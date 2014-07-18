@@ -1,0 +1,165 @@
+﻿
+        body {
+            font-family: arial;
+            font-size: 14px;
+        }
+                
+        ul {
+            list-style:none;
+            /*list-style:circle;*/
+        }
+
+        li {
+            margin-left: -6px;
+        }
+
+        .mainContent {
+            background: blue;
+            margin: 0;
+            padding: 0;
+        }
+
+        .drawingCanvas {
+            /*margin-top: -18px;*/
+            background: antiquewhite;
+            border: 1px solid black;
+            /*color: #a0d2ef;
+            display: inline-block;*/
+        }
+
+        .textCanvas {
+            /*margin-top: -18px;*/
+            background: white;
+            overflow-y: auto;
+        }
+
+        .textViewItem {
+            background-color: transparent;
+            background-position: 8px 12px, center right;
+            background-repeat: repeat;
+            text-align: left;
+            font-size: 1em;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+
+            .textViewItem[data-type="note"] {
+                background-color: white;
+                /*border: 2px solid #999;*/
+            }
+
+            .textViewItem[data-type="annotation"] {
+                background-color: #C1FCA9;
+                /*border: 2px solid #999;*/
+            }
+
+            .textViewItem[data-isselected="true"] {
+                background-color: gray;
+                /*border: 2px solid #999;*/
+            }
+
+        .appHeader {
+            position: absolute;
+            overflow-x: hidden;
+        }
+
+        .appContent {
+            position: absolute;
+        }
+
+        .appFooter {
+            position: absolute;
+            overflow-x: hidden;
+        }
+
+        .pictureInPicture {
+            position: absolute;
+        }
+
+        .pictureContainer {
+            position: absolute;
+            margin: 0;
+            padding: 0;
+            display:block;
+        }
+
+        .textContainer {
+            position: absolute;
+            margin: 0;
+            padding: 0;
+            display:block;
+        }
+
+        .verticalMenu {
+            position: absolute;
+            display: block;
+            max-width: 100px;
+            overflow-x: hidden;
+            margin-left: 8px;
+        }
+
+        .horizontalMenu {
+            position: absolute;
+            margin-left: 8px;
+            display: none;
+            /*overflow-x:hidden;*/
+        }
+
+        .verticalMenuGroup {
+            min-width: 95px;
+            padding-top: 0;
+            padding-bottom: 6px;
+            padding-left: 1px;
+            padding-right: 1px;
+            background-color: blanchedalmond;
+        }
+
+        .outlineLabel {
+            margin-left: 10px;
+            font-size: x-small;
+        }
+
+        .expandHideButton {
+            margin-left: 10px;
+        }
+
+        .pinAsRoot {
+            margin-right: 10px;
+        }
+
+        .notePanel {
+            margin-left: 15px;
+            padding: 1px;
+        }
+
+        .notePanel-group {
+            margin: 1px;
+            padding: 1px;
+        }
+
+        .notePanel-panel {
+            margin: 1px;
+            padding: 1px;
+        }
+
+        .notePanel-heading {
+            margin: 1px;
+            padding: 1px;
+        }
+
+        .notePanel-body {
+            margin: 1px;
+            padding: 1px;
+        }
+
+        .notePanel-link {
+            background-color: aliceblue;
+        }
+
+        .notePanel-formGroup {
+            padding-left: 4px;
+            padding-right: 4px;
+        }
+

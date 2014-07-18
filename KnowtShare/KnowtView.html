@@ -1,0 +1,344 @@
+﻿<!DOCTYPE html>
+<!--http://www.html5rocks.com/en/mobile/touch/-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+
+<html ng-app="knowtShareApp" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+    <title>KnowtShare: Session</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <meta name="description" content="knowtshare: collaborative modeling " />
+    <meta name="author" content="Apprentice Systems" />
+
+    <meta name="application-name" content="knowtshare" />
+    <meta name="msapplication-TileColor" content="#a63fa6" />
+    <meta name="msapplication-square70x70logo" content="images/KnowtShareBadge.png" />
+    <meta name="msapplication-square150x150logo" content="images/KnowtShareLogo.png" />
+    <meta name="msapplication-wide310x150logo" content="images/KnowtShareWideLogo.png" />
+    <meta name="msapplication-square310x310logo" content="images/KnowtShareWideLogo.png" />
+
+
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="bootstrap/css/bootstrap-theme.css" rel="stylesheet" />
+    <link href="content/toastr.min.css" rel="stylesheet" />
+
+    <link href="css/noteDiagram.css" rel="stylesheet" />
+
+
+    <!--    http://stackoverflow.com/questions/15626952/twitter-bootstrap-and-canvas-positioning  -->
+
+    <script type="text/ng-template" id="shapeTreeButtonItem.html">
+        <button ng-show="shape.hasGroupMembers()" type="button" class="btn  btn-sm pull-left" ng-click="shape.toggleShowSubcomponents()">
+            <span class="glyphicon" ng-class="{'plus': 'glyphicon-plus-sign', 'minus': 'glyphicon-minus-sign', 'none': 'glyphicon-certificate' }[shape.currentToggleSubcomponentsState()]"></span>
+        </button>
+        <!--<span>the toggle details: {{shape.currentToggleDetailsState()}}</span>-->
+        <button ngxx-show="shape.showDetails || shape.hasDetails()" type="button" class="btn btn-sm pull-left" ng-click="shape.toggleShowDetails()">
+            <span class="glyphicon" ng-class="{'open': 'glyphicon-chevron-down', 'close': 'glyphicon-chevron-up', 'none': 'glyphicon-chevron-right' }[shape.currentToggleDetailsState()]"></span>
+        </button>
+        <button type="button" class="btn  btn-sm pull-right" ng-click="vm.doPinAsRoot(shape)">
+            <span class="glyphicon glyphicon-pushpin"></span>
+        </button>
+    </script>
+
+    <script type="text/ng-template" id="shapeTreeHeaderItem.html">
+        <span style="padding-left:20px" ng-class="{'selected': shape.isSelected}"> {{shape.outlineRef()}}  {{shape.context.headerText}}</span>
+    </script>
+
+    <script type="text/ng-template" id="shapeTreeBodyItem.html">
+        <div >
+            <a ng-show="shape.context.hasNoteUri" href="{{shape.context.noteUri}}" target="_blank">link:</a>
+            <span>{{shape.context.noteText}}</span>
+        </div>
+    </script>
+
+</head>
+
+
+<body ng-cloak ng-controller="workSpace as space" style="overflow-y:hidden">
+
+    <header id="appHeader" class="app-header">
+        <nav>
+            <h1 class="label label-info " style="margin-left:10px">{{space.clientCount}}</h1>
+            <span class="label label-success " ng-show="space.hasSessionKey">{{space.traffic}}</span>
+            <img id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
+            <span style="margin-right:10px">{{space.documentTitle}}</span>
+            <span style="margin-right:10px">{{space.sessionTitle}}</span>
+            <span style="margin-right:10px">{{space.clientMode}}</span>
+
+            <span style="margin-right:10px">:{{space.sessionKey}}</span>
+            <span style="margin-right:10px">:{{space.userId}}</span>
+            <span style="margin-right:10px">:{{space.userNickName}}</span>
+            <button class="btn btn-default navbar-btn" ng-show="vm.isViewOnlySession" ng-click="vm.doAddAnnotation">
+                Annotate
+            </button>
+            <button class="btn btn-default navbar-btn" ng-show="vm.isViewOnlySession" ng-click="vm.doSaveFilePicker">
+                Save
+            </button>
+            <button class="btn btn-default navbar-btn" ng-show="vm.isViewOnlySession" ng-click="vm.doResyncSession">
+                Resync
+            </button>
+            <button class="btn btn-default navbar-btn" ng-show="vm.isViewOnlySession && space.viewMenu.isDrawingView" ng-click="vm.doZoomToFit">
+                Fit
+            </button>
+            <button class="btn btn-default navbar-btn" ng-show="vm.isViewOnlySession && space.viewMenu.isDrawingView" ng-click="vm.doZoom1To1">
+                1:1
+            </button>
+            <button class="btn btn-default navbar-btn" ng-show="vm.isViewOnlySession && space.viewMenu.isDrawingView" ng-click="vm.gotoTextView">
+                Text
+            </button>
+            <button class="btn btn-default navbar-btn" ng-show="vm.isViewOnlySession && space.viewMenu.isTextView" ng-click="vm.gotoDrawingView">
+                Note
+            </button>
+
+            <button type="button" class="btn navbar-btn" ng-show="vm.isViewOnlySession" ng-click="vm.doTogglePanZoomWindow">
+                {{vm.zoomText}}
+            </button>
+        </nav>
+    </header>
+
+    <section id="appContent" class="app-content">
+        <article id="mainContent" class="main-content">
+
+            <div id="textContainer" ng-show="space.viewMenu.isTextView" class="text-container" ng-controller="noteTreeView as vm">
+                <ul class="breadcrumb">
+                    <li ng-repeat="crumb in vm.selectionPath">
+                        <a class="btn btn-link " ng-click="vm.doPinAsRoot(crumb)">{{crumb.context ? crumb.context.headerText : crumb.myName}}</a>
+                    </li>
+                </ul>
+
+                <div id="textCanvas" class="text-canvas">
+
+                    <script type="text/ng-template" id="shapeTreeItem.html">
+                        <article class="text-view-item" data-type="{{shape.context.myType}}" >
+                                <div ng-include=" 'shapeTreeButtonItem.html' "></div>
+                                <p  ng-click="vm.selectShape(shape)" ng-include=" 'shapeTreeHeaderItem.html' "></p>
+
+                                <div ng-if="shape.showDetails && shape.hasDetails()">
+                                    <div ng-include=" 'shapeTreeBodyItem.html' "></div>
+                                 </div>
+                                  <ul ng-if="shape.showSubcomponents && shape.hasGroupMembers()">
+                                    <li ng-repeat="shape in shape.Subcomponents.elements" ng-include=" 'shapeTreeItem.html' "></li>
+                                </ul>
+                        </article>
+                    </script>
+
+                    <ul>
+                        <li ng-repeat="shape in vm.shapeElements" ng-include=" 'shapeTreeItem.html' "></li>
+                    </ul>
+
+                </div>
+            </div>
+
+            <div id="pictureContainer" ng-show="space.viewMenu.isDrawingView" class="picture-container" ng-controller="noteCanvasView as vm">
+                <canvas class="drawing-canvas" id="drawingCanvas" width="550" height="550"></canvas>
+            </div>
+
+        </article>
+        <article id="PIP" class="picture-in-picture">
+            <canvas class="drawing-canvas" id="panZoomCanvas" width="10" height="10"></canvas>
+        </article>
+    </section>
+
+    <section id="horizontalMenu" class="horizontal-menu" style="display:none">
+        <div class="btn-group">
+            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                Notes <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" ng-controller="noteMenu as menu">
+                <li ng-click="menu.doAddNote"><a href="#"> Add </a></li>
+                <li ng-click="menu.doOpenSelected" ng-show="menu.hasSelection"><a href="#"> Edit </a></li>
+                <li ng-click="menu.doDuplicateSelected" ng-show="menu.hasSelection"><a href="#"> Duplicate </a></li>
+                <li ng-click="menu.doConfirmDelete" ng-show="menu.hasSelection"><a href="#"> Delete </a></li>
+                <li ng-click="menu.doUnDo" ng-show="menu.canDoUnDo"><a href="#"> Undo </a></li>
+            </ul>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                View <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" ng-controller="viewMenu as menu">
+                <li ng-click="menu.gotoTextView" ng-show="menu.isDrawingView"><a href="#"> Text </a></li>
+                <li ng-click="menu.gotoDrawingView" ng-show="menu.isTextView"><a href="#"> Drawing </a></li>
+                <li ng-click="space.noteMenu.doConfirmClear"><a href="#"> Clear </a></li>
+            </ul>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                Zoom <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" ng-controller="panZoomMenu as menu">
+                <li ng-click="menu.doTogglePanZoomWindow" ng-show="menu.isPanZoomWindowOpen"><a href="#"> Zoom on/off </a></li>
+                <li ng-click="menu.doZoomToFit"><a href="#"> Fit </a></li>
+                <li ng-click="menu.doZoom1To1"><a href="#"> 1:1 </a></li>
+            </ul>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                File <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" ng-controller="fileMenu as menu">
+                <li ng-click="menu.doNewDocument"><a href="#"> New </a></li>
+                <li ng-click="menu.doOpenFilePicker"><a href="#"> Open </a></li>
+                <li ng-click="menu.doSaveFilePicker"><a href="#"> Save </a></li>
+                <li ng-click="menu.doCloseDocument"><a href="#"> Close </a></li>
+                <li ng-click="menu.doSaveAsHTMLFilePicker" ng-show="menu.isTextView"><a href="#"> HTML </a></li>
+                <li ng-click="menu.doSaveAsPNGFilePicker" ng-show="menu.isDrawingView"><a href="#"> Screenshot </a></li>
+            </ul>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                Share <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" ng-controller="sessionMenu as menu">
+                <li ng-click="menu.doCreateSession" ng-hide="menu.hasSessionKey"><a href="#"> Share </a></li>
+                <li ng-click="menu.doJoinSession" ng-hide="menu.hasSessionKey"><a href="#"> Join </a></li>
+                <li ng-click="menu.doStopSharing" ng-show="menu.hasSessionKey"><a href="#"> Stop </a></li>
+                <li ng-click="menu.doShareSession" ng-show=" menu.hasSessionKey"><a href="#"> Link </a></li>
+                <li ng-click="menu.doResyncSession" ng-show="menu.hasSessionKey"><a href="#"> Resync </a></li>
+            </ul>
+        </div>
+
+    </section>
+
+
+
+    <aside id="verticalMenu" class="vertical-menu">
+        <div id="menuNotes" class="btn-group-vertical dropdown vertical-menu-group" ng-controller="noteMenu as menu">
+            <button class="btn btn-sm" ng-click="menu.doAddNote">
+                Add Note
+            </button>
+            <button class="btn btn-sm" ng-click="menu.doOpenSelected" ng-disabled="!menu.hasSelection">
+                Edit Note
+            </button>
+            <button class="btn btn-sm" ng-click="menu.doDuplicateSelected" ng-disabled="!menu.hasSelection">
+                Duplicate
+            </button>
+            <button class="btn btn-sm" ng-click="menu.doConfirmDelete" ng-disabled="!menu.hasSelection">
+                Delete
+            </button>
+            <button class="btn  btn-sm" ng-click="menu.doUnDo" ng-disabled="!menu.canDoUnDo">
+                Undo
+            </button>
+
+        </div>
+
+        <div id="menuView" class="btn-group-vertical dropdown vertical-menu-group" ng-controller="viewMenu as menu">
+
+            <button class="btn  btn-sm" ng-click="menu.gotoTextView" ng-show="menu.isDrawingView">
+                Text View
+            </button>
+            <button class="btn btn-sm " ng-click="menu.gotoDrawingView" ng-show="menu.isTextView">
+                Note View
+            </button>
+            <button class="btn  btn-sm" ng-click="space.noteMenu.doConfirmClear">
+                Clear
+            </button>
+        </div>
+
+        <div id="menuPanZoom" class="btn-group-vertical dropdown vertical-menu-group" ng-hide="menu.isTextView" ng-controller="panZoomMenu as menu">
+            <button class="btn  btn-sm" ng-click="menu.doTogglePanZoomWindow">
+                {{menu.zoomText}}
+            </button>
+            <button class="btn  btn-sm" ng-click="menu.doZoomToFit">
+                Fit
+            </button>
+            <button class="btn  btn-sm" ng-click="menu.doZoom1To1">
+                1:1
+            </button>
+        </div>
+
+        <div id="menuFile" class="btn-group-vertical dropdown vertical-menu-group" ng-controller="fileMenu as menu">
+            <button class="btn  btn-sm" ng-click="menu.doNewDocument">
+                New
+            </button>
+            <button class="btn  btn-sm" ng-click="menu.doOpenFilePicker">
+                Open
+            </button>
+            <button class="btn  btn-sm" ng-click="menu.doSaveFilePicker">
+                Save
+            </button>
+            <button class="btn  btn-sm" ng-click="menu.doCloseDocument">
+                Close
+            </button>
+            <button class="btn  btn-sm" ng-click="menu.doSaveAsHTMLFilePicker" ng-show="menu.isTextView">
+                HTML
+            </button>
+            <button class="btn  btn-sm" ng-click="menu.doSaveAsPNGFilePicker" ng-show="menu.isDrawingView">
+                Screenshot
+            </button>
+        </div>
+
+        <div id="menuShare" class="btn-group-vertical dropdown vertical-menu-group" ng-controller="sessionMenu as menu">
+
+            <button class="btn  btn-sm " ng-click="menu.doCreateSession" ng-hide="menu.hasSessionKey">
+                Share
+            </button>
+            <button class="btn  btn-sm " ng-click="menu.doJoinSession" ng-hide="menu.hasSessionKey">
+                Join
+            </button>
+            <button class="btn btn-sm " ng-click="menu.doStopSharing" ng-show="menu.hasSessionKey">
+                Stop Sharing
+            </button>
+            <button class="btn  btn-sm " ng-click="menu.doShareSession" ng-show="menu.hasSessionKey">
+                Share Link
+            </button>
+            <button class="btn  btn-sm " ng-click="menu.doResyncSession" ng-show="menu.hasSessionKey">
+                Resync
+            </button>
+
+        </div>
+
+    </aside>
+
+    <footer id="appFooter" class="app-footer"></footer>
+
+
+
+    <script src="Scripts/jquery-2.1.1.min.js"></script>
+    <script src="Scripts/angular.js"></script>
+    <script src="Scripts/angular-route.js"></script>
+    <script src="Scripts/angular-animate.js"></script>
+    <script src="Scripts/angular-touch.js"></script>
+
+    <script src="Scripts/angular-ui/ui-bootstrap.min.js"></script>
+    <script src="Scripts/angular-ui/ui-bootstrap-tpls.min.js"></script>
+
+    <script src="Scripts/toastr.min.js"></script>
+
+
+    <!--Reference the autogenerated SignalR hub script. -->
+    <script src="Scripts/jquery.signalR-2.1.0.min.js"></script>
+    <script src="/signalr/hubs"></script>
+
+
+    <script type="text/javascript" src="http://foundryjs.azurewebsites.net/bundles/EaselJS"></script>
+    <script type="text/javascript" src="http://foundryjs.azurewebsites.net/Foundry/FoundryComplete.js"></script>
+
+
+
+    <script type="text/javascript" src="Knowt/KnowtShareApp.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewNgDialog.js"></script>
+
+
+    <script type="text/javascript" src="Knowt/KnowtViewLayout.js"></script>
+
+    <script type="text/javascript" src="Knowt/KnowtViewStencil.js"></script>
+
+    <script type="text/javascript" src="Knowt/KnowtViewMenuContent.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewMenuPanZoom.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewMenuFile.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewMenuView.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewMenuSession.js"></script>
+
+    <script type="text/javascript" src="Knowt/KnowtViewNoteCanvasView.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewNoteTreeView.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewKeyEvents.js"></script>
+
+</body>
+</html>

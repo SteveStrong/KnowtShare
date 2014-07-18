@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html>
+<!--http://www.html5rocks.com/en/mobile/touch/-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+
+<html ng-app="knowtPadApp" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+    <title>Knowt Pad</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <meta name="description" content="knowtshare: collaborative modeling " />
+    <meta name="author" content="Apprentice Systems" />
+
+    <meta name="application-name" content="knowtshare" />
+    <meta name="msapplication-TileColor" content="#a63fa6" />
+    <meta name="msapplication-square70x70logo" content="images/KnowtShareBadge.png" />
+    <meta name="msapplication-square150x150logo" content="images/KnowtShareLogo.png" />
+    <meta name="msapplication-wide310x150logo" content="images/KnowtShareWideLogo.png" />
+    <meta name="msapplication-square310x310logo" content="images/KnowtShareWideLogo.png" />
+
+
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="bootstrap/css/bootstrap-theme.css" rel="stylesheet" />
+    <link href="content/toastr.min.css" rel="stylesheet" />
+
+    <link href="css/noteDiagram.css" rel="stylesheet" />
+
+    <script type="text/ng-template" id="shapeTreeButtonItem.html">
+        <button ng-show="shape.hasGroupMembers()" type="button" class="btn btn-default btn-sm pull-left" ng-click="toggleShowSubcomponents(shape)">
+            <span class="glyphicon" ng-class="{'plus': 'glyphicon-plus-sign', 'minus': 'glyphicon-minus-sign', 'none': 'glyphicon-certificate' }[shape.currentToggleSubcomponentsState()]"></span>
+        </button>
+        <button ng-show="shape.hasDetails()" type="button" class="btn btn-sm pull-left" ng-click="toggleShowDetails(shape)">
+            <span class="glyphicon" ng-class="{'open': 'glyphicon-chevron-down', 'close': 'glyphicon-chevron-up', 'none': 'glyphicon-chevron-right' }[shape.currentToggleDetailsState()]"></span>
+        </button>
+        <button type="button" class="btn btn-default btn-sm pull-right" ng-click="pinAsRoot(shape)">
+            <span class="glyphicon glyphicon-pushpin"></span>
+        </button>
+    </script>
+
+    <script type="text/ng-template" id="shapeTreeHeaderItem.html">
+        <span style="padding-left:20px"> {{shape.outlineRef()}}  {{shape.context.headerText}}</span>
+    </script>
+
+    <script type="text/ng-template" id="shapeTreeBodyItem.html">
+        <span><em>{{shape.context.noteText}}</em></span>
+        <br />
+        <a class='btn btn-link' ng-href="{{shape.context.noteUri}}" target="_blank">link {{shape.context.noteUri}}</a>
+        <br />
+    </script>
+
+
+
+    <script id="noteTemplate.html" type="text/ng-template">
+
+        <div class="form-horizontal" role="form">
+            <div class="form-group notePanel-formGroup" style="margin-left:2px">
+                <label for="IDTextSummary" class="control-label">Headline:</label>
+                <input readonly type="text" id="IDTextSummary" x-webkit-speech class="form-control" style="display:inline" ng-model="context.headerText" placeholder="the note headline" />
+            </div>
+
+            <div class="panel-collapse" collapse="!context.isTextDifferent">
+                <div class="form-group notePanel-formGroup" style="margin-left:2px">
+                    <label for="IDTextNote" class="control-label">Details:</label>
+                    <textarea readonly class="form-control" id="IDTextNote" rows="5" ng-model="context.noteText" placeholder="the note text"></textarea>
+                </div>
+                <div class="form-group notePanel-formGroup" style="margin-left:2px">
+                    <label for="IDTextURI" class="control-label"> <a href="#" target="_blank" ng-disable="!context.hasNoteUri" ng-href="{{context.noteUri}}">Link: </a>(ex. http://www.knowtshare.com)</label>
+                    <input readonly class="form-control" id="IDTextURI" ng-model="context.noteUri" placeholder="the note uri" />
+                    <img ng-show="context.hasImageUri" ng-src="{{context.noteUri}}" alt="image missing" height="100" />
+                </div>
+            </div>
+
+        </div>
+
+    </script>
+
+    <script id="WorkspaceInspect.html" type="text/ng-template">
+        <div ng-repeat="prop in context.Properties.elements">
+            <span><strong>{{prop.asReference()}}:</strong></span>
+            <span><em>{{prop.asDisplayValue()}}</em></span>
+            <input ng-model="context[prop.myName]" />
+        </div>
+    </script>
+
+    <script id="WorkspaceHeader.html" type="text/ng-template">
+        <h3>workspace properties</h3>
+        <span>{{context.myName}}</span>
+        <span>type:</span><span>{{context.myType}}</span>
+    </script>
+
+</head>
+
+
+<body ng-cloak ng-controller="workSpace as space" style="overflow-y:hidden">
+
+    <header id="appHeader" class="appHeader">
+        <nav>
+            <img id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
+            <span style="margin-right:10px">{{space.title}}</span>
+            <span style="margin-right:10px"><em>{{space.subTitle}}</em></span>
+        </nav>
+
+    </header>
+
+
+    <section id="appContent" class="appContent">
+        <article id="mainContent" class="mainContent" ng-controller="noteMenu as menu">
+            <button class="btn btn-success" ng-click="menu.doAddNote">Add Note</button>
+            <button class="btn btn-danger" ng-disabled="!menu.canDoDelete" ng-click="menu.doConfirmDelete">Delete Note</button>
+            <button class="btn btn-info" ng-disabled="!menu.canOpenSelected" ng-click="menu.doOpenSelected">Edit Note</button>
+            <button class="btn btn-success" ng-click="space.animals.doAddNote">Add Animal</button>
+            <button class="btn btn-default" ng-click="menu.doConfirmClear">Clear</button>
+            <button class="btn btn-default" ng-click="space.doSave">Save</button>
+            <button class="btn btn-default" ng-click="space.doRestore">Restore</button>
+            <button class="btn btn-default" ng-click="space.inspect()">inspect</button>
+        </article>
+
+
+
+        <article>
+            <ul class="breadcrumb" >
+                <li ng-repeat="crumb in vm.selectionPath">
+                    <a class="btn btn-link " ng-click="pinAsRoot(crumb)">{{crumb.context ? crumb.context.headerText : crumb.myName}}</a>
+                </li>
+            </ul>
+
+            <section class="left-side">
+                <div class="list-container">
+                    <!--<div ng-repeat="context in notes" ng-class="{isSelected: context.isSelected}" ng-click="markSelected(context)">
+                        <div ng-include=" 'noteTemplate.html' "></div>
+                    </div>-->
+
+                    <div id="textCanvas" class="textCanvas">
+                        <script type="text/ng-template" id="shapeTreeItem.html">
+
+                            <article>
+                                <p class="textViewItem" data-type="{{shape.context.myType}}" ng-class="{'selected': shape.isSelected}">
+                                    <div ng-include=" 'shapeTreeButtonItem.html' "></div>
+                                    <p style="padding-left:10px" ng-click="selectShape(shape)" ng-include=" 'shapeTreeHeaderItem.html' "></p>
+
+                                <div shape="shape" ng-if="shape.showDetails && shape.hasDetails()">
+                                    <div ng-include=" 'shapeTreeBodyItem.html' "></div>
+                                </div>
+                                <ul ng-if="shape.showSubcomponents && shape.hasGroupMembers()">
+                                    <li ng-repeat="shape in shape.Subcomponents.elements" ng-include=" 'shapeTreeItem.html' "></li>
+                                </ul>
+                                </p>
+                            </article>
+                        </script>
+                        <ul>
+                            <li ng-repeat="shape in shapes" ng-include=" 'shapeTreeItem.html' "></li>
+                        </ul>
+
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="right-side">
+                <div class="details-container">
+                        <canvas style="background-color:bisque" class="drawing-canvas" id="drawingCanvas" width="800" height="600"></canvas>
+                </div>
+            </section>
+        </article>
+
+        <article id="PIP" class="pictureInPicture">
+            <canvas class="drawing-canvas" id="panZoomCanvas" width="10" height="10"></canvas>
+        </article>
+
+
+
+    </section>
+
+
+    <footer id="appFooter" class="appFooter"></footer>
+
+
+
+    <script src="Scripts/jquery-2.1.1.js"></script>
+    <script src="Scripts/angular.js"></script>
+    <script src="Scripts/angular-route.js"></script>
+    <script src="Scripts/angular-animate.js"></script>
+    <script src="Scripts/angular-touch.js"></script>
+
+    <script src="Scripts/angular-ui/ui-bootstrap.min.js"></script>
+    <script src="Scripts/angular-ui/ui-bootstrap-tpls.min.js"></script>
+
+    <script src="Scripts/toastr.min.js"></script>
+
+
+    <script type="text/javascript" src="http://foundryjs.azurewebsites.net/bundles/EaselJS"></script>
+    <script type="text/javascript" src="http://foundryjs.azurewebsites.net/Foundry/FoundryComplete.js"></script>
+
+    <script type="text/javascript" src="Knowt/KnowtPadApp.js"></script>
+
+    <script type="text/javascript" src="Knowt/KnowtViewStencil.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewNgDialog.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewMenuNoteAndShape.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewMenuAnimalNotes.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewMenuFile.js"></script>
+</body>
+</html>
