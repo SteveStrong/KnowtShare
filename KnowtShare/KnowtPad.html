@@ -104,12 +104,13 @@
 
 
     <section id="appContent" class="appContent">
-        <article id="mainContent" class="mainContent" ng-controller="noteMenu as menu">
+        <article id="mainContent" class="mainContent" ng-controller="contentMenu as menu">
             <button class="btn btn-success" ng-click="menu.doAddNote">Add Note</button>
             <button class="btn btn-danger" ng-disabled="!menu.canDoDelete" ng-click="menu.doConfirmDelete">Delete Note</button>
             <button class="btn btn-info" ng-disabled="!menu.canOpenSelected" ng-click="menu.doOpenSelected">Edit Note</button>
             <button class="btn btn-success" ng-click="space.animals.doAddNote">Add Animal</button>
             <button class="btn btn-default" ng-click="menu.doConfirmClear">Clear</button>
+
             <button class="btn btn-default" ng-click="space.doSave">Save</button>
             <button class="btn btn-default" ng-click="space.doRestore">Restore</button>
             <button class="btn btn-default" ng-click="space.inspect()">inspect</button>
@@ -194,9 +195,11 @@
     <script type="text/javascript" src="Knowt/KnowtPadApp.js"></script>
 
     <script type="text/javascript" src="Knowt/KnowtViewStencil.js"></script>
+    <!--can we also add an animal stencil-->
+    <!--<script type="text/javascript" src="Knowt/KnowtViewMenuAnimalNotes.js"></script>-->
     <script type="text/javascript" src="Knowt/KnowtViewNgDialog.js"></script>
-    <script type="text/javascript" src="Knowt/KnowtViewMenuNoteAndShape.js"></script>
-    <script type="text/javascript" src="Knowt/KnowtViewMenuAnimalNotes.js"></script>
-    <script type="text/javascript" src="Knowt/KnowtViewMenuFile.js"></script>
+    <!--<script type="text/javascript" src="Knowt/KnowtViewMenuFile.js"></script>-->
+    <script type="text/javascript" src="Knowt/KnowtViewMenuPanZoom.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewMenuContent.js"></script>
 </body>
 </html>

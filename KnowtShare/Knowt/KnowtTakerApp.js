@@ -32,8 +32,7 @@ knowtApp.header = { title: 'Knowt Taker', help: 'knowtshareHelp.html' };
             positionClass: "toast-bottom-left",
         }
 
-        //load templares for dialogs and shapes...
-        fo.utils.xmlHttpGet('http://localhost:50085/KnowtView.Dialogs.html', function (text, xhr) {
+        fo.utils.xmlHttpGet('KnowtView.Dialogs.html', function (text, xhr) {
             var head = document.getElementsByTagName("head")[0];
             var script = document.createElement('div');
 

@@ -539,13 +539,13 @@
         };
 
         obj.openEdit = function (context) {
-            if (!context) return;
+            if (!context || obj.dialogService.isBusy()) return;
             //mush of this is specific to notes so maybe if belongs 
             //defined in the stencil??
 
             var myUndo = fo.undo.do('Edited', { id: context.uniqueID, spec: context.getSpec() });
 
-            var dialog = obj.dialogService.createDialog({
+            var dialog = obj.dialogService.doPopupDialog({
                 context: context,
                 //headerTemplate: 'noteHeaderTemplate.html',
                 //bodyTemplate: 'noteBodyTemplate.html',
@@ -579,8 +579,6 @@
                 onReady: function () {
                 }
             });
-
-            dialog.display();
         };
 
         obj.doDeleteAsync = function (onComplete) {

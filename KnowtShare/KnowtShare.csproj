@@ -192,7 +192,6 @@
     <Content Include="Knowt\KnowtViewTraffic.js" />
     <Content Include="Knowt\older\KnowtShareApp.html" />
     <Content Include="Knowt\older\KnowtViewMenuAnimalNotes.js" />
-    <Content Include="Knowt\older\KnowtViewMenuNoteAndShape.js" />
     <Content Include="Knowt\older\KnowtViewMenuNotes.js" />
     <Content Include="Knowt\older\oldKnowtViewApp.js" />
     <Content Include="Knowt\older\oldKnowtViewViewModel.js" />

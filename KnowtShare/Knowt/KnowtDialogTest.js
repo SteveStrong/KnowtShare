@@ -47,8 +47,7 @@ app.service('workspaceService', ['$log', function ($log) {
 //now create the main controller
 (function (app, fo, undefined) {
 
-    ////load templares for dialogs and shapes...
-    fo.utils.xmlHttpGet('http://localhost:50085/KnowtView.Dialogs.html', function (text, xhr) {
+    fo.utils.xmlHttpGet('KnowtView.Dialogs.html', function (text, xhr) {
         var head = document.getElementsByTagName("head")[0];
         var script = document.createElement('div');
 

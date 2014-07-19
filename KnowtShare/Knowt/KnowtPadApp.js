@@ -32,8 +32,23 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
             positionClass: "toast-bottom-left",
         }
 
-        //load templares for dialogs and shapes...
-        fo.utils.xmlHttpGet('http://localhost:50085/KnowtView.Dialogs.html', function (text, xhr) {
+        fo.subscribe('info', function (a, b) {
+            toastr.info(a, b);
+        });
+
+        fo.subscribe('warning', function (a, b) {
+            toastr.warning(a, b);
+        });
+
+        fo.subscribe('error', function (a, b) {
+            toastr.error(a, b);
+        });
+
+        fo.subscribe('success', function (a, b) {
+            toastr.success(a, b);
+        });
+
+        fo.utils.xmlHttpGet('KnowtView.Dialogs.html', function (text, xhr) {
             var head = document.getElementsByTagName("head")[0];
             var script = document.createElement('div');
 
@@ -56,12 +71,10 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
 
         var space;
 
-        this.workSpace = function (template) {
+        this.workSpace = function (properties, modelTemplate) {
             if (space) return space;
 
-            var spec = fo.utils.union({}, template);
-
-            space = fo.ws.makeNoteWorkspace("KnowtPad", {
+            var spec = {
                 canvasId: 'drawingCanvas',
                 panZoomCanvasId: 'panZoomCanvas',
                 pipId: 'PIP',
@@ -69,7 +82,15 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
                 subTitle: "take notes visually",
                 userId: "123456780",
                 userNickName: 'sedona',
-            }, spec);
+
+            }
+            space = fo.ws.makeNoteWorkspace("KnowtPad", fo.utils.union(spec, properties), modelTemplate);
+
+            space.isDocumentEmpty = function () {
+                //var total = (this.rootPage.Subcomponents.count * this.rootModel.Subcomponents.count) / 2;
+                var isEmpty = this.rootPage.Subcomponents.isEmpty() && this.rootModel.Subcomponents.isEmpty();
+                return isEmpty;
+            };
 
             return space;
         };
@@ -79,27 +100,17 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
             return space;
         }
 
+        this.activeDrawing = function () {
+            if (!space) throw new Error('Workspace is not initialized');
+            return space.drawing;
+        }
+
     }]);
 
 }(knowtApp, Foundry));
 
 //now create the main controller
 (function (app, fo, undefined) {
-
-
-    app.controller('noteMenu', function ($log, workspaceService, dialogService) {
-        var space = workspaceService.activeWorkSpace();
-
-        var rootModel = space.rootModel;
-        var testObj = {
-            tryme: function () {
-                alert('tryme worked');
-            },
-            theTitle: 'this is the title',
-        }
-        var noteMenu = rootModel.factory.newMenuNoteAndShape(testObj, rootModel);
-        return noteMenu;
-    })
 
     app.controller('workSpace', function ($scope, $log, workspaceService, dialogService) {
 
@@ -115,36 +126,11 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
             }
         };
 
-
         var space = workspaceService.workSpace({
             factory: fo.knowtPadApp,
+            stencil: fo.KnowtShare,
             dialogService: dialogService,
-            hasSelection: function () { return false; },
-            currentNote: function () { },
-            currentShape: function () { },
-            pinAsRootShape: function () {
-                return space.rootPage;
-            },
-            selectionPath: function () {
-                var path = [];
-                var self = space.drawing;
-                var parent = space.pinAsRootShape;
-                while (parent && parent != self) {
-                    path.push(parent);
-                    parent = parent.myParent;
-                }
-                return path.reverse();
-            },
-            modelElements: function () {
-                var context = this.pinAsRootShape.context;
-                context = context || this.model;
-                return context.Subcomponents.elements;
-            },
-            shapeElements: function () {
-                return this.pinAsRootShape.Subcomponents.elements;
-            }
         });
-
 
         space.inspect = function () {
             dialogService.doPopupDialog({
@@ -205,36 +191,19 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
 
 
 
-        rootModel.factory.newMenuAnimalNotes({}, rootModel, function (obj) {
-            space.animals = obj;
-        });
+        //rootModel.factory.newMenuAnimalNotes({}, rootModel, function (obj) {
+        //    space.animals = obj;
+        //});
 
-        rootModel.factory.newMenuFile({ space: space }, space, function (obj) {
-            space.file = obj;
-        });
+        //rootModel.factory.newMenuFile({ space: space }, space, function (obj) {
+        //    space.file = obj;
+        //});
 
-        fo.subscribe('info', function(a,b){
-            toastr.info(a,b);
-        });
 
-        fo.subscribe('doubleClick', function (shape, context, action) {
-            if (context.hasNoteUri && CTRLKEY) {
-                window.open(context.noteUri, "_blank");
-            }
-            else {
-                space.notes.openEdit(context);
-            }
-            shape.doUpdate();
-        });
 
-        fo.subscribe('doubleClick', function (shape, context, action) {
-            if (context.noteUri) {
-                window.open(context.noteUri, "_blank");
-            }
-            else {
-                fo.doCommand('editorDialog', context);
-            }
-        });
+
+
+
 
 
 
@@ -275,5 +244,28 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
 
         return space;
     });
+
+
+
+    app.controller('contentMenu', function ($log, workspaceService, dialogService) {
+        var space = workspaceService.activeWorkSpace();
+
+        if (!space.contentMenu) {
+            space.contentMenu = space.factory.newMenuContent({ space: space, }, space);
+
+
+            fo.subscribe('doubleClick', function (shape, context, action) {
+                if (context.hasNoteUri && CTRLKEY) {
+                    window.open(context.noteUri, "_blank");
+                }
+                else {
+                    space.contentMenu.openEdit(context);
+                }
+                shape.doUpdate();
+            });
+
+        }
+        return space.contentMenu;
+    })
 
 }(knowtApp, Foundry));
