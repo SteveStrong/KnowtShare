@@ -6,7 +6,7 @@ namespace KnowtShare
 {
     public class ShapeHub : Hub
     {
-        public void Hello()
+        public void sayHello()
         {
             Clients.All.hello();
         }
@@ -14,7 +14,7 @@ namespace KnowtShare
         public void Send(string name, string message)
         {
             // Call the broadcastMessage method to update clients.
-            Clients.All.broadcastMessage(name, message);
+            Clients.All.recieve(name, message);
         }
 
 

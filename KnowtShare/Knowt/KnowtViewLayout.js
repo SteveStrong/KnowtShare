@@ -108,7 +108,9 @@
         result.autoResize = function (on) {
             if (on) window.addEventListener('resize', result.onScreenResize, false);
             if (!on) window.removeEventListener('resize', result.onScreenResize, false);
-            if (on) result.onScreenResize();
+            if (on) {
+                setTimeout(result.onScreenResize, 200);
+            }
         }
 
         return result;

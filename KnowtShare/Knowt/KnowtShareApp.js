@@ -1,12 +1,8 @@
 ﻿
 var knowtApp = angular.module('knowtShareApp', ['ngRoute', 'ngAnimate', 'ui.bootstrap']);
-
-knowtApp.header = { title: 'knowtshare', help: 'knowtshareHelp.html' };
-
-//initial document and run implemented...
+knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
 
 (function (app, fo, undefined) {
-
     app.defaultNS = function (name) {
         var id = fo.getNamespaceKey(this.name, name);
         return id;
@@ -17,6 +13,11 @@ knowtApp.header = { title: 'knowtshare', help: 'knowtshareHelp.html' };
         return id;
     }
 
+}(knowtApp, Foundry));
+
+//initial document and run implemented...
+
+(function (app, fo, undefined) {
 
 
     app.run(function ($log, workspaceService) {
@@ -62,7 +63,7 @@ knowtApp.header = { title: 'knowtshare', help: 'knowtshareHelp.html' };
             $.connection.hub.start().done(function () {
                 //pop some toast to
                 fo.publish('info', [ 'connected to service', 'ready']);
-                workspaceService.serverLogin(shapeHub);
+               // workspaceService.serverLogin(shapeHub);
             });
         }
         else {
@@ -147,89 +148,91 @@ knowtApp.header = { title: 'knowtshare', help: 'knowtshareHelp.html' };
 
  
             if (!defaultSession) {
-                space.doSessionRestore();
+                setTimeout(function () {
+                    space.doSessionRestore();
+                }, 100);
             }
 
             return space;
         };
 
-        function manageCollaberation() {
-            space.createSession = function (sessionKey, sessionSpec) {
-                this.sessionKey = sessionKey;
-                this.userId = this.isLoggedIn ? this.userId : "Session";
+        //function manageCollaberation() {
+        //    space.createSession = function (sessionKey, sessionSpec) {
+        //        this.sessionKey = sessionKey;
+        //        this.userId = this.isLoggedIn ? this.userId : "Session";
 
-                if (sessionSpec.presenter) {
-                    this.isPresenterSession = true;
-                }
-                var syncPayload = this.currentModelToPayload(sessionSpec);
-                shapeHub.server.playerCreateSession(this.sessionKey, this.userId, syncPayload);
-            }
+        //        if (sessionSpec.presenter) {
+        //            this.isPresenterSession = true;
+        //        }
+        //        var syncPayload = this.currentModelToPayload(sessionSpec);
+        //        shapeHub.server.playerCreateSession(this.sessionKey, this.userId, syncPayload);
+        //    }
 
-            space.joinSession = function (sessionKey) {
-                this.sessionKey = sessionKey;
-                this.userId = this.isLoggedIn ? this.userId : "Session";
+        //    space.joinSession = function (sessionKey) {
+        //        this.sessionKey = sessionKey;
+        //        this.userId = this.isLoggedIn ? this.userId : "Session";
 
-                var syncPayload = this.currentModelToPayload();
-                shapeHub.server.playerJoinSession(this.sessionKey, this.userId, syncPayload);
-            }
+        //        var syncPayload = this.currentModelToPayload();
+        //        shapeHub.server.playerJoinSession(this.sessionKey, this.userId, syncPayload);
+        //    }
 
-            shapeHub.client.authorReceiveJoinSessionFromPlayer = function (sessionKey, userId, payload) {
-                if (!space.matchesSession(sessionKey)) {
-                    return;
-                }
+        //    shapeHub.client.authorReceiveJoinSessionFromPlayer = function (sessionKey, userId, payload) {
+        //        if (!space.matchesSession(sessionKey)) {
+        //            return;
+        //        }
 
-                var shareSpec = {};
-                //if (!space.isPresenterSession) {
-                //    space.updateSessionTraffic(0, payload.length);
-                //    space.payloadToCurrentModel(payload);
-                //    space.doRepaint;
-                //    toastr.success('is being sent the synchronized drawing', ctrl.userNickName);
-                //}
-                //else {
-                //    shareSpec = { isViewOnlySession: true }
-                //}
+        //        var shareSpec = {};
+        //        //if (!space.isPresenterSession) {
+        //        //    space.updateSessionTraffic(0, payload.length);
+        //        //    space.payloadToCurrentModel(payload);
+        //        //    space.doRepaint;
+        //        //    toastr.success('is being sent the synchronized drawing', ctrl.userNickName);
+        //        //}
+        //        //else {
+        //        //    shareSpec = { isViewOnlySession: true }
+        //        //}
 
-                var syncPayload = workspace.currentModelToPayload(shareSpec);
-                //space.updateSessionTraffic(syncPayload.length, 0);
-                shapeHub.invoke("authorSendJoinSessionModelToPlayers", sessionKey, userId, syncPayload);
+        //        var syncPayload = workspace.currentModelToPayload(shareSpec);
+        //        //space.updateSessionTraffic(syncPayload.length, 0);
+        //        shapeHub.invoke("authorSendJoinSessionModelToPlayers", sessionKey, userId, syncPayload);
 
-            };
+        //    };
 
-            shapeHub.client.playerReceiveJoinSessionModel = function (sessionKey, userId, payload) {
-                if (!space.matchesSession(sessionKey)) {
-                    return;
-                }
+        //    shapeHub.client.playerReceiveJoinSessionModel = function (sessionKey, userId, payload) {
+        //        if (!space.matchesSession(sessionKey)) {
+        //            return;
+        //        }
 
-                //ctrl.updateSessionTraffic(0, payload.length);
-                var spec = space.payloadToCurrentModel(payload);
-                var command = spec.command;
+        //        //ctrl.updateSessionTraffic(0, payload.length);
+        //        var spec = space.payloadToCurrentModel(payload);
+        //        var command = spec.command;
 
-                //ctrl.doRepaint;
+        //        //ctrl.doRepaint;
 
-                //this should be toast
-                if (command && command.isViewOnlySession) {
-                    space.isViewOnlySession = true;
-                    toastr.success('Has synchronized with presentation', space.userNickName);
-                }
-                else {
-                    toastr.success('Has synchronized with your notes', space.userNickName);
-                }
-            };
-        }
+        //        //this should be toast
+        //        if (command && command.isViewOnlySession) {
+        //            space.isViewOnlySession = true;
+        //            toastr.success('Has synchronized with presentation', space.userNickName);
+        //        }
+        //        else {
+        //            toastr.success('Has synchronized with your notes', space.userNickName);
+        //        }
+        //    };
+        //}
 
 
-        this.serverLogin = function (hub) {
-            shapeHub = hub;
+        //this.serverLogin = function (hub) {
+        //    shapeHub = hub;
 
-            shapeHub.client.clientCountChanged = function (count) {
-                space.clientCount = count;
-            };
+        //    shapeHub.client.clientCountChanged = function (count) {
+        //        space.clientCount = count;
+        //    };
 
-            manageCollaberation();
-            if (defaultSession && space) {
-                space.joinSession(defaultSession);
-            }
-        }
+        //    manageCollaberation();
+        //    if (defaultSession && space) {
+        //        space.joinSession(defaultSession);
+        //    }
+        //}
 
         this.activeWorkSpace = function () {
             if (!space) throw new Error('Workspace is not initialized');

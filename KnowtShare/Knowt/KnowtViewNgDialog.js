@@ -1,6 +1,28 @@
 ﻿
 (function (app, fo, ws, undefined) {
 
+    //http://stackoverflow.com/questions/14833326/how-to-set-focus-in-angularjs
+
+    app.directive('captureFocus', function ($timeout, $parse) {
+        return {
+            link: function (scope, element, attrs) {
+                var model = $parse(attrs.captureFocus);
+                scope.$watch(model, function (value) {
+                    console.log('value=', value);
+                    if (value === true) {
+                        $timeout(function () {
+                            element[0].focus();
+                        }, 800);
+                    }
+                });
+                //element.bind('blur', function () {
+                //    console.log('blur')
+                //    scope.$apply(model.assign(scope, false));
+                //})
+            }
+        };
+    });
+
     //http://weblogs.asp.net/dwahlin/building-an-angularjs-dialog-service
 
     app.service('dialogService', ['$modal','$templateCache', function ($modal, $templateCache) {

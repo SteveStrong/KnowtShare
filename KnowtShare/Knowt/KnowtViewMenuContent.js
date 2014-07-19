@@ -221,16 +221,16 @@
 
                   var rootModel = obj.rootModel;
 
-                  var note = model.getSubcomponent(id, true);
+                  var model = rootModel.getSubcomponent(id, true);
                   for (var key in spec) {
-                      if (spec[key] != note[key]) {
-                          note[key] = spec[key];
+                      if (spec[key] != model[key]) {
+                          model[key] = spec[key];
                       }
                   }
                   //ctrl.page.render();
 
                   //tell other users the note has changed
-                  fo.publish('ModelChanged', [note]);
+                  fo.publish('ModelChanged', [model]);
 
                   return payload;
               },
@@ -563,7 +563,7 @@
                     }
                     var keep = fo.undo.verifyKeep(myUndo, { id: context.uniqueID, spec: context.getSpec() });
                     if (keep) fo.publish('ModelChanged', [context]);
-                    $modalInstance.close(context);
+                    //done elsewhere $modalInstance.close(context);
                 },
                 onCancel: function ($modalInstance, context) {
                     var keep = fo.undo.verifyKeep(myUndo, { id: context.uniqueID, spec: context.getSpec() });
@@ -571,7 +571,7 @@
                         fo.undo.unDo(myUndo);
                         fo.publish('ModelChanged', [context]);
                     }
-                    $modalInstance.dismiss(context);
+                    //done elsewhere $modalInstance.dismiss(context);
                 },
                 onExit: function () {
                    // obj.doModelSmash;

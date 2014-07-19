@@ -1,22 +1,34 @@
 ﻿
 var knowtApp = angular.module('knowtChirpApp', ['ngRoute', 'ngAnimate', 'ui.bootstrap']);
-
-
-//initial document and run implemented...
+knowtApp.header = { title: 'Knowt Chirp', help: 'knowtshareHelp.html' };
 
 (function (app, fo, undefined) {
-
     app.defaultNS = function (name) {
         var id = fo.getNamespaceKey(this.name, name);
         return id;
     }
 
+    app.stencilNS = function (name) {
+        var id = fo.getNamespaceKey("KnowtShare", name);
+        return id;
+    }
+
+}(knowtApp, Foundry));
+
+//initial document and run implemented...
+
+(function (app, fo, undefined) {
+
     app.run(function ($log, dialogService) {
 
-
+        //http://www.asp.net/signalr/overview/signalr-20/hubs-api/hubs-api-guide-javascript-client#logging
         // Reference the auto-generated proxy for the hub.
+        var connection = $.hubConnection();
+        connection.logging = true;
+
         var shapeHub = $.connection.shapeHub;
         var hub = $.connection.hub;
+
 
         //http://codeseven.github.io/toastr/demo.html
         toastr.options = {
@@ -40,7 +52,7 @@ var knowtApp = angular.module('knowtChirpApp', ['ngRoute', 'ngAnimate', 'ui.boot
         if (shapeHub) {
             hub.start().done(function () {
                 //pop some toast to
-                toastr.info('connected to service', 'ready to chirp');
+                fo.publish('info', ['connected to service', 'ready to chirp']);
 
                 sessionKey = sessionKey || 'chirp';
                 shapeHub.started = true;
@@ -48,10 +60,8 @@ var knowtApp = angular.module('knowtChirpApp', ['ngRoute', 'ngAnimate', 'ui.boot
             });
         }
         else {
-            toastr.warning('but everything loaded', 'did not connected to service');
+            fo.publish('warning', ['but everything loaded', 'did not connected to service']);
         }
-
-
     });
 
 }(knowtApp, Foundry));
@@ -70,12 +80,8 @@ var knowtApp = angular.module('knowtChirpApp', ['ngRoute', 'ngAnimate', 'ui.boot
         });
 
         this.workSpace = workSpace;
-        this.drawing = workSpace.drawing;
 
 
-        fo.subscribe('hubReady', function (shapeHub, sessionKey) {
-
-        });
 
         var viewModelSpec = {
         }
@@ -104,11 +110,35 @@ var knowtApp = angular.module('knowtChirpApp', ['ngRoute', 'ngAnimate', 'ui.boot
             }
         };
 
+        fo.subscribe('info', function (a, b) {
+            toastr.info(a, b);
+        });
+
+        fo.subscribe('warning', function (a, b) {
+            toastr.warning(a, b);
+        });
+
+        fo.subscribe('error', function (a, b) {
+            toastr.error(a, b);
+        });
+
 
         var workSpace = workspaceService.workSpace;
         workSpace.rootModel = fo.makeComponent({ myName: 'testing' })
         var rootSpec = workspaceService.rootSpec;
 
+        var shapeHub;
+        fo.subscribe('hubReady', function (hub, sessionKey) {
+
+            shapeHub = fo.knowtChirpApp.newShapeHub({
+                shapeHub: hub,
+                space: workSpace,
+            }, workSpace);
+
+            shapeHub.doJoinSession(sessionKey);
+
+            $scope.safeApply();
+        });
 
 
         //workSpace.ex
@@ -120,41 +150,29 @@ var knowtApp = angular.module('knowtChirpApp', ['ngRoute', 'ngAnimate', 'ui.boot
 
         $scope.vm = viewModel;
 
-        fo.subscribe('hubReady', function (hub, sessionKey) {
-            workSpace.sessionKey = sessionKey;
-            workSpace.hasSessionKey = true;
-
-            var shapeHub = fo.knowtChirpApp.newShapeHub({
-                hub: hub,
-                space: workSpace,
-            }, workSpace);
-
-           
-
-            $scope.doPing = function () {
-                shapeHub.doSendPing;
-            }
-
-            $scope.doSendMessage = function () {
-                shapeHub.doSendMessage('hello steve' + new Date().toString());;
-            }
-
-            fo.subscribe('info', function(a,b){
-                toastr.info(a,b);
-            });
+        $scope.rootModel = workSpace.rootModel;
 
 
-            $scope.safeApply();
-        });
 
         $scope.chirp = fo.makeComponent();
 
+        $scope.doNewPage = function () {
+            shapeHub.doOpenSessionPage();
+        }
+
+        $scope.doPing = function () {
+            shapeHub.doPing('');
+        }
+
+        $scope.doSendMessage = function () {
+            shapeHub.doSendMessage(workSpace.userid, 'hello steve' + new Date().toString());
+        }
 
         $scope.doChirp = function () {
             //alert('you need: the note creation, note send,  modules,');
 
             //lest make a shape
-            var note = fo.knowtChirpApp.newNote({
+            var note = fo.KnowtShare.newNote({
                 author: workSpace.userNickName,
                 userId: workSpace.userId,
                 headerText: function () {
@@ -165,6 +183,8 @@ var knowtApp = angular.module('knowtChirpApp', ['ngRoute', 'ngAnimate', 'ui.boot
                     return 'the time is: ' + this.headerText;
                 }
             }, workSpace.rootModel);
+
+            workSpace.rootModel.capture(note);
 
             $scope.chirp = note;
             $scope.safeApply();

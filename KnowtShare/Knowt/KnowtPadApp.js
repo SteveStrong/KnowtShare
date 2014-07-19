@@ -1,8 +1,21 @@
 ﻿
 var knowtApp = angular.module('knowtPadApp', ['ngRoute', 'ngAnimate', 'ui.bootstrap']);
-
+knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
 
 //initial document and run implemented...
+(function (app, fo, undefined) {
+    app.defaultNS = function (name) {
+        var id = fo.getNamespaceKey(this.name, name);
+        return id;
+    }
+
+    app.stencilNS = function (name) {
+        var id = fo.getNamespaceKey("KnowtShare", name);
+        return id;
+    }
+
+}(knowtApp, Foundry));
+
 
 (function (app, fo, undefined) {
 

@@ -1,9 +1,157 @@
 ﻿<!DOCTYPE html>
+
+
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>knowtshare</title>
+
+    <title>KnowtShare &middot; Home</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="knowtshare: collaborative modeling " />
+    <meta name="author" content="Apprentice Systems" />
+
+
+
+
+    <meta name="application-name" content="knowtshare" />
+    <meta name="msapplication-TileColor" content="#a63fa6" />
+    <meta name="msapplication-square70x70logo" content="images/KnowtShareBadge.png" />
+    <meta name="msapplication-square150x150logo" content="images/KnowtShareLogo.png" />
+    <meta name="msapplication-wide310x150logo" content="images/KnowtShareWideLogo.png" />
+    <meta name="msapplication-square310x310logo" content="images/KnowtShareWideLogo.png" />
+
+
+    <link href="content/bootstrap.min.css" rel="stylesheet" />
+
+
+
+    <!--http://www.favicon.cc/?-->
+
 </head>
 <body>
-    <h1>knowtshare</h1>
+
+    <!-- Navbar
+    ================================================== -->
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="./Diagram.html">KnowtShare 2.0</a>
+
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav pull-right">
+                <li class="active"><a href="./KnowtView.html">Take Notes...</a></li>
+            </ul>
+        </div>
+    </nav>
+
+
+
+    <div id="container" class="container">
+        <div class="jumbotron">
+            <img class="pull-right" src="images/KnowtShareWideLogo.png" />
+            <h1>KnowtShare</h1>
+            <p class="lead">take notes, capture knowledge, collaborate and share ideas with others</p>
+            <p><a href="http://apprenticesystems.azurewebsites.net/knowtshareinfo.html" class="btn btn-default">Learn more &raquo;</a></p>
+
+        </div>
+
+        <div class="body-content">
+            <div class="row">
+                <div class="col-lg-2">
+                    <h2>Web Notes</h2>
+                    <!--<p>Start taking notes or creating drawings using the browser. it's free</p>-->
+                    <!--<p><a href="./Diagram.html" class="btn btn-success">Knowtshare 1.0</a></p>-->
+                    <p><a href="./KnowtView.html" class="btn btn-success">Knowtshare 2.0</a></p>
+                    <p><a href="./angularSignalR.html" class="btn btn-info">Angular Example</a></p>
+                    <!--<img src="images/knowtshareQRCode.png" height="150" />-->
+                </div>
+                <div class="col-lg-4">
+                    <h2>Knowt Apps:</h2>
+                    <p>smaller applications build from the parts of knowtshare</p>
+                    <p>
+                        <a href="KnowtPad.html" target="_blank" class="btn btn-info">knowt pad</a>
+                        --notes on canvas and in tree view
+                    </p>
+                    <p>
+                        <a href="KnowtChirp.html" target="_blank" class="btn  btn-info">knowt chirp</a>
+                        --just send a note via signalR
+                    </p>
+                    <p>
+                        <a href="KnowtTaker.html" target="_blank" class="btn  btn-info">knowt taker</a>
+                        --capture notes and save to local storage
+                    </p>
+
+                    <!--<p><a class="btn btn-link" href="Knowtify.html">get Knowtify &raquo;</a></p>-->
+                </div>
+                <div class="col-lg-3">
+                    <h2>Modular components</h2>
+                    <p>Knowtshare 2.0 will be modular making it possable to build your own applications</p>
+                    <p><a href="http://foundryjs.azurewebsites.net/recommender/recommender.html" target="_blank" class="btn">beach towns</a><br /></p>
+                    <p><a href="http://foundryjs.azurewebsites.net/KArecommender/recommender.html" target="_blank" class="btn">knowledge artifacts</a><br /></p>
+
+                    <!--<p><a class="btn btn-link" href="http://apps.microsoft.com/windows/en-us/app/decidero-car/e816254b-d977-4cde-b85c-f46afc151028">get the app &raquo;</a></p>-->
+                </div>
+                <div class="col-lg-3">
+                    <h2>Were just getting getting started</h2>
+                    <p>be part of the feature planning by sending us your comments on twitter</p>
+                    <a id="tweetShare" href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.knowtshare.com" data-text="Visit this site" data-via="KnowtShare" data-size="large" data-hashtags=""></a>
+                    <a href="https://twitter.com/KnowtShare" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @KnowtShare</a>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; Apprentice Systems 2013</p>
+        </footer>
+    </div>
+
+    <!--<script src="Scripts/jquery-2.1.1.min.js"></script>-->
+    <script src="http://foundryjs.azurewebsites.net/Foundry/Foundry.min.js"></script>
+
+    <script>
+        !function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+            if (!d.getElementById(id)) {
+                js = d.createElement(s); js.id = id; js.src = p + '://platform.twitter.com/widgets.js';
+                fjs.parentNode.insertBefore(js, fjs);
+            }
+        }(document, 'script', 'twitter-wjs');
+
+    </script>
+
+    <script type="text/javascript">
+
+        String.prototype.endsWith = function (str) {
+            return (this.match(str + "$") == str);
+        };
+
+        var content = document.getElementById('container');
+        fo.enableFileDragAndDrop(content);
+
+        fo.subscribe('textFileDropped', function (payload, name, ext) {
+            if (ext.endsWith('.knt') || ext.endsWith('.json') || ext.endsWith('.txt')) {
+                var spec = JSON.parse(payload);
+                content.innerHTML = '<pre>' + JSON.stringify(spec, undefined, 3) + '</pre>';
+            }
+
+            if (ext.endsWith('.csv')) {
+                var payload = fo.convert.csvToJson(payload);
+                var spec = JSON.parse(payload);
+                content.innerHTML = '<pre>' + JSON.stringify(spec, undefined, 3) + '</pre>';
+            }
+        });
+
+
+    </script>
 </body>
+
 </html>
