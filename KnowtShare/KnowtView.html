@@ -28,30 +28,6 @@
 
     <!--    http://stackoverflow.com/questions/15626952/twitter-bootstrap-and-canvas-positioning  -->
 
-    <script type="text/ng-template" id="shapeTreeButtonItem.html">
-        <button ng-show="shape.hasGroupMembers()" type="button" class="btn  btn-sm pull-left" ng-click="shape.toggleShowSubcomponents()">
-            <span class="glyphicon" ng-class="{'plus': 'glyphicon-plus-sign', 'minus': 'glyphicon-minus-sign', 'none': 'glyphicon-certificate' }[shape.currentToggleSubcomponentsState()]"></span>
-        </button>
-        <!--<span>the toggle details: {{shape.currentToggleDetailsState()}}</span>-->
-        <button ngxx-show="shape.showDetails || shape.hasDetails()" type="button" class="btn btn-sm pull-left" ng-click="shape.toggleShowDetails()">
-            <span class="glyphicon" ng-class="{'open': 'glyphicon-chevron-down', 'close': 'glyphicon-chevron-up', 'none': 'glyphicon-chevron-right' }[shape.currentToggleDetailsState()]"></span>
-        </button>
-        <button type="button" class="btn  btn-sm pull-right" ng-click="vm.doPinAsRoot(shape)">
-            <span class="glyphicon glyphicon-pushpin"></span>
-        </button>
-    </script>
-
-    <script type="text/ng-template" id="shapeTreeHeaderItem.html">
-        <span style="padding-left:20px" ng-class="{'selected': shape.isSelected}"> {{shape.outlineRef()}}  {{shape.context.headerText}}</span>
-    </script>
-
-    <script type="text/ng-template" id="shapeTreeBodyItem.html">
-        <div >
-            <a ng-show="shape.context.hasNoteUri" href="{{shape.context.noteUri}}" target="_blank">link:</a>
-            <span>{{shape.context.noteText}}</span>
-        </div>
-    </script>
-
 </head>
 
 
@@ -100,31 +76,16 @@
     <section id="appContent" class="app-content">
         <article id="mainContent" class="main-content">
 
-            <div id="textContainer" ng-show="space.viewMenu.isTextView" class="text-container" ng-controller="noteTreeView as vm">
+            <div id="textContainer" ng-show="space.viewMenu.isTextView" class="text-container" ng-controller="noteTreeView as viewModel">
                 <ul class="breadcrumb">
-                    <li ng-repeat="crumb in vm.selectionPath">
-                        <a class="btn btn-link " ng-click="vm.doPinAsRoot(crumb)">{{crumb.context ? crumb.context.headerText : crumb.myName}}</a>
+                    <li ng-repeat="crumb in viewModel.selectionPath">
+                        <a class="btn btn-link " ng-click="viewModel.doPinAsRoot(crumb)">{{crumb.context ? crumb.context.headerText : crumb.myName}}</a>
                     </li>
                 </ul>
 
                 <div id="textCanvas" class="text-canvas">
-
-                    <script type="text/ng-template" id="shapeTreeItem.html">
-                        <article class="text-view-item" data-type="{{shape.context.myType}}" >
-                                <div ng-include=" 'shapeTreeButtonItem.html' "></div>
-                                <p  ng-click="vm.selectShape(shape)" ng-include=" 'shapeTreeHeaderItem.html' "></p>
-
-                                <div ng-if="shape.showDetails && shape.hasDetails()">
-                                    <div ng-include=" 'shapeTreeBodyItem.html' "></div>
-                                 </div>
-                                  <ul ng-if="shape.showSubcomponents && shape.hasGroupMembers()">
-                                    <li ng-repeat="shape in shape.Subcomponents.elements" ng-include=" 'shapeTreeItem.html' "></li>
-                                </ul>
-                        </article>
-                    </script>
-
                     <ul>
-                        <li ng-repeat="shape in vm.shapeElements" ng-include=" 'shapeTreeItem.html' "></li>
+                        <li ng-repeat="shape in viewModel.shapeElements" ng-include=" 'shapeTreeItem.html' "></li>
                     </ul>
 
                 </div>

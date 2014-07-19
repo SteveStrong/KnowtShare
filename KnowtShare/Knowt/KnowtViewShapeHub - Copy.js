@@ -1,10 +1,17 @@
 ﻿
 (function (app, fo, undefined) {
 
+    fo.defineType(app.defaultNS('shapeHub'), {
+        hub: { client: {} },
+        rootModel: fo.fromParent,
+        rootPage: fo.fromParent,
+    },
+    function (properties, subcomponents, parent) {
 
-    app.newShapeHub = function (shapeHub, space) {
+        var obj = fo.makeComponent(properties, subcomponents, parent);
 
-        var obj = {}
+        var space = parent;
+        var shapeHub = obj.hub
 
         obj.doOpenSessionPage = function () {
             var url = window.location;
@@ -313,7 +320,7 @@
         }
 
         return obj;
-    };
+    });
 
 
 }(knowtApp, Foundry));

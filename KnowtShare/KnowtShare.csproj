@@ -174,7 +174,7 @@
     <Content Include="Knowt\KnowtPadApp.js" />
     <Content Include="Knowt\KnowtShareApp.js" />
     <Content Include="Knowt\KnowtTakerApp.js" />
-    <Content Include="Knowt\KnowtViewController.js" />
+    <Content Include="Knowt\older\KnowtViewController.js" />
     <Content Include="Knowt\KnowtViewErrorReport.js" />
     <Content Include="Knowt\KnowtViewKeyEvents.js" />
     <Content Include="Knowt\KnowtViewLayout.js" />
@@ -187,12 +187,12 @@
     <Content Include="Knowt\KnowtViewNgDialog.js" />
     <Content Include="Knowt\KnowtViewNoteCanvasView.js" />
     <Content Include="Knowt\KnowtViewNoteTreeView.js" />
+    <Content Include="Knowt\KnowtViewShapeHub - Copy.js" />
     <Content Include="Knowt\KnowtViewShapeHub.js" />
     <Content Include="Knowt\KnowtViewStencil.js" />
     <Content Include="Knowt\KnowtViewTraffic.js" />
     <Content Include="Knowt\older\KnowtShareApp.html" />
-    <Content Include="Knowt\older\KnowtViewMenuAnimalNotes.js" />
-    <Content Include="Knowt\older\KnowtViewMenuNotes.js" />
+    <Content Include="Knowt\KnowtViewStencilAnimals.js" />
     <Content Include="Knowt\older\oldKnowtViewApp.js" />
     <Content Include="Knowt\older\oldKnowtViewViewModel.js" />
     <Content Include="packages.config" />
@@ -208,6 +208,7 @@
     <Content Include="content\bootstrap-theme.css.map" />
     <Content Include="content\bootstrap.css.map" />
     <Content Include="images\Thumbs.db" />
+    <Content Include="KnowtView.NoteTemplate.html" />
     <None Include="Properties\PublishProfiles\knowtshareStaging.pubxml" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />

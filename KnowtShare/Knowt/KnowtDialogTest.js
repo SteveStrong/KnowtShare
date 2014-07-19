@@ -47,13 +47,10 @@ app.service('workspaceService', ['$log', function ($log) {
 //now create the main controller
 (function (app, fo, undefined) {
 
-    fo.utils.xmlHttpGet('KnowtView.Dialogs.html', function (text, xhr) {
-        var head = document.getElementsByTagName("head")[0];
-        var script = document.createElement('div');
+    //load templares for tialogs and shapes...
+    fo.utils.loadTemplate('KnowtView.Dialogs.html');
+    fo.utils.loadTemplate('KnowtView.NoteTemplate.html');
 
-        script.innerHTML = text;
-        head.appendChild(script);
-    });
 
 
     app.controller('workSpace', function ($scope, $log, workspaceService, dialogService) {

@@ -319,26 +319,17 @@
 
 
         //dataURI is used to store a picture
-        obj.createAndCaptureNote = function(text, dataUri) {
+        obj.createAndCaptureNote = function(properties, text, dataUri) {
 
             var target = space.currentModelTarget();
 
-            var self = this;
-            var note = this.stencil.newNote({
-                author: function () { return self.userNickName },
+            var spec = {
+                author: this.userNickName,
                 userId: this.userId,
                 dataUri: dataUri,
-                //headerText: function () {
-                //    var date = new Date();
-                //    return date.toString()
-                //},
-                //noteText: function () {
-                //    return this.author + ' the time is: ' + this.headerText;
-                //}
-            }, target);
+            }
 
-            var uniqueID = note.uniqueID;
-
+            var note = this.stencil.newNote(fo.utils.union(spec, properties), target);
 
             if (text) {
                 if (text.startsWith('http')) {
@@ -350,6 +341,7 @@
                 }
             }
 
+            var uniqueID = note.uniqueID;
             target.capture(note, uniqueID);
 
             var shape = undefined;
@@ -374,7 +366,7 @@
         };
 
 
-        obj.doCreateNote = function (onComplete) {
+        obj.doCreateNote = function (properties, onComplete) {
 
             //headerText: function () {
             //    var date = new Date();
@@ -384,24 +376,24 @@
             //    return this.author + ' the time is: ' + this.headerText;
             //}
 
-            obj.createAndCaptureNote();
+            obj.createAndCaptureNote(properties);
             onComplete && onComplete();
         }
 
 
         //now subscribe to data from drag and drop
         fo.subscribe('urlDropped', function (url) {
-            var note = obj.createAndCaptureNote(url).note;
+            var note = obj.createAndCaptureNote({}, url).note;
             fo.publish('ModelChanged', [note]);
         });
 
         fo.subscribe('textDropped', function (txt) {
-            var note = obj.createAndCaptureNote(txt).note;
+            var note = obj.createAndCaptureNote({},txt).note;
             fo.publish('ModelChanged', [note]);
         });
 
         fo.subscribe('imageFileDropped', function (payload, name, ext) {
-            var note = obj.createAndCaptureNote('', payload).note;
+            var note = obj.createAndCaptureNote({},'', payload).note;
             note.establishManagedProperty('sourceFilename', name);
             fo.publish('ModelChanged', [note]);
         });

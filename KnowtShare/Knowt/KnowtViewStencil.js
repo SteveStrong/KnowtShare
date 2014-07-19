@@ -1,10 +1,7 @@
 ﻿/// <reference path="../../FoundryJS/Apprentice/FileSaver.min.js" />
-var Foundry = Foundry || {};
-Foundry.workspace = Foundry.workspace || {};
 
 (function (app, fo, ws, undefined) {
  
-
     ws.Workspace.prototype.specToKnowtShareModelSync = function (spec) {
 
         function modifyModelType(item) {

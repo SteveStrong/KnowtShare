@@ -25,68 +25,7 @@
 
     <link href="css/noteDiagram.css" rel="stylesheet" />
 
-    <script type="text/ng-template" id="shapeTreeButtonItem.html">
-        <button ng-show="shape.hasGroupMembers()" type="button" class="btn btn-default btn-sm pull-left" ng-click="toggleShowSubcomponents(shape)">
-            <span class="glyphicon" ng-class="{'plus': 'glyphicon-plus-sign', 'minus': 'glyphicon-minus-sign', 'none': 'glyphicon-certificate' }[shape.currentToggleSubcomponentsState()]"></span>
-        </button>
-        <button ng-show="shape.hasDetails()" type="button" class="btn btn-sm pull-left" ng-click="toggleShowDetails(shape)">
-            <span class="glyphicon" ng-class="{'open': 'glyphicon-chevron-down', 'close': 'glyphicon-chevron-up', 'none': 'glyphicon-chevron-right' }[shape.currentToggleDetailsState()]"></span>
-        </button>
-        <button type="button" class="btn btn-default btn-sm pull-right" ng-click="pinAsRoot(shape)">
-            <span class="glyphicon glyphicon-pushpin"></span>
-        </button>
-    </script>
 
-    <script type="text/ng-template" id="shapeTreeHeaderItem.html">
-        <span style="padding-left:20px"> {{shape.outlineRef()}}  {{shape.context.headerText}}</span>
-    </script>
-
-    <script type="text/ng-template" id="shapeTreeBodyItem.html">
-        <span><em>{{shape.context.noteText}}</em></span>
-        <br />
-        <a class='btn btn-link' ng-href="{{shape.context.noteUri}}" target="_blank">link {{shape.context.noteUri}}</a>
-        <br />
-    </script>
-
-
-
-    <script id="noteTemplate.html" type="text/ng-template">
-
-        <div class="form-horizontal" role="form">
-            <div class="form-group notePanel-formGroup" style="margin-left:2px">
-                <label for="IDTextSummary" class="control-label">Headline:</label>
-                <input readonly type="text" id="IDTextSummary" x-webkit-speech class="form-control" style="display:inline" ng-model="context.headerText" placeholder="the note headline" />
-            </div>
-
-            <div class="panel-collapse" collapse="!context.isTextDifferent">
-                <div class="form-group notePanel-formGroup" style="margin-left:2px">
-                    <label for="IDTextNote" class="control-label">Details:</label>
-                    <textarea readonly class="form-control" id="IDTextNote" rows="5" ng-model="context.noteText" placeholder="the note text"></textarea>
-                </div>
-                <div class="form-group notePanel-formGroup" style="margin-left:2px">
-                    <label for="IDTextURI" class="control-label"> <a href="#" target="_blank" ng-disable="!context.hasNoteUri" ng-href="{{context.noteUri}}">Link: </a>(ex. http://www.knowtshare.com)</label>
-                    <input readonly class="form-control" id="IDTextURI" ng-model="context.noteUri" placeholder="the note uri" />
-                    <img ng-show="context.hasImageUri" ng-src="{{context.noteUri}}" alt="image missing" height="100" />
-                </div>
-            </div>
-
-        </div>
-
-    </script>
-
-    <script id="WorkspaceInspect.html" type="text/ng-template">
-        <div ng-repeat="prop in context.Properties.elements">
-            <span><strong>{{prop.asReference()}}:</strong></span>
-            <span><em>{{prop.asDisplayValue()}}</em></span>
-            <input ng-model="context[prop.myName]" />
-        </div>
-    </script>
-
-    <script id="WorkspaceHeader.html" type="text/ng-template">
-        <h3>workspace properties</h3>
-        <span>{{context.myName}}</span>
-        <span>type:</span><span>{{context.myType}}</span>
-    </script>
 
 </head>
 
@@ -108,7 +47,7 @@
             <button class="btn btn-success" ng-click="menu.doAddNote">Add Note</button>
             <button class="btn btn-danger" ng-disabled="!menu.canDoDelete" ng-click="menu.doConfirmDelete">Delete Note</button>
             <button class="btn btn-info" ng-disabled="!menu.canOpenSelected" ng-click="menu.doOpenSelected">Edit Note</button>
-            <button class="btn btn-success" ng-click="space.animals.doAddNote">Add Animal</button>
+            <button class="btn btn-success" ng-click="menu.animals.doAddNote">Add Animal</button>
             <button class="btn btn-default" ng-click="menu.doConfirmClear">Clear</button>
 
             <button class="btn btn-default" ng-click="space.doSave">Save</button>
@@ -119,37 +58,22 @@
 
 
         <article>
-            <ul class="breadcrumb" >
-                <li ng-repeat="crumb in vm.selectionPath">
-                    <a class="btn btn-link " ng-click="pinAsRoot(crumb)">{{crumb.context ? crumb.context.headerText : crumb.myName}}</a>
-                </li>
-            </ul>
 
-            <section class="left-side">
+
+            <section class="left-side" ng-controller="noteTreeView as viewModel">
+                <ul class="breadcrumb">
+                    <li ng-repeat="crumb in viewModel.selectionPath">
+                        <a class="btn btn-link " ng-click="viewModel.doPinAsRoot(crumb)">{{crumb.context ? crumb.context.headerText : crumb.myName}}</a>
+                    </li>
+                </ul>
                 <div class="list-container">
                     <!--<div ng-repeat="context in notes" ng-class="{isSelected: context.isSelected}" ng-click="markSelected(context)">
                         <div ng-include=" 'noteTemplate.html' "></div>
                     </div>-->
 
                     <div id="textCanvas" class="textCanvas">
-                        <script type="text/ng-template" id="shapeTreeItem.html">
-
-                            <article>
-                                <p class="textViewItem" data-type="{{shape.context.myType}}" ng-class="{'selected': shape.isSelected}">
-                                    <div ng-include=" 'shapeTreeButtonItem.html' "></div>
-                                    <p style="padding-left:10px" ng-click="selectShape(shape)" ng-include=" 'shapeTreeHeaderItem.html' "></p>
-
-                                <div shape="shape" ng-if="shape.showDetails && shape.hasDetails()">
-                                    <div ng-include=" 'shapeTreeBodyItem.html' "></div>
-                                </div>
-                                <ul ng-if="shape.showSubcomponents && shape.hasGroupMembers()">
-                                    <li ng-repeat="shape in shape.Subcomponents.elements" ng-include=" 'shapeTreeItem.html' "></li>
-                                </ul>
-                                </p>
-                            </article>
-                        </script>
                         <ul>
-                            <li ng-repeat="shape in shapes" ng-include=" 'shapeTreeItem.html' "></li>
+                            <li ng-repeat="shape in viewModel.shapeElements" ng-include=" 'shapeTreeItem.html' "></li>
                         </ul>
 
                     </div>
@@ -195,11 +119,13 @@
     <script type="text/javascript" src="Knowt/KnowtPadApp.js"></script>
 
     <script type="text/javascript" src="Knowt/KnowtViewStencil.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewStencilAnimals.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewMenuContent.js"></script>
+
     <!--can we also add an animal stencil-->
-    <!--<script type="text/javascript" src="Knowt/KnowtViewMenuAnimalNotes.js"></script>-->
     <script type="text/javascript" src="Knowt/KnowtViewNgDialog.js"></script>
     <!--<script type="text/javascript" src="Knowt/KnowtViewMenuFile.js"></script>-->
     <script type="text/javascript" src="Knowt/KnowtViewMenuPanZoom.js"></script>
-    <script type="text/javascript" src="Knowt/KnowtViewMenuContent.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewNoteTreeView.js"></script>
 </body>
 </html>

@@ -1,0 +1,83 @@
+﻿<script id="WorkspaceInspect.html" type="text/ng-template">
+    <div ng-repeat="prop in context.Properties.elements">
+        <span><strong>{{prop.asReference()}}:</strong></span>
+        <span><em>{{prop.asDisplayValue()}}</em></span>
+        <input ng-model="context[prop.myName]" />
+    </div>
+</script>
+
+<script id="WorkspaceHeader.html" type="text/ng-template">
+    <h3>workspace properties</h3>
+    <span>{{context.myName}}</span>
+    <span>type:</span>
+    <span>{{context.myType}}</span>
+</script>
+
+
+<script type="text/ng-template" id="shapeTreeButtonItem.html">
+    <button ng-show="shape.hasGroupMembers()" type="button" class="btn  btn-sm pull-left" ng-click="shape.toggleShowSubcomponents()">
+        <span class="glyphicon" ng-class="{'plus': 'glyphicon-plus-sign', 'minus': 'glyphicon-minus-sign', 'none': 'glyphicon-certificate' }[shape.currentToggleSubcomponentsState()]"></span>
+    </button>
+    <!--<span>the toggle details: {{shape.currentToggleDetailsState()}}</span>-->
+    <button ngxx-show="shape.showDetails || shape.hasDetails()" type="button" class="btn btn-sm pull-left" ng-click="shape.toggleShowDetails()">
+        <span class="glyphicon" ng-class="{'open': 'glyphicon-chevron-down', 'close': 'glyphicon-chevron-up', 'none': 'glyphicon-chevron-right' }[shape.currentToggleDetailsState()]"></span>
+    </button>
+    <button type="button" class="btn  btn-sm pull-right" ng-show="shape.isSelected" ng-click="viewModel.doPinAsRoot(shape)">
+        <span class="glyphicon glyphicon-pushpin"></span>
+    </button>
+</script>
+
+<script type="text/ng-template" id="shapeTreeHeaderItem.html">
+    <span style="padding-left:20px" ng-class="{'selected': shape.isSelected}"> {{shape.outlineRef()}}  {{shape.context.headerText}}</span>
+</script>
+
+<script type="text/ng-template" id="shapeTreeBodyItem.html">
+    <div>
+        <a ng-show="shape.context.hasNoteUri" href="{{shape.context.noteUri}}" target="_blank">link:</a>
+        <span>{{shape.context.noteText}}</span>
+    </div>
+</script>
+
+
+<script id="noteTemplate.html" type="text/ng-template">
+
+    <div class="form-horizontal" role="form">
+        <div class="form-group notePanel-formGroup" style="margin-left:2px">
+            <label for="IDTextSummary" class="control-label">Headline:</label>
+            <input readonly type="text" id="IDTextSummary" x-webkit-speech class="form-control" style="display:inline" ng-model="context.headerText" placeholder="the note headline" />
+        </div>
+
+        <div class="panel-collapse" collapse="!context.isTextDifferent">
+            <div class="form-group notePanel-formGroup" style="margin-left:2px">
+                <label for="IDTextNote" class="control-label">Details:</label>
+                <textarea readonly class="form-control" id="IDTextNote" rows="5" ng-model="context.noteText" placeholder="the note text"></textarea>
+            </div>
+            <div class="form-group notePanel-formGroup" style="margin-left:2px">
+                <label for="IDTextURI" class="control-label"> <a href="#" target="_blank" ng-disable="!context.hasNoteUri" ng-href="{{context.noteUri}}">Link: </a>(ex. http://www.knowtshare.com)</label>
+                <input readonly class="form-control" id="IDTextURI" ng-model="context.noteUri" placeholder="the note uri" />
+                <img ng-show="context.hasImageUri" ng-src="{{context.noteUri}}" alt="image missing" height="100" />
+            </div>
+        </div>
+
+    </div>
+
+</script>
+
+<script type="text/ng-template" id="shapeTreeItem.html">
+    <article class="text-view-item" data-type="{{shape.context.myType}}">
+        <div ng-include=" 'shapeTreeButtonItem.html' "></div>
+        <p ng-click="viewModel.selectShape(shape)" ng-include=" 'shapeTreeHeaderItem.html' "></p>
+
+        <div ng-if="shape.showDetails && shape.hasDetails()">
+            <div ng-include=" 'shapeTreeBodyItem.html' "></div>
+        </div>
+        <ul ng-if="shape.showSubcomponents && shape.hasGroupMembers()">
+            <li ng-repeat="shape in shape.Subcomponents.elements" ng-include=" 'shapeTreeItem.html' "></li>
+        </ul>
+    </article>
+</script>
+
+
+
+
+

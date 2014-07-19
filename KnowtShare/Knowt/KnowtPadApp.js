@@ -19,12 +19,7 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
 
 (function (app, fo, undefined) {
 
-    app.defaultNS = function (name) {
-        var id = fo.getNamespaceKey(this.name, name);
-        return id;
-    }
-
-    app.run(function ($log, dialogService, workspaceService) {
+    app.run(function ($log, $exceptionHandler, dialogService, workspaceService) {
 
 
         //http://codeseven.github.io/toastr/demo.html
@@ -48,13 +43,10 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
             toastr.success(a, b);
         });
 
-        fo.utils.xmlHttpGet('KnowtView.Dialogs.html', function (text, xhr) {
-            var head = document.getElementsByTagName("head")[0];
-            var script = document.createElement('div');
+        //load templares for tialogs and shapes...
+        fo.utils.loadTemplate('KnowtView.Dialogs.html');
+        fo.utils.loadTemplate('KnowtView.NoteTemplate.html');
 
-            script.innerHTML = text;
-            head.appendChild(script);
-        });
 
 
     });
@@ -251,8 +243,9 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
         var space = workspaceService.activeWorkSpace();
 
         if (!space.contentMenu) {
-            space.contentMenu = space.factory.newMenuContent({ space: space, }, space);
+            var menu = space.contentMenu = space.factory.newMenuContent({ space: space, }, space);
 
+            menu.animals = space.factory.newStencilAnimalNotes({}, menu);
 
             fo.subscribe('doubleClick', function (shape, context, action) {
                 if (context.hasNoteUri && CTRLKEY) {
@@ -266,6 +259,17 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
 
         }
         return space.contentMenu;
+    })
+
+    app.controller('noteTreeView', function ($log, workspaceService, dialogService) {
+        var space = workspaceService.activeWorkSpace();
+
+        if (!space.noteTreeView) {
+            space.noteTreeView = space.factory.newNoteTreeView({
+                space: space,
+            }, space);
+        }
+        return space.noteTreeView;
     })
 
 }(knowtApp, Foundry));

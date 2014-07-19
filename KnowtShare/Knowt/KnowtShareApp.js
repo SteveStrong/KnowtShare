@@ -49,21 +49,20 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             toastr.success(a, b);
         });
 
-        //load templares for dialogs and shapes...
-        fo.utils.xmlHttpGet('KnowtView.Dialogs.html', function (text, xhr) {
-            var head = document.getElementsByTagName("head")[0];
-            var script = document.createElement('div');
+        //load templares for tialogs and shapes...
+        fo.utils.loadTemplate('KnowtView.Dialogs.html');
+        fo.utils.loadTemplate('KnowtView.NoteTemplate.html');
 
-            script.innerHTML = text;
-            head.appendChild(script);
-        });
 
 
         if (shapeHub) {
             $.connection.hub.start().done(function () {
                 //pop some toast to
                 fo.publish('info', [ 'connected to service', 'ready']);
-               // workspaceService.serverLogin(shapeHub);
+                // workspaceService.serverLogin(shapeHub);
+
+
+
             });
         }
         else {

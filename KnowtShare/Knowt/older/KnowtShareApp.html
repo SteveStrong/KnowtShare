@@ -24,35 +24,6 @@
     <link href="css/Diagram.css" rel="stylesheet" />
     <link href="content/toastr.min.css" rel="stylesheet" />
 
-
-
-
-
-    <!--    http://stackoverflow.com/questions/15626952/twitter-bootstrap-and-canvas-positioning  -->
-
-    <script type="text/ng-template" id="shapeTreeButtonItem.html">
-        <button ng-show="shape.hasGroupMembers()" type="button" class="btn btn-default btn-sm pull-left" ng-click="toggleShowSubcomponents(shape)">
-            <span class="glyphicon" ng-class="{'plus': 'glyphicon-plus-sign', 'minus': 'glyphicon-minus-sign', 'none': 'glyphicon-certificate' }[shape.currentToggleSubcomponentsState()]"></span>
-        </button>
-        <button ng-show="shape.hasDetails()" type="button" class="btn btn-sm pull-left" ng-click="toggleShowDetails(shape)">
-            <span class="glyphicon" ng-class="{'open': 'glyphicon-chevron-down', 'close': 'glyphicon-chevron-up', 'none': 'glyphicon-chevron-right' }[shape.currentToggleDetailsState()]"></span>
-        </button>
-        <button type="button" class="btn btn-default btn-sm pull-right" ng-click="pinAsRoot(shape)">
-            <span class="glyphicon glyphicon-pushpin"></span>
-        </button>
-    </script>
-
-    <script type="text/ng-template" id="shapeTreeHeaderItem.html">
-        <span style="padding-left:20px"> {{shape.outlineRef()}}  {{shape.context.headerText}}</span>
-    </script>
-
-    <script type="text/ng-template" id="shapeTreeBodyItem.html">
-        <span>note: {{shape.context.noteText}}</span>
-        <br />
-        <a href="{{shape.context.noteUri}}" target="_blank">link to:{{shape.myName}}</a>
-        <br />
-    </script>
-
 </head>
 
 
@@ -104,23 +75,6 @@
                 </ul>
 
                 <div id="textCanvas" class="textCanvas">
-                    <script type="text/ng-template" id="shapeTreeItem.html">
-
-                        <article>
-                            <p class="textViewItem" data-type="{{shape.context.myType}}" data-isselected="{{shape.isSelected}}">
-                                <div ng-include=" 'shapeTreeButtonItem.html' ">
-                                </div>
-                            <p style="padding-left:10px" ng-click="selectShape(shape)" ng-include=" 'shapeTreeHeaderItem.html' ">
-                            </p>
-
-                            <shape-tree-body shape="shape" ng-if="shape.showDetails && shape.hasDetails()">
-                            </shape-tree-body>
-                            <ul ng-if="shape.showSubcomponents && shape.hasGroupMembers()">
-                                <li ng-repeat="shape in shape.Subcomponents.elements" ng-include=" 'shapeTreeItem.html' "></li>
-                            </ul>
-                            </p>
-                        </article>
-                    </script>
                     <ul>
                         <li ng-repeat="shape in vm.shapeElements" ng-include=" 'shapeTreeItem.html' "></li>
                     </ul>
