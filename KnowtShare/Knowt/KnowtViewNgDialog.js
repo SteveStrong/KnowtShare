@@ -26,7 +26,20 @@
     //http://weblogs.asp.net/dwahlin/building-an-angularjs-dialog-service
 
     //this 'global' variable helps make the dialog modal, so 2 cannot be opened at once
-    var currentDialog;
+    var currentDialogInstance;
+    function isDialogBusy () {
+        return currentDialogInstance !== undefined;
+    }
+    function markAsBusy(dialog) {
+        currentDialogInstance = dialog;
+        return currentDialogInstance;
+    }
+    function unmarkAsBusy() {
+        var result = currentDialogInstance;
+        currentDialogInstance = undefined;
+        return result;
+    }
+
 
     app.service('dialogService', ['$modal','$templateCache', function ($modal, $templateCache) {
 
@@ -153,49 +166,40 @@
             },
 
             display: function (args, actions) {
+                if (isDialogBusy()) return;
                 fo.utils.mixin(this, actions);
                 var result = this.doShow(args);
+                markAsBusy(result);
                 return result;
             }
         }
 
         this.createDialog = function(spec, actions) {
-
             var properties = fo.utils.union(defaultDialogProperties, spec);
             var methods = fo.utils.union(defaultDialogActions, actions);
 
             var dialog = fo.makeComponent(properties);
 
             fo.utils.mixin(dialog, methods);
-
             return dialog;
         }
 
 
         this.isBusy = function () {
-            return currentDialog !== undefined;
-        }
-
-        function markAsBusy(dialog) {
-            currentDialog = dialog || this;
-            return currentDialog;
-        }
-        function unmarkAsBusy() {
-            var result = currentDialog;
-            currentDialog = undefined;
-            return result;
+            return isDialogBusy();
         }
 
         this.doPopupDialog = function (spec, actions, args) {
-            if (this.isBusy()) return;
+            if (isDialogBusy()) return;
 
             var dialog = this.createDialog(spec, actions);
             var dialogArgs = fo.utils.mixin(args, {
-                onServiceActivated: markAsBusy,
+                onServiceActivated: function () { },
                 onServiceComplete: unmarkAsBusy,          
             });
 
             var result = dialog.display(dialogArgs);
+            markAsBusy(result);
             return result;
         }
 

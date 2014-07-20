@@ -325,9 +325,7 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         var rootPage = space.rootPage;
 
         //listen for key events...
-        var keyPressedState = space.factory.newKeyPressedEvents({
-            space: space,
-        }, space);
+        var keyPressedState = space.factory.newKeyPressedEvents({}, space);
 
         var layout = fo.knowtShareApp.newMainLayout({
             drawing: function () { return space.drawing; },

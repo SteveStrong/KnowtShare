@@ -25,9 +25,6 @@
     <link href="content/bootstrap.min.css" rel="stylesheet" />
 
 
-
-    <!--http://www.favicon.cc/?-->
-
 </head>
 <body>
 
@@ -41,7 +38,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="./Diagram.html">KnowtShare 2.0</a>
+            <a class="navbar-brand" href="./KnowtView.html">KnowtShare 2.0</a>
 
         </div>
 
@@ -114,7 +111,6 @@
         </footer>
     </div>
 
-    <!--<script src="Scripts/jquery-2.1.1.min.js"></script>-->
     <script src="http://foundryjs.azurewebsites.net/Foundry/Foundry.min.js"></script>
 
     <script>
@@ -138,16 +134,12 @@
         fo.enableFileDragAndDrop(content);
 
         fo.subscribe('textFileDropped', function (payload, name, ext) {
-            if (ext.endsWith('.knt') || ext.endsWith('.json') || ext.endsWith('.txt')) {
-                var spec = JSON.parse(payload);
-                content.innerHTML = '<pre>' + JSON.stringify(spec, undefined, 3) + '</pre>';
-            }
-
             if (ext.endsWith('.csv')) {
-                var payload = fo.convert.csvToJson(payload);
-                var spec = JSON.parse(payload);
-                content.innerHTML = '<pre>' + JSON.stringify(spec, undefined, 3) + '</pre>';
-            }
+                payload = fo.convert.csvToJson(payload);
+            }           
+            
+            var spec = JSON.parse(payload);
+            content.innerHTML = '<pre>' + JSON.stringify(spec, undefined, 3) + '</pre>';
         });
 
 

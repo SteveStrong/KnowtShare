@@ -3,10 +3,7 @@
 (function (app, fo, undefined) {
 
 
-
-
     fo.defineType(app.defaultNS('keyPressedEvents'), {
-        space: fo.fromParent,
         KEYCODE: 0,
         CTRLKEY: false,
         ALTKEY: false,

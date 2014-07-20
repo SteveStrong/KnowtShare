@@ -42,6 +42,11 @@
             }
         };
 
+        fo.subscribeComplete('WorkspaceClear', function (space) {
+            result.smashProperty('pinAsRootShape');
+            $scope.safeApply();
+        });
+
         result.selectShape = function (shape) {
             this.currentPage.selectShape(shape, true);
         };

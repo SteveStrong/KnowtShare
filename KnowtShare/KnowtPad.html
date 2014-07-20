@@ -34,9 +34,31 @@
 
     <header id="appHeader" class="appHeader">
         <nav>
-            <img id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
-            <span style="margin-right:10px">{{space.title}}</span>
-            <span style="margin-right:10px"><em>{{space.subTitle}}</em></span>
+            <h1 class="label label-info " style="margin-left:10px">{{space.clientCount}}</h1>
+            <span class="label label-success " ng-show="space.hasSessionKey">{{space.traffic}}</span>
+
+            <img ng-click="space.updateAllViews()" id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
+            <span style="margin-left:10px">:{{space.title}}</span>
+            <span style="margin-left:1px"><em>:{{space.subTitle}}</em></span>
+
+            <span class="label label-info " style="margin-left:10px">doc: {{space.documentName}}</span>
+            <span class="label label-info " style="margin-left:1px">ext: {{space.documentExt}}</span>
+
+             <span class="label label-success " style="margin-left:10px">doc title: {{space.documentTitle}}</span>
+            <span class="label label-success " style="margin-left:1px">ses title: {{space.sessionTitle}}</span>
+            <span class="label label-success " style="margin-left:1px">mode: {{space.clientMode}}</span>
+
+            <span class="label label-warning " style="margin-left:10px">key: {{space.sessionKey}}</span>
+            <span class="label label-warning " style="margin-left:1px">id: {{space.userId}}</span>
+            <span class="label label-warning " style="margin-left:1px">name: {{space.userNickName}}</span>
+
+            <span class="label label-success " style="margin-left:10px">saved: {{space.isDocumentSaved}}</span>
+            <span class="label label-success " style="margin-left:1px">empty: {{space.isDocumentEmpty()}}</span>
+
+            <span class="label label-danger " style="margin-left:10px">doc: {{space.activeDocument.documentName}}</span>
+            <span class="label label-danger " style="margin-left:1px">ext: {{space.activeDocument.documentExt}}</span>
+            <span class="label label-danger " style="margin-left:1px">title: {{space.activeDocument.documentTitle}}</span>
+
         </nav>
 
     </header>
@@ -45,14 +67,25 @@
     <section id="appContent" class="appContent">
         <article id="mainContent" class="mainContent" ng-controller="contentMenu as menu">
             <button class="btn btn-success" ng-click="menu.doAddNote">Add Note</button>
+            <button class="btn btn-success" ng-click="menu.animals.doAddNote">Add Animal</button>
             <button class="btn btn-danger" ng-disabled="!menu.canDoDelete" ng-click="menu.doConfirmDelete">Delete Note</button>
             <button class="btn btn-info" ng-disabled="!menu.canOpenSelected" ng-click="menu.doOpenSelected">Edit Note</button>
-            <button class="btn btn-success" ng-click="menu.animals.doAddNote">Add Animal</button>
-            <button class="btn btn-default" ng-click="menu.doConfirmClear">Clear</button>
+            <button class="btn btn-warning" ng-disabled="!menu.canDoUnDo" ng-click="menu.doUnDo">Undo</button>
+            <span>|</span>
 
-            <button class="btn btn-default" ng-click="space.doSave">Save</button>
-            <button class="btn btn-default" ng-click="space.doRestore">Restore</button>
-            <button class="btn btn-default" ng-click="space.inspect()">inspect</button>
+            <button class="btn btn-default" ng-click="menu.doConfirmClear">Clear</button>
+            <button class="btn btn-default" ng-click="space.inspect()">Inspect</button>
+            <span>|</span>
+            <span ng-controller="fileMenu as menu">
+                <button class="btn btn-info" ng-click="menu.doNewDocument">New </button>
+                <button class="btn btn-info" ng-click="menu.doOpenFilePicker">Open</button>
+                <span>|</span>
+                <button class="btn btn-info" ng-click="menu.doSaveFilePicker">Save</button>
+                <button class="btn btn-info" ng-click="menu.doCloseDocument">Close</button>
+                <span>|</span>
+                <button class="btn btn-info" ng-click="menu.doSaveAsHTMLFilePicker">to Html</button>
+                <button class="btn btn-info" ng-click="menu.doSaveAsPNGFilePicker">to Png</button>
+            </span>
         </article>
 
 
@@ -67,23 +100,22 @@
                     </li>
                 </ul>
                 <div class="list-container">
-                    <!--<div ng-repeat="context in notes" ng-class="{isSelected: context.isSelected}" ng-click="markSelected(context)">
-                        <div ng-include=" 'noteTemplate.html' "></div>
-                    </div>-->
-
                     <div id="textCanvas" class="textCanvas">
                         <ul>
                             <li ng-repeat="shape in viewModel.shapeElements" ng-include=" 'shapeTreeItem.html' "></li>
                         </ul>
-
                     </div>
-
                 </div>
             </section>
 
-            <section class="right-side">
+            <section class="right-side" ng-controller="noteCanvasView as viewModel">
+                <ul class="breadcrumb">
+                    <li ng-repeat="page in viewModel.pages">
+                        <a class="btn btn-link " ng-click="viewModel.doPinAsRoot(page)">{{page.context ? page.context.headerText : page.myName}}</a>
+                    </li>
+                </ul>
                 <div class="details-container">
-                        <canvas style="background-color:bisque" class="drawing-canvas" id="drawingCanvas" width="800" height="600"></canvas>
+                    <canvas style="background-color:bisque" class="drawing-canvas" id="drawingCanvas" width="800" height="600"></canvas>
                 </div>
             </section>
         </article>
@@ -124,8 +156,11 @@
 
     <!--can we also add an animal stencil-->
     <script type="text/javascript" src="Knowt/KnowtViewNgDialog.js"></script>
-    <!--<script type="text/javascript" src="Knowt/KnowtViewMenuFile.js"></script>-->
+    <script ype="text/javascript" src="Knowt/KnowtViewKeyEvents.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewMenuFile.js"></script>
     <script type="text/javascript" src="Knowt/KnowtViewMenuPanZoom.js"></script>
+
+    <script type="text/javascript" src="Knowt/KnowtViewNoteCanvasView.js"></script>
     <script type="text/javascript" src="Knowt/KnowtViewNoteTreeView.js"></script>
 </body>
 </html>

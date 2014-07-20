@@ -452,17 +452,19 @@
             if (ext && ext.endsWith('.knt')) {
                 obj.doClearFileDropAsync(function (cmd) {
                     setTimeout(function () {
-                        //ctrl.doCommand(cmd);
+
                         //there may be cases where a dropped file want to ADD TO the content
+                        //make sure we ask the question///
 
-                        fo.runWithUIRefreshLock(function () {
-                            var clear = space.isDocumentEmpty;
-                            if (clear) space.clear();
+                        var clear = space.isDocumentEmpty;
+                        if (clear) space.clear();
 
-                            space.refreshModelFromPayload(payload, clear);
-                        });
+                        space.payloadToCurrentModel(payload);
+                        space.copyDocumentSpecTo(space.activeDocument);
+
+                        fo.publish('DocumentChanged', [space])
                         space.doSessionSave();
-                        //ctrl.doRepaint;
+
 
                     }, 200);
                 });
@@ -520,8 +522,8 @@
             },
             {
                 ClearNotes: function () {
-                    obj.dialogService.doCloseDialog();
-                    space.clear(); //this make sure we are in a known state
+                   space.clear(); //this make sure we are in a known state
+                   obj.dialogService.doCloseDialog();
                 },
                 SaveDocumentFirst: function () {
                     obj.dialogService.doCloseDialog();

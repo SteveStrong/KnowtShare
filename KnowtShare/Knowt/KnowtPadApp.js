@@ -84,6 +84,24 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
                 return isEmpty;
             };
 
+            //the defaults for the current document being worked on
+            //this may not be what the workspace is saving or what the user has selected
+
+            var documentSpec = {
+                documentName: 'myKnowts',
+                documentExt: '.knt',
+                documentTitle: function () {
+                    var result = this.documentName;
+                    if (result && !this.myParent.isDocumentSaved) {
+                        result += "*";
+                    }
+                    return result;
+                },
+            }
+
+            space.activeDocument = fo.makeComponent(documentSpec, {}, space);
+
+
             return space;
         };
 
@@ -133,90 +151,72 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
             });
         }
 
-
-        var rootModel = space.rootModel;
-        var rootPage = space.rootPage;
-
-
-        rootModel.deleteNote = function (note) {
-            note.isSelected = false;
-            note.removeFromModel();
-            rootModel.smashProperty('hasSelection');
-            rootModel.smashProperty('currentNote');
-        }
-
-        //root model should be designed to manage what item is selected
-        $scope.toggleSelection = function (note) {
+        //listen for key events...
+        space.keyPressedState = space.factory.newKeyPressedEvents({}, space);
+        space.updateAllViews = function () {
+            space.rootPage.forceLayout();
+            //space.rootPage.doRepaint();
             $scope.safeApply();
         }
 
-
-        $scope.notes = rootModel.Subcomponents.elements;
-        $scope.shapes = rootPage.Subcomponents.elements;
-
-        $scope.selectShape = function (shape) {
-            rootPage.selectShape(shape, true);
-        };
-        $scope.unselectShape = function () {
-            rootPage.selectShape(undefined, true);
+        space.saveFilePicker = function (documentSpec, onComplete) {
+            var doc = documentSpec ? documentSpec : space.copyDocumentSpecTo({});
+            space.userSaveFileDialog(function (payload, name, ext) {
+                if (ext && ext.endsWith('.knt')) {
+                    space.isDocumentSaved = true;
+                    space.documentName = name;
+                    space.documentExt = ext;
+                    space.payloadSaveAs(payload, name, ext);
+                }
+                onComplete && onComplete();
+            }, '.knt', doc.documentName);
         };
 
-        $scope.pinAsRoot = function (shape) {
-            vm.pinAsRootShape = shape;
-            vm.smashProperty('modelElements');
-            vm.smashProperty('shapeElements');
-            $scope.modelElements = vm.modelElements;
-            $scope.shapeElements = vm.shapeElements;
 
-            $scope.safeApply();
+        space.openFilePicker = function (documentSpec, onComplete) {
+            var doc = documentSpec ? documentSpec : space.copyDocumentSpecTo({});
+            space.userOpenFileDialog(function (payload, name, ext) {
+                if (ext && ext.endsWith('.knt')) {
+                    space.payloadToCurrentModel(payload);
+                    space.isDocumentSaved = true;
+                    space.documentName = name;
+                    space.documentExt = ext;
+                    space.doSessionSave();
+                    space.rootPage && space.rootPage.forceLayout();
+                    //may need to publish to open channel if you have a session key
+
+                    //if clear and others are listening we need to add that command to the payload
+                    //var syncPayload = space.currentModelToPayload({ clearBeforeSync: clear });
+                    //ctrl.updateSessionTraffic(syncPayload.length, 0);
+                    //if (!space.hasSessionKey) return;
+
+                    // hub.invoke("authorSendModelToPlayers", ctrl.sessionKey, ctrl.userNickName, ctrl.userId, syncPayload);
+                }
+                onComplete && onComplete();
+            }, '.knt', doc.documentName);
         }
 
-        $scope.toggleShowSubcomponents = function (shape) {
-            shape.toggleShowSubcomponents();
-            $scope.safeApply();
-        }
+        fo.enableFileDragAndDrop('appContent');
 
-        $scope.toggleShowDetails = function (shape) {
-            shape.toggleShowDetails();
-            $scope.safeApply();
-        }
-
-
-
-        //rootModel.factory.newMenuAnimalNotes({}, rootModel, function (obj) {
-        //    space.animals = obj;
-        //});
-
-        //rootModel.factory.newMenuFile({ space: space }, space, function (obj) {
-        //    space.file = obj;
-        //});
-
-
-
-
-
-
-
-
-
-        fo.subscribeComplete('noteAdded', function (note) {
+        //this method is called from KnowtViewMenuContext...  on file drop
+        fo.subscribeComplete('DocumentChanged', function (workspace) {
+            workspace.rootPage.forceLayout();
             $scope.safeApply();
         });
 
-        fo.subscribe('ShapeSelected', function (view, shape, selections) {
-            rootModel.currentShape = shape;
-            rootModel.hasSelection = shape && shape.isSelected ? true : false;
-            rootModel.currentNote = shape && shape.context;
+        fo.subscribeComplete('WorkspaceClear', function (workspace) {
+            $scope.safeApply();
         });
+
 
         fo.subscribeComplete('ShapeSelected', function (view, shape, selections) {
             $scope.safeApply();
         });
 
 
-        fo.subscribeComplete('ShapeReparented', function (shape, oldParent, newParent, loc) {
-            $scope.safeApply();
-        });
+        //fo.subscribeComplete('ShapeReparented', function (shape, oldParent, newParent, loc) {
+        //    $scope.safeApply();
+        //});
 
         fo.subscribeComplete('Reparented', function (shape, oldParent, newParent, loc) {
             $scope.safeApply();
@@ -226,11 +226,23 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
             $scope.safeApply();
         });
 
-        fo.subscribeComplete('Deleted', function (name, note, shape) {
+        //fo.subscribeComplete('Deleted', function (name, note, shape) {
+        //    $scope.safeApply();
+        //});
+
+        //fo.subscribeComplete('Added', function (name, note, shape) {
+        //    $scope.safeApply();
+        //});
+
+        fo.subscribeComplete('doToggleView', function () {
             $scope.safeApply();
         });
 
-        fo.subscribeComplete('Added', function (name, note, shape) {
+        fo.subscribeComplete('undoAdded', function (name, note, shape) {
+            $scope.safeApply();
+        });
+
+        fo.subscribeComplete('undoRemoved', function (name, note, shape) {
             $scope.safeApply();
         });
 
@@ -248,7 +260,7 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
             menu.animals = space.factory.newStencilAnimalNotes({}, menu);
 
             fo.subscribe('doubleClick', function (shape, context, action) {
-                if (context.hasNoteUri && CTRLKEY) {
+                if (context.hasNoteUri && space.keyPressedState && space.keyPressedState.CTRLKEY) {
                     window.open(context.noteUri, "_blank");
                 }
                 else {
@@ -259,7 +271,16 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
 
         }
         return space.contentMenu;
-    })
+    });
+
+    app.controller('fileMenu', function ($log, workspaceService, dialogService) {
+        var space = workspaceService.activeWorkSpace();
+
+        if (!space.fileMenu) {
+            space.fileMenu = space.factory.newMenuFile({ space: space, }, space);
+        }
+        return space.fileMenu;
+    });
 
     app.controller('noteTreeView', function ($log, workspaceService, dialogService) {
         var space = workspaceService.activeWorkSpace();
@@ -270,6 +291,17 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
             }, space);
         }
         return space.noteTreeView;
+    })
+
+    app.controller('noteCanvasView', function ($log, workspaceService, dialogService) {
+        var space = workspaceService.activeWorkSpace();
+
+        if (!space.noteCanvasView) {
+            space.noteCanvasView = space.factory.newNoteCanvasView({
+                space: space,
+            }, space);
+        }
+        return space.noteCanvasView;
     })
 
 }(knowtApp, Foundry));
