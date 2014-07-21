@@ -367,15 +367,6 @@
 
 
         obj.doCreateNote = function (properties, onComplete) {
-
-            //headerText: function () {
-            //    var date = new Date();
-            //    return date.toString()
-            //},
-            //noteText: function () {
-            //    return this.author + ' the time is: ' + this.headerText;
-            //}
-
             obj.createAndCaptureNote(properties);
             onComplete && onComplete();
         }
@@ -450,21 +441,21 @@
             }
 
             if (ext && ext.endsWith('.knt')) {
-                obj.doClearFileDropAsync(function (cmd) {
-                    setTimeout(function () {
+                //look at doing this workflow and a set of promices...
 
+                obj.doClearFileDropAsync(function (action) {
                         //there may be cases where a dropped file want to ADD TO the content
-                        //make sure we ask the question///
+                    if ('save'.matches(action)) {
+                        space.saveFilePicker(); //this make sure we are in a known state
+                        return;
+                    }
 
-                        var clear = space.isDocumentEmpty;
-                        if (clear) space.clear();
+                    setTimeout(function () {
+                        var clear = space.isDocumentEmpty();
+                        if (clear || 'clear'.matches(action)) space.clear();
 
                         space.payloadToCurrentModel(payload);
-                        space.copyDocumentSpecTo(space.activeDocument);
-
                         fo.publish('DocumentChanged', [space])
-                        space.doSessionSave();
-
 
                     }, 200);
                 });
@@ -490,15 +481,13 @@
               },
             {
                 ClearExistingNotes: function () {
-                    obj.dialogService.doCloseDialog();
-                    space.clear(); //this make sure we are in a known state
+                    obj.dialogService.doCloseDialog('clear');
                 },
                 SaveThenClear: function () {
-                    obj.dialogService.doCloseDialog();
-                    space.saveFilePicker(); //this make sure we are in a known state
+                    obj.dialogService.doCloseDialog('save');
                 },
                 MergeNotes: function () {
-                    obj.dialogService.doDismissDialog();
+                    obj.dialogService.doCloseDialog('merge');
                 },
             });
         };

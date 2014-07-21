@@ -100,7 +100,6 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
                 subTitle: "take notes create KnowtFacts",
                 userId: "123456780",
                 userNickName: 'sedona',
-
             }
 
             space = fo.ws.makeNoteWorkspace("KnowtShare", fo.utils.union(spec, properties), modelTemplate);
@@ -112,37 +111,22 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             };
 
 
-            //the defaults for the current document being worked on
-            //this may not be what the workspace is saving or what the user has selected
+            //space.activeDocument = fo.makeComponent(documentSpec, {}, space);
 
-            var documentSpec = {
-                documentName: 'myKnowts',
-                documentExt: '.knt',
-                documentTitle: function () {
-                    var result = this.documentName;
-                    if (result && !myParent.isDocumentSaved) {
-                        result += "*";
-                    }
-                    return result;
-                },
-            }
+            //space.refreshModelFromPayload = function (payload, clear) {
+            //    //ctrl.updateSessionTraffic(0, payload.length);
+            //    space.payloadToCurrentModel(payload);
+            //    space.copyDocumentSpecTo(space.activeDocument);
+            //    //ctrl.doModelSmash;
+            //    space.doSessionSave();
 
-            space.activeDocument = fo.makeComponent(documentSpec, {}, space);
+            //    //if clear and others are listening we need to add that command to the payload
+            //    var syncPayload = space.currentModelToPayload({ clearBeforeSync: clear });
+            //    //ctrl.updateSessionTraffic(syncPayload.length, 0);
+            //    if (!space.hasSessionKey) return;
 
-            space.refreshModelFromPayload = function (payload, clear) {
-                //ctrl.updateSessionTraffic(0, payload.length);
-                space.payloadToCurrentModel(payload);
-                space.copyDocumentSpecTo(space.activeDocument);
-                //ctrl.doModelSmash;
-                space.doSessionSave();
-
-                //if clear and others are listening we need to add that command to the payload
-                var syncPayload = space.currentModelToPayload({ clearBeforeSync: clear });
-                //ctrl.updateSessionTraffic(syncPayload.length, 0);
-                if (!space.hasSessionKey) return;
-
-               // hub.invoke("authorSendModelToPlayers", ctrl.sessionKey, ctrl.userNickName, ctrl.userId, syncPayload);
-            }
+            //   // hub.invoke("authorSendModelToPlayers", ctrl.sessionKey, ctrl.userNickName, ctrl.userId, syncPayload);
+            //}
 
 
  
@@ -281,51 +265,27 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             });
         }
 
-        space.saveFilePicker = function (documentSpec, onComplete) {
-            var doc = documentSpec ? documentSpec : space.copyDocumentSpecTo({});
-            space.userSaveFileDialog(function (payload, name, ext) {
-                if (ext && ext.endsWith('.knt')) {
-                    space.isDocumentSaved = true;
-                    space.documentName = name;
-                    space.documentExt = ext;
-                    space.payloadSaveAs(payload, name, ext);
-                }
-                onComplete && onComplete();
-            }, '.knt', doc.documentName);
-        };
-
-
-        space.openFilePicker = function (documentSpec, onComplete) {
-            var doc = documentSpec ? documentSpec : space.copyDocumentSpecTo({});
-            space.userOpenFileDialog(function (payload, name, ext) {
-                if (ext && ext.endsWith('.knt')) {
-                    space.payloadToCurrentModel(payload);
-                    space.isDocumentSaved = true;
-                    space.documentName = name;
-                    space.documentExt = ext;
-                    space.doSessionSave();
-                    space.rootPage && space.rootPage.forceLayout();
-                    //may need to publish to open channel if you have a session key
-
-                    //if clear and others are listening we need to add that command to the payload
-                    //var syncPayload = space.currentModelToPayload({ clearBeforeSync: clear });
-                    //ctrl.updateSessionTraffic(syncPayload.length, 0);
-                    //if (!space.hasSessionKey) return;
-
-                    // hub.invoke("authorSendModelToPlayers", ctrl.sessionKey, ctrl.userNickName, ctrl.userId, syncPayload);
-                }
-                onComplete && onComplete();
-            }, '.knt', doc.documentName);
-        }
 
 
         fo.enableFileDragAndDrop('mainContent');
+        //this method is called from KnowtViewMenuContext...  on file drop
+        fo.subscribeComplete('DocumentChanged', function (workspace) {
+            workspace.copyDocumentSpecTo(workspace.activeDocument);
+            workspace.rootPage.forceLayout();
+            workspace.doSessionSave();
+
+            $scope.safeApply();
+        });
 
         var rootModel = space.rootModel;
         var rootPage = space.rootPage;
 
         //listen for key events...
         var keyPressedState = space.factory.newKeyPressedEvents({}, space);
+        space.updateAllViews = function () {
+            rootPage.forceLayout();
+            $scope.safeApply();
+        }
 
         var layout = fo.knowtShareApp.newMainLayout({
             drawing: function () { return space.drawing; },
@@ -342,20 +302,6 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             $scope.safeApply();
         }
 
-        //SRS IMPORTAND TO CHANGE IN KERNAL!!
-        // //only send event if a shape is hit
-        fo.subscribe('doubleClick', function (shape, context, action) {
-            if (context.hasNoteUri && keyPressedState.CTRLKEY) {
-                window.open(context.noteUri, "_blank");
-            }
-            else {
-                space.noteMenu.openEdit(context);
-            }
-            //shape.doUpdate();
-        });
-
-
-
 
 
         fo.subscribeComplete('ShapeSelected', function (view, shape, selections) {
@@ -365,21 +311,25 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
 
         fo.subscribeComplete('Reparented', function (shape, oldParent, newParent, loc) {
             space.doSessionSave();
+            space.isDocumentSaved = false;
             $scope.safeApply();
         });
 
         fo.subscribeComplete('ModelChanged', function (note) {
             space.doSessionSave();
+            space.isDocumentSaved = false;
             $scope.safeApply();
         });
 
         fo.subscribeComplete('Deleted', function (name, note, shape) {
             space.doSessionSave();
+            space.isDocumentSaved = false;
             $scope.safeApply();
         });
 
         fo.subscribeComplete('Added', function (name, note, shape) {
             space.doSessionSave();
+            space.isDocumentSaved = false;
             $scope.safeApply();
         });
 
@@ -404,14 +354,50 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
 //now create the noteMenu controller
 (function (app, fo, undefined) {
 
-    app.controller('noteMenu', function ($log, workspaceService, dialogService) {
+    app.controller('contentMenu', function ($log, workspaceService, dialogService) {
         var space = workspaceService.activeWorkSpace();
 
-        if (!space.noteMenu) {        
-            space.noteMenu = space.factory.newMenuContent({ space: space, }, space);
+        if (!space.contentMenu) {
+            var menu = space.contentMenu = space.factory.newMenuContent({}, space);
+
+            menu.animals = space.factory.newStencilAnimalNotes({}, menu);
+
+            fo.subscribe('doubleClick', function (shape, context, action) {
+                if (context.hasNoteUri && space.keyPressedState && space.keyPressedState.CTRLKEY) {
+                    window.open(context.noteUri, "_blank");
+                }
+                else {
+                    space.contentMenu.openEdit(context);
+                }
+                shape.doUpdate();
+            });
+
         }
-        return space.noteMenu;
-    })
+        return space.contentMenu;
+    });
+
+}(knowtApp, Foundry));
+
+//now create the fileMenu controller
+(function (app, fo, undefined) {
+
+    app.controller('fileMenu', function ($log, workspaceService, dialogService) {
+        var space = workspaceService.activeWorkSpace();
+
+        //the defaults for the current document being worked on
+        //this may not be what the workspace is saving or what the user has selected
+
+        if (!space.fileMenu) {
+            space.fileMenu = space.factory.newMenuFile({
+                documentSpec: {
+                    documentName: 'knowtPad',
+                    documentExt: '.knt',
+                },
+            }, space);
+        }
+        return space.fileMenu;
+    });
+
 }(knowtApp, Foundry));
 
 //now create the viewMenu controller
@@ -424,7 +410,8 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             space.viewMenu = space.factory.newMenuView({ space: space, }, space);
         }
         return space.viewMenu;
-    })
+    });
+
 }(knowtApp, Foundry));
 
 //now create the panZoomMenu controller
@@ -441,25 +428,11 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             }, space);
         }
         return space.panZoomMenu;
-    })
+    });
+
 }(knowtApp, Foundry));
 
-//now create the fileMenu controller
-(function (app, fo, undefined) {
 
-    app.controller('fileMenu', function ($log, workspaceService, dialogService) {
-        var space = workspaceService.activeWorkSpace();
-
-        if (!space.fileMenu) {
-            space.fileMenu = space.factory.newMenuFile({
-                space: space,
-                //drawing: workspaceService.activeDrawing(),
-            }, space);
-       }
-
-        return space.fileMenu;
-    })
-}(knowtApp, Foundry));
 
 //now create the sessionMenu controller
 (function (app, fo, undefined) {
@@ -478,34 +451,34 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
     })
 }(knowtApp, Foundry));
 
-//now create the noteCanvasView controller
-(function (app, fo, undefined) {
-
-    app.controller('noteCanvasView', function ($log, workspaceService, dialogService) {
-        var space = workspaceService.activeWorkSpace();
-
-        if (!space.NoteCanvasView) {
-            space.NoteCanvasView = space.factory.newNoteCanvasView({
-                space: space,
-                drawing: workspaceService.activeDrawing(),
-            }, space);
-        }
-
-        return space.NoteCanvasView;
-    })
-}(knowtApp, Foundry));
-
 //now create the noteTreeView controller
 (function (app, fo, undefined) {
 
     app.controller('noteTreeView', function ($log, workspaceService, dialogService) {
         var space = workspaceService.activeWorkSpace();
 
-        if (!space.NoteTreeView) {
-            space.NoteTreeView = space.factory.newNoteTreeView({
+        if (!space.noteTreeView) {
+            space.noteTreeView = space.factory.newNoteTreeView({
                 space: space,
             }, space);
         }
-        return space.NoteTreeView;
+        return space.noteTreeView;
     })
+
+}(knowtApp, Foundry));
+
+//now create the noteCanvasView controller
+(function (app, fo, undefined) {
+
+    app.controller('noteCanvasView', function ($log, workspaceService, dialogService) {
+        var space = workspaceService.activeWorkSpace();
+
+        if (!space.noteCanvasView) {
+            space.noteCanvasView = space.factory.newNoteCanvasView({
+                space: space,
+            }, space);
+        }
+        return space.noteCanvasView;
+    })
+
 }(knowtApp, Foundry));

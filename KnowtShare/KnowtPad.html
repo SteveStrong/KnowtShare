@@ -33,19 +33,12 @@
 <body ng-cloak ng-controller="workSpace as space" style="overflow-y:hidden">
 
     <header id="appHeader" class="appHeader">
-        <nav>
-            <h1 class="label label-info " style="margin-left:10px">{{space.clientCount}}</h1>
-            <span class="label label-success " ng-show="space.hasSessionKey">{{space.traffic}}</span>
-
-            <img ng-click="space.updateAllViews()" id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
-            <span style="margin-left:10px">:{{space.title}}</span>
-            <span style="margin-left:1px"><em>:{{space.subTitle}}</em></span>
-
+        <div>
             <span class="label label-info " style="margin-left:10px">doc: {{space.documentName}}</span>
             <span class="label label-info " style="margin-left:1px">ext: {{space.documentExt}}</span>
+            <span class="label label-info " style="margin-left:1px">doc title: {{space.documentTitle}}</span>
 
-             <span class="label label-success " style="margin-left:10px">doc title: {{space.documentTitle}}</span>
-            <span class="label label-success " style="margin-left:1px">ses title: {{space.sessionTitle}}</span>
+            <span class="label label-success " style="margin-left:10px">ses title: {{space.sessionTitle}}</span>
             <span class="label label-success " style="margin-left:1px">mode: {{space.clientMode}}</span>
 
             <span class="label label-warning " style="margin-left:10px">key: {{space.sessionKey}}</span>
@@ -57,8 +50,15 @@
 
             <span class="label label-danger " style="margin-left:10px">doc: {{space.activeDocument.documentName}}</span>
             <span class="label label-danger " style="margin-left:1px">ext: {{space.activeDocument.documentExt}}</span>
-            <span class="label label-danger " style="margin-left:1px">title: {{space.activeDocument.documentTitle}}</span>
+        </div>
 
+        <nav>
+            <h1 class="label label-info " style="margin-left:10px">{{space.clientCount}}</h1>
+            <span class="label label-success " ng-show="space.hasSessionKey">{{space.traffic}}</span>
+
+            <img ng-click="space.updateAllViews()" id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
+            <span style="margin-left:10px">:{{space.title}}</span>
+            <span style="margin-left:1px"><em>:{{space.subTitle}}</em></span>
         </nav>
 
     </header>

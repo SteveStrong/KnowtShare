@@ -74,7 +74,11 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
                 subTitle: "take notes visually",
                 userId: "123456780",
                 userNickName: 'sedona',
-
+                //documentTitle: function () {
+                //    var result = this.documentName + this.documentExt;
+                //    if (result && !this.isDocumentSaved) result += "*";
+                //    return result;
+                //},
             }
             space = fo.ws.makeNoteWorkspace("KnowtPad", fo.utils.union(spec, properties), modelTemplate);
 
@@ -84,22 +88,8 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
                 return isEmpty;
             };
 
-            //the defaults for the current document being worked on
-            //this may not be what the workspace is saving or what the user has selected
 
-            var documentSpec = {
-                documentName: 'myKnowts',
-                documentExt: '.knt',
-                documentTitle: function () {
-                    var result = this.documentName;
-                    if (result && !this.myParent.isDocumentSaved) {
-                        result += "*";
-                    }
-                    return result;
-                },
-            }
 
-            space.activeDocument = fo.makeComponent(documentSpec, {}, space);
 
 
             return space;
@@ -155,52 +145,48 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
         space.keyPressedState = space.factory.newKeyPressedEvents({}, space);
         space.updateAllViews = function () {
             space.rootPage.forceLayout();
-            //space.rootPage.doRepaint();
             $scope.safeApply();
         }
 
-        space.saveFilePicker = function (documentSpec, onComplete) {
-            var doc = documentSpec ? documentSpec : space.copyDocumentSpecTo({});
-            space.userSaveFileDialog(function (payload, name, ext) {
-                if (ext && ext.endsWith('.knt')) {
-                    space.isDocumentSaved = true;
-                    space.documentName = name;
-                    space.documentExt = ext;
-                    space.payloadSaveAs(payload, name, ext);
-                }
-                onComplete && onComplete();
-            }, '.knt', doc.documentName);
-        };
+        //this code is in  fo.defineType(app.defaultNS('menuFile')
 
+        //space.saveFilePicker = function (documentSpec, onComplete) {
+        //    var doc = documentSpec ? documentSpec : space.copyDocumentSpecTo({});
+        //    space.userSaveFileDialog(function (payload, name, ext) {
+        //        if (ext && ext.endsWith('.knt')) {
+        //            space.isDocumentSaved = true;
+        //            space.documentName = name;
+        //            space.documentExt = ext;
+        //            space.payloadSaveAs(payload, name, ext);
+        //            fo.publish('DocumentChanged', [space])
+        //        }
+        //        onComplete && onComplete();
+        //    }, '.knt', doc.documentName);
+        //};
 
-        space.openFilePicker = function (documentSpec, onComplete) {
-            var doc = documentSpec ? documentSpec : space.copyDocumentSpecTo({});
-            space.userOpenFileDialog(function (payload, name, ext) {
-                if (ext && ext.endsWith('.knt')) {
-                    space.payloadToCurrentModel(payload);
-                    space.isDocumentSaved = true;
-                    space.documentName = name;
-                    space.documentExt = ext;
-                    space.doSessionSave();
-                    space.rootPage && space.rootPage.forceLayout();
-                    //may need to publish to open channel if you have a session key
+        //space.openFilePicker = function (documentSpec, onComplete) {
+        //    var doc = documentSpec ? documentSpec : space.copyDocumentSpecTo({});
+        //    space.userOpenFileDialog(function (payload, name, ext) {
+        //        if (ext && ext.endsWith('.knt')) {
+        //            space.payloadToCurrentModel(payload);
+        //            space.isDocumentSaved = true;
+        //            space.documentName = name;
+        //            space.documentExt = ext;
+        //            fo.publish('DocumentChanged', [space])
+        //        }
+        //        onComplete && onComplete();
+        //    }, '.knt', doc.documentName);
+        //}
 
-                    //if clear and others are listening we need to add that command to the payload
-                    //var syncPayload = space.currentModelToPayload({ clearBeforeSync: clear });
-                    //ctrl.updateSessionTraffic(syncPayload.length, 0);
-                    //if (!space.hasSessionKey) return;
-
-                    // hub.invoke("authorSendModelToPlayers", ctrl.sessionKey, ctrl.userNickName, ctrl.userId, syncPayload);
-                }
-                onComplete && onComplete();
-            }, '.knt', doc.documentName);
-        }
 
         fo.enableFileDragAndDrop('appContent');
 
         //this method is called from KnowtViewMenuContext...  on file drop
         fo.subscribeComplete('DocumentChanged', function (workspace) {
+            workspace.copyDocumentSpecTo(workspace.activeDocument);
             workspace.rootPage.forceLayout();
+            workspace.doSessionSave();
+
             $scope.safeApply();
         });
 
@@ -219,20 +205,24 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
         //});
 
         fo.subscribeComplete('Reparented', function (shape, oldParent, newParent, loc) {
+            space.isDocumentSaved = false;
             $scope.safeApply();
         });
 
         fo.subscribeComplete('ModelChanged', function (note) {
+            space.isDocumentSaved = false;
             $scope.safeApply();
         });
 
-        //fo.subscribeComplete('Deleted', function (name, note, shape) {
-        //    $scope.safeApply();
-        //});
+        fo.subscribeComplete('Deleted', function (name, note, shape) {
+            space.isDocumentSaved = false;
+            //$scope.safeApply();
+        });
 
-        //fo.subscribeComplete('Added', function (name, note, shape) {
-        //    $scope.safeApply();
-        //});
+        fo.subscribeComplete('Added', function (name, note, shape) {
+            space.isDocumentSaved = false;
+            //$scope.safeApply();
+        });
 
         fo.subscribeComplete('doToggleView', function () {
             $scope.safeApply();
@@ -255,7 +245,7 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
         var space = workspaceService.activeWorkSpace();
 
         if (!space.contentMenu) {
-            var menu = space.contentMenu = space.factory.newMenuContent({ space: space, }, space);
+            var menu = space.contentMenu = space.factory.newMenuContent({}, space);
 
             menu.animals = space.factory.newStencilAnimalNotes({}, menu);
 
@@ -276,8 +266,16 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
     app.controller('fileMenu', function ($log, workspaceService, dialogService) {
         var space = workspaceService.activeWorkSpace();
 
+        //the defaults for the current document being worked on
+        //this may not be what the workspace is saving or what the user has selected
+
         if (!space.fileMenu) {
-            space.fileMenu = space.factory.newMenuFile({ space: space, }, space);
+            space.fileMenu = space.factory.newMenuFile({
+                documentSpec: {
+                    documentName: 'knowtPad',
+                    documentExt: '.knt',
+                },
+            }, space);
         }
         return space.fileMenu;
     });
