@@ -6,10 +6,10 @@
  
   <file>/Foundry/Foundry.canvas.js</file>
   <file>/Foundry/Foundry.canvas.structure.js</file>
-  <file>/Foundry/Foundry.canvas.page2D.js</file>
+  <!--<file>/Foundry/Foundry.canvas.page2D.js</file>-->
   <file>/Foundry/Foundry.canvas.shape2D.js</file>
 
   <file>/Foundry/canvas2image.js</file>
   <!--<file>/Foundry/Foundry.canvas.panzoom.js</file>-->
-  <file>/Foundry/Foundry.canvas.document.js</file>
+  <!--<file>/Foundry/Foundry.canvas.document.js</file>-->
 </bundle>

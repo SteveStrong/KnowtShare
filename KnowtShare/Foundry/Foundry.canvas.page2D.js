@@ -114,7 +114,6 @@ Foundry.canvas = Foundry.canvas || {};
 
         this.doAnimations = true;
        // this.setAnimationsOn(this.doAnimations);
-        this.PIP = undefined; //picture in picture Page2DCanvas
 
         this._defaultPinX = 100;
         this._defaultPinY = 100;
@@ -370,16 +369,25 @@ Foundry.canvas = Foundry.canvas || {};
 
 
     //define as noop first then replace
-    Page2DCanvas.prototype.updatePIP = function () { };
+    Page2DCanvas.prototype.updatePIP = function () {
+
+    };
     Page2DCanvas.prototype.setPIP = function (pip) {
-        this.PIP = pip;
         var page = this;
-        Page2DCanvas.prototype.updatePIP = function () {
-            if (page.PIP) {
-                fo.publish('refreshPanZoom', [page.PIP, page]);
-            }
+        if (page.pictureInPicture) {
+            throw new Error('cannot reset pip in this page');
+        }
+        page.pictureInPicture = pip;
+        pip.myParent = page;
+        page.updatePIP = function () {
+            fo.publish('updatePanZoom', [page.pictureInPicture, page]);
         }
         page.updatePIP();
+        return page.pictureInPicture;
+    }
+
+    Page2DCanvas.prototype.getPIP = function () {
+        return this.pictureInPicture;
     }
 
     Page2DCanvas.prototype.setPIPSize = function (width, height, element) {

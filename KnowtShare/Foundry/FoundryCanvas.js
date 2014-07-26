@@ -4156,11 +4156,11 @@ var fo = Foundry;
     };
 
     ns.publish = function (/* String */topic, /* Array? */args) {
-        ns.runWithUIRefreshLock(function () {
+       // ns.runWithUIRefreshLock(function () {
             ns.publishNoLock(publishBegin(topic), args);
             ns.publishNoLock(topic, args);
             ns.publishNoLock(publishComplete(topic), args);
-        });
+       // });
     }
 
 
@@ -12114,7 +12114,6 @@ Foundry.canvas = Foundry.canvas || {};
 
         this.doAnimations = true;
        // this.setAnimationsOn(this.doAnimations);
-        this.PIP = undefined; //picture in picture Page2DCanvas
 
         this._defaultPinX = 100;
         this._defaultPinY = 100;
@@ -12370,16 +12369,25 @@ Foundry.canvas = Foundry.canvas || {};
 
 
     //define as noop first then replace
-    Page2DCanvas.prototype.updatePIP = function () { };
+    Page2DCanvas.prototype.updatePIP = function () {
+
+    };
     Page2DCanvas.prototype.setPIP = function (pip) {
-        this.PIP = pip;
         var page = this;
-        Page2DCanvas.prototype.updatePIP = function () {
-            if (page.PIP) {
-                fo.publish('refreshPanZoom', [page.PIP, page]);
-            }
+        if (page.pictureInPicture) {
+            throw new Error('cannot reset pip in this page');
+        }
+        page.pictureInPicture = pip;
+        pip.myParent = page;
+        page.updatePIP = function () {
+            fo.publish('updatePanZoom', [page.pictureInPicture, page]);
         }
         page.updatePIP();
+        return page.pictureInPicture;
+    }
+
+    Page2DCanvas.prototype.getPIP = function () {
+        return this.pictureInPicture;
     }
 
     Page2DCanvas.prototype.setPIPSize = function (width, height, element) {
@@ -14460,6 +14468,13 @@ Foundry.createjs = this.createjs || {};
     var defaultPage;
     var defaultWindow;
 
+    fo.subscribe('updatePanZoom', function (self, selfParent) {
+        defaultWindow = zoom ? zoom : defaultWindow;
+        defaultPage = page ? page : defaultPage;
+        fo.publish('warning', ['updatePanZoom']);
+        defaultWindow && defaultWindow.draw(defaultPage, 'green');
+    });
+
     fo.subscribe('refreshPanZoom', function (zoom, page) {
         defaultWindow = zoom ? zoom : defaultWindow;
         defaultPage = page ? page : defaultPage;
@@ -14610,11 +14625,8 @@ Foundry.createjs = this.createjs || {};
             if ( result ) result.style.position = 'absolute';
             return result;
         },
-        page: function() {
+        page: function () {
             var page = ns.makePage2D(this.pageId);
-            this.panZoom = this.panZoomId && ns.makePanZoomWindow2D(this.panZoomId, {}, page);
-            this.panZoom && page.setPIP(this.panZoom);
-            page.myParent = this;
             return page;
         },
         pipId: 'PIP',
@@ -14629,7 +14641,13 @@ Foundry.createjs = this.createjs || {};
             return result;
         },
         panZoom: function () {
-            return this.page;
+            var page = this.page;
+            if (!page.pictureInPicture && this.panZoomId) {
+                //once created this value shoul dnot be smashed!!!
+                var panZoom = ns.makePanZoomWindow2D(this.panZoomId, {}, page);
+                page.setPIP(panZoom);
+            }
+            return page.pictureInPicture;
         },
 
         //code to manage the scale of the drawing
@@ -14639,20 +14657,20 @@ Foundry.createjs = this.createjs || {};
         },
         doZoom1To1: function () {
             var page = this.page;
-            if (page) page.zoom1To1(page.updatePIP);
+            page && page.zoom1To1(page.updatePIP);
         },
         doZoomToFit: function () {
             var page = this.page;
-            if (page) page.zoomToFit(page.updatePIP);
+            page && page.zoomToFit(page.updatePIP);
         },
         zoomDelta: 1.1,
         doZoomOut: function () {
             var page = this.page;
-            if (page) page.zoomBy(1 / this.zoomDelta);
+            page && page.zoomBy(1 / this.zoomDelta);
         },
         doZoomIn: function () {
             var page = this.page;
-            if (page) page.zoomBy(this.zoomDelta);
+            page && page.zoomBy(this.zoomDelta);
         },
         doTogglePanZoomWindow: function () {
             var zoom = this.panZoom;

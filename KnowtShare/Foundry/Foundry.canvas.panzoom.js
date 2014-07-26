@@ -146,6 +146,13 @@ Foundry.createjs = this.createjs || {};
     var defaultPage;
     var defaultWindow;
 
+    fo.subscribe('updatePanZoom', function (self, selfParent) {
+        defaultWindow = zoom ? zoom : defaultWindow;
+        defaultPage = page ? page : defaultPage;
+        fo.publish('warning', ['updatePanZoom']);
+        defaultWindow && defaultWindow.draw(defaultPage, 'green');
+    });
+
     fo.subscribe('refreshPanZoom', function (zoom, page) {
         defaultWindow = zoom ? zoom : defaultWindow;
         defaultPage = page ? page : defaultPage;

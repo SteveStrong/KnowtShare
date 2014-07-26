@@ -4154,11 +4154,11 @@ var fo = Foundry;
     };
 
     ns.publish = function (/* String */topic, /* Array? */args) {
-        ns.runWithUIRefreshLock(function () {
+       // ns.runWithUIRefreshLock(function () {
             ns.publishNoLock(publishBegin(topic), args);
             ns.publishNoLock(topic, args);
             ns.publishNoLock(publishComplete(topic), args);
-        });
+       // });
     }
 
 

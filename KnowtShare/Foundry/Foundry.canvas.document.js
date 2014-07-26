@@ -45,11 +45,8 @@ Foundry.createjs = this.createjs || {};
             if ( result ) result.style.position = 'absolute';
             return result;
         },
-        page: function() {
+        page: function () {
             var page = ns.makePage2D(this.pageId);
-            this.panZoom = this.panZoomId && ns.makePanZoomWindow2D(this.panZoomId, {}, page);
-            this.panZoom && page.setPIP(this.panZoom);
-            page.myParent = this;
             return page;
         },
         pipId: 'PIP',
@@ -64,7 +61,13 @@ Foundry.createjs = this.createjs || {};
             return result;
         },
         panZoom: function () {
-            return this.page;
+            var page = this.page;
+            if (!page.pictureInPicture && this.panZoomId) {
+                //once created this value shoul dnot be smashed!!!
+                var panZoom = ns.makePanZoomWindow2D(this.panZoomId, {}, page);
+                page.setPIP(panZoom);
+            }
+            return page.pictureInPicture;
         },
 
         //code to manage the scale of the drawing
@@ -74,20 +77,20 @@ Foundry.createjs = this.createjs || {};
         },
         doZoom1To1: function () {
             var page = this.page;
-            if (page) page.zoom1To1(page.updatePIP);
+            page && page.zoom1To1(page.updatePIP);
         },
         doZoomToFit: function () {
             var page = this.page;
-            if (page) page.zoomToFit(page.updatePIP);
+            page && page.zoomToFit(page.updatePIP);
         },
         zoomDelta: 1.1,
         doZoomOut: function () {
             var page = this.page;
-            if (page) page.zoomBy(1 / this.zoomDelta);
+            page && page.zoomBy(1 / this.zoomDelta);
         },
         doZoomIn: function () {
             var page = this.page;
-            if (page) page.zoomBy(this.zoomDelta);
+            page && page.zoomBy(this.zoomDelta);
         },
         doTogglePanZoomWindow: function () {
             var zoom = this.panZoom;
