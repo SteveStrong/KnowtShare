@@ -156,6 +156,73 @@
     <Content Include="css\TwoColumnSidebarLayoutDark.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Foundry\canvas2Blob.js" />
+    <Content Include="Foundry\canvas2Image.js" />
+    <Content Include="Foundry\csvToJSON.js" />
+    <Content Include="Foundry\FileSaver.js" />
+    <Content Include="Foundry\Foundry.adaptor.js" />
+    <Content Include="Foundry\Foundry.canvas.document.js" />
+    <Content Include="Foundry\Foundry.canvas.js" />
+    <Content Include="Foundry\Foundry.canvas.page2D.js" />
+    <Content Include="Foundry\Foundry.canvas.panzoom.js" />
+    <Content Include="Foundry\Foundry.canvas.shape2D.js" />
+    <Content Include="Foundry\Foundry.canvas.structure.js" />
+    <Content Include="Foundry\Foundry.convert.csv.js" />
+    <Content Include="Foundry\Foundry.core.collection.js" />
+    <Content Include="Foundry\Foundry.core.collectionSpec.js" />
+    <Content Include="Foundry\Foundry.core.component.js" />
+    <Content Include="Foundry\Foundry.core.extensions.js" />
+    <Content Include="Foundry\Foundry.core.js">
+      <DependentUpon>Foundry.core.js.bundle</DependentUpon>
+    </Content>
+    <Content Include="Foundry\Foundry.core.min.js">
+      <DependentUpon>Foundry.core.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\Foundry.core.promise.js" />
+    <Content Include="Foundry\Foundry.core.property.js" />
+    <Content Include="Foundry\Foundry.core.relationship.js" />
+    <Content Include="Foundry\Foundry.core.utils.js" />
+    <Content Include="Foundry\Foundry.decision.js" />
+    <Content Include="Foundry\Foundry.hub.js" />
+    <Content Include="Foundry\Foundry.js">
+      <DependentUpon>Foundry.js.bundle</DependentUpon>
+    </Content>
+    <Content Include="Foundry\Foundry.min.js">
+      <DependentUpon>Foundry.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\Foundry.rules.binding.js" />
+    <Content Include="Foundry\Foundry.rules.factory.js" />
+    <Content Include="Foundry\Foundry.rules.filtering.js" />
+    <Content Include="Foundry\Foundry.rules.JSONDescription.js" />
+    <Content Include="Foundry\Foundry.rules.templates.js" />
+    <Content Include="Foundry\Foundry.trace.js" />
+    <Content Include="Foundry\Foundry.undo.js" />
+    <Content Include="Foundry\Foundry.workspace.core.js" />
+    <Content Include="Foundry\FoundryCanvas.js">
+      <DependentUpon>FoundryCanvas.js.bundle</DependentUpon>
+    </Content>
+    <Content Include="Foundry\FoundryCanvas.min.js">
+      <DependentUpon>FoundryCanvas.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\FoundryComplete.js">
+      <DependentUpon>FoundryComplete.js.bundle</DependentUpon>
+    </Content>
+    <Content Include="Foundry\FoundryComplete.min.js">
+      <DependentUpon>FoundryComplete.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\FoundryUI.js">
+      <DependentUpon>FoundryUI.js.bundle</DependentUpon>
+    </Content>
+    <Content Include="Foundry\FoundryUI.min.js">
+      <DependentUpon>FoundryUI.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\handlebars.min.js" />
+    <Content Include="Foundry\moment.min.js" />
+    <Content Include="Foundry\q.js" />
+    <Content Include="Foundry\version.js" />
+    <Content Include="Foundry\version.min.js">
+      <DependentUpon>version.js</DependentUpon>
+    </Content>
     <Content Include="images\KnowtShareBadge.png" />
     <Content Include="images\KnowtShareLogo.png" />
     <Content Include="images\knowtshareQRCode.png" />
@@ -209,6 +276,37 @@
     <Content Include="content\bootstrap.css.map" />
     <Content Include="images\Thumbs.db" />
     <Content Include="KnowtView.NoteTemplate.html" />
+    <Content Include="Foundry\Foundry.core.js.bundle">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Foundry\Foundry.core.min.js.map">
+      <DependentUpon>Foundry.core.min.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\Foundry.js.bundle">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Foundry\Foundry.min.js.map">
+      <DependentUpon>Foundry.min.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\FoundryCanvas.js.bundle">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Foundry\FoundryCanvas.min.js.map">
+      <DependentUpon>FoundryCanvas.min.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\FoundryComplete.js.bundle">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Foundry\FoundryComplete.min.js.map">
+      <DependentUpon>FoundryComplete.min.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\FoundryUI.js.bundle" />
+    <Content Include="Foundry\FoundryUI.min.js.map">
+      <DependentUpon>FoundryUI.min.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\version.min.js.map">
+      <DependentUpon>version.min.js</DependentUpon>
+    </Content>
     <None Include="Properties\PublishProfiles\knowtshareStaging.pubxml" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
@@ -555,7 +653,9 @@
     <Compile Include="Server\ShapeHub.cs" />
     <Compile Include="Server\Startup.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Foundry\Archive\" />
+  </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>

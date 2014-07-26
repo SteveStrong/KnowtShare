@@ -68,7 +68,7 @@
             <img id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
             <span style="margin-right:10px">{{space.title}}</span>
             <span style="margin-right:10px"><em>{{space.subTitle}}</em></span>
-      </nav>
+        </nav>
 
     </header>
 
@@ -78,11 +78,11 @@
             <button class="btn btn-success" ng-click="vm.doAddNote">Add Note</button>
             <button class="btn btn-danger" ng-disabled="!vm.canDoDelete" ng-click="vm.doConfirmDelete">Delete Note</button>
             <button class="btn btn-info" ng-disabled="!vm.canOpenSelected" ng-click="vm.doOpenSelected">Edit Note</button>
-            <button class="btn btn-default"  ng-click="vm.doSave">Save</button>
+            <button class="btn btn-default" ng-click="vm.doSave">Save</button>
             <button class="btn btn-default" ng-click="vm.doConfirmClear">Clear</button>
             <button class="btn btn-default" ng-click="vm.doRestore">Restore</button>
             <button class="btn btn-default" ng-click="space.rootModel.doTest()">dialog test</button>
-    </article>
+        </article>
         <h1>notes</h1>
         <div class="note-wrapper">
             <div ng-repeat="context in notes" ng-class="{isSelected: context.isSelected}" ng-click="markSelected(context)">
@@ -91,15 +91,15 @@
         </div>
 
 
-        <br/>
+        <br />
         <h1>workspace properties</h1>
-        <span>user NickName</span><input ng-model="space.userNickName"  />
+        <span>user NickName</span><input ng-model="space.userNickName" />
         <div ng-repeat="prop in space.Properties.elements">
             <span><strong>{{prop.asReference()}}:</strong></span>  <span><em>{{prop.asDisplayValue()}}</em></span>
         </div>
     </section>
 
- 
+
     <footer id="appFooter" class="appFooter"></footer>
 
 
@@ -120,9 +120,14 @@
     <script type="text/javascript" src="http://foundryjs.azurewebsites.net/Foundry/FoundryComplete.js"></script>
 
     <script type="text/javascript" src="Knowt/KnowtTakerApp.js"></script>
-    <script type="text/javascript" src="Knowt/KnowtViewStencil.js"></script>
     <script type="text/javascript" src="Knowt/KnowtViewNgDialog.js"></script>
-    <script type="text/javascript" src="Knowt/KnowtViewMenuNotes.js"></script>
+
+    
+    <script type="text/javascript" src="Knowt/KnowtViewStencil.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewStencilAnimals.js"></script>
+
+    <script type="text/javascript" src="Knowt/KnowtViewMenuContent.js"></script>
+
 
 </body>
 </html>

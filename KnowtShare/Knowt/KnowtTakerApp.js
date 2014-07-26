@@ -36,6 +36,7 @@ knowtApp.header = { title: 'Knowt Taker', help: 'knowtshareHelp.html' };
         fo.utils.loadTemplate('KnowtView.Dialogs.html');
         fo.utils.loadTemplate('KnowtView.NoteTemplate.html');
 
+        fo.exportTypes();
 
     });
 
@@ -46,24 +47,44 @@ knowtApp.header = { title: 'Knowt Taker', help: 'knowtshareHelp.html' };
     //http://odetocode.com/blogs/scott/archive/2013/06/06/decorating-angularjs-services.aspx
     //http://www.bennadel.com/blog/2542-logging-client-side-errors-with-angularjs-and-stacktrace-js.htm
 
+    //inspect the arguments passed into collect the session key 
+    var args = fo.utils.queryStringToObject(window.location.toString(), '?');
 
     app.service('workspaceService', ['$log', function ($log) {
 
         var space;
+        var defaultSession = args && args.session;
 
-        this.workSpace = function (template) {
+
+        this.workSpace = function (properties, modelTemplate) {
             if (space) return space;
 
-            var spec = fo.utils.union({ }, template);
-            space = fo.ws.makeModelWorkspace("KnowtShare", {
+            var spec = {
                 title: "KnowtTaker",
                 subTitle: "take and save notes",
                 userId: "123456780",
                 userNickName: 'sedona',
-            }, spec);
+            }
+
+            space = fo.ws.makeNoteWorkspace("KnowtShare", fo.utils.union(spec, properties), modelTemplate);
+
+            space.isDocumentEmpty = function () {
+                //var total = (this.rootPage.Subcomponents.count * this.rootModel.Subcomponents.count) / 2;
+                var isEmpty = this.rootPage.Subcomponents.isEmpty() && this.rootModel.Subcomponents.isEmpty();
+                return isEmpty;
+            };
+
+
+
+            if (!defaultSession) {
+                setTimeout(function () {
+                    space.doSessionRestore();
+                }, 100);
+            }
 
             return space;
         };
+
 
     }]);
 
@@ -140,7 +161,7 @@ knowtApp.header = { title: 'Knowt Taker', help: 'knowtshareHelp.html' };
         $scope.notes = rootModel.Subcomponents.elements;
 
 
-        $scope.vm = fo.knowtTakerApp.newMenuNotes({}, rootModel);
+        $scope.vm = fo.knowtTakerApp.newMenuContent({}, space);
 
         fo.subscribe('info', function(a,b){
             toastr.info(a,b);

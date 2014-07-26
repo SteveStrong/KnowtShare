@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bundle minify="true" runOnBuild="true" output="Foundry.js">
+  <!--The order of the <file> elements determines the order of them when bundled.-->
+	<file>/Foundry/Foundry.core.js</file>
+  
+  <file>/Foundry/Foundry.rules.factory.js</file>
+  <file>/Foundry/Foundry.adaptor.js</file>
+  <file>/Foundry/Foundry.hub.js</file>
+  
+	<file>/Foundry/FileSaver.js</file>
+	<file>/Foundry/canvas2Blob.js</file>
+	<file>/Foundry/Foundry.workspace.core.js</file>
+  <file>/Foundry/Foundry.undo.js</file>
+  <file>/Foundry/moment.min.js</file>
+  <file>/Foundry/Foundry.rules.filtering.js</file>
+	<file>/Foundry/Foundry.convert.csv.js</file>
+</bundle>

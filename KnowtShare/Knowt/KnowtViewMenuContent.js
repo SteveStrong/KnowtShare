@@ -121,9 +121,7 @@
         doConfirmClear: function () {
             this.doClearAsync();
         },
-        doConfirmClearFileDropAsync: function () {
 
-        },
         doUnDo: function () {
             if (!fo.undo.canUndo()) return;
             fo.undo.unDo();
@@ -516,7 +514,7 @@
                 },
                 SaveDocumentFirst: function () {
                     obj.dialogService.doCloseDialog();
-                   space.saveFilePicker(); //this make sure we are in a known state
+                    fo.publish('doSaveFilePicker', [])
                 },
             });
         };

@@ -191,6 +191,8 @@ knowtApp.header = { title: 'Knowt Pad', help: 'knowtshareHelp.html' };
         });
 
         fo.subscribeComplete('WorkspaceClear', function (workspace) {
+            workspace.doSessionSave();
+
             $scope.safeApply();
         });
 

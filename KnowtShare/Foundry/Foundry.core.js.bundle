@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bundle minify="true" runOnBuild="true" output="Foundry.core.js">
+  <!--The order of the <file> elements determines the order of them when bundled.-->
+  <file>/Foundry/version.js</file>
+  <file>/Foundry/Foundry.trace.js</file>
+    
+	<file>/Foundry/Foundry.core.extensions.js</file>
+	<file>/Foundry/Foundry.core.utils.js</file>
+	<file>/Foundry/Foundry.core.property.js</file>
+	<file>/Foundry/Foundry.core.collectionSpec.js</file>
+	<file>/Foundry/Foundry.core.collection.js</file>
+  
+	<file>/Foundry/Foundry.core.component.js</file>
+	<file>/Foundry/Foundry.core.relationship.js</file>
+
+	<file>/Foundry/q.js</file>
+  <file>/Foundry/Foundry.core.promise.js</file>
+
+</bundle>

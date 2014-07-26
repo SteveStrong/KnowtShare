@@ -86,7 +86,6 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
     app.service('workspaceService', ['$log', 'dialogService', function ($log, dialogService) {
 
         var space;
-        var shapeHub;
         var defaultSession = args && args.session;
 
         this.workSpace = function (properties, modelTemplate) {
@@ -272,6 +271,12 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         fo.subscribeComplete('DocumentChanged', function (workspace) {
             workspace.copyDocumentSpecTo(workspace.activeDocument);
             workspace.rootPage.forceLayout();
+            workspace.doSessionSave();
+
+            $scope.safeApply();
+        });
+
+        fo.subscribeComplete('WorkspaceClear', function (workspace) {
             workspace.doSessionSave();
 
             $scope.safeApply();
