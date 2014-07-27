@@ -92,7 +92,7 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             if (space) return space;
 
             var spec = {
-                canvasId: 'drawingCanvas',
+                canvasId: 'diagramCanvas',
                 panZoomCanvasId: 'panZoomCanvas',
                 pipId: 'PIP',
                 title: "Knowt Share",
@@ -110,24 +110,6 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             };
 
 
-            //space.activeDocument = fo.makeComponent(documentSpec, {}, space);
-
-            //space.refreshModelFromPayload = function (payload, clear) {
-            //    //ctrl.updateSessionTraffic(0, payload.length);
-            //    space.payloadToCurrentModel(payload);
-            //    space.copyDocumentSpecTo(space.activeDocument);
-            //    //ctrl.doModelSmash;
-            //    space.doSessionSave();
-
-            //    //if clear and others are listening we need to add that command to the payload
-            //    var syncPayload = space.currentModelToPayload({ clearBeforeSync: clear });
-            //    //ctrl.updateSessionTraffic(syncPayload.length, 0);
-            //    if (!space.hasSessionKey) return;
-
-            //   // hub.invoke("authorSendModelToPlayers", ctrl.sessionKey, ctrl.userNickName, ctrl.userId, syncPayload);
-            //}
-
-
  
             if (!defaultSession) {
                 setTimeout(function () {
@@ -138,83 +120,6 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             return space;
         };
 
-        //function manageCollaberation() {
-        //    space.createSession = function (sessionKey, sessionSpec) {
-        //        this.sessionKey = sessionKey;
-        //        this.userId = this.isLoggedIn ? this.userId : "Session";
-
-        //        if (sessionSpec.presenter) {
-        //            this.isPresenterSession = true;
-        //        }
-        //        var syncPayload = this.currentModelToPayload(sessionSpec);
-        //        shapeHub.server.playerCreateSession(this.sessionKey, this.userId, syncPayload);
-        //    }
-
-        //    space.joinSession = function (sessionKey) {
-        //        this.sessionKey = sessionKey;
-        //        this.userId = this.isLoggedIn ? this.userId : "Session";
-
-        //        var syncPayload = this.currentModelToPayload();
-        //        shapeHub.server.playerJoinSession(this.sessionKey, this.userId, syncPayload);
-        //    }
-
-        //    shapeHub.client.authorReceiveJoinSessionFromPlayer = function (sessionKey, userId, payload) {
-        //        if (!space.matchesSession(sessionKey)) {
-        //            return;
-        //        }
-
-        //        var shareSpec = {};
-        //        //if (!space.isPresenterSession) {
-        //        //    space.updateSessionTraffic(0, payload.length);
-        //        //    space.payloadToCurrentModel(payload);
-        //        //    space.doRepaint;
-        //        //    toastr.success('is being sent the synchronized drawing', ctrl.userNickName);
-        //        //}
-        //        //else {
-        //        //    shareSpec = { isViewOnlySession: true }
-        //        //}
-
-        //        var syncPayload = workspace.currentModelToPayload(shareSpec);
-        //        //space.updateSessionTraffic(syncPayload.length, 0);
-        //        shapeHub.invoke("authorSendJoinSessionModelToPlayers", sessionKey, userId, syncPayload);
-
-        //    };
-
-        //    shapeHub.client.playerReceiveJoinSessionModel = function (sessionKey, userId, payload) {
-        //        if (!space.matchesSession(sessionKey)) {
-        //            return;
-        //        }
-
-        //        //ctrl.updateSessionTraffic(0, payload.length);
-        //        var spec = space.payloadToCurrentModel(payload);
-        //        var command = spec.command;
-
-        //        //ctrl.doRepaint;
-
-        //        //this should be toast
-        //        if (command && command.isViewOnlySession) {
-        //            space.isViewOnlySession = true;
-        //            toastr.success('Has synchronized with presentation', space.userNickName);
-        //        }
-        //        else {
-        //            toastr.success('Has synchronized with your notes', space.userNickName);
-        //        }
-        //    };
-        //}
-
-
-        //this.serverLogin = function (hub) {
-        //    shapeHub = hub;
-
-        //    shapeHub.client.clientCountChanged = function (count) {
-        //        space.clientCount = count;
-        //    };
-
-        //    manageCollaberation();
-        //    if (defaultSession && space) {
-        //        space.joinSession(defaultSession);
-        //    }
-        //}
 
         this.activeWorkSpace = function () {
             if (!space) throw new Error('Workspace is not initialized');
@@ -292,11 +197,11 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             $scope.safeApply();
         }
 
-        var layout = fo.knowtShareApp.newMainLayout({
-            drawing: function () { return space.drawing; },
-        }, space, function (obj) {
-            obj.autoResize(true);
-        });
+        //var layout = fo.knowtShareApp.newMainLayout({
+        //    drawing: function () { return space.drawing; },
+        //}, space, function (obj) {
+        //    obj.autoResize(true);
+        //});
 
  
 

@@ -1,153 +1,117 @@
 ﻿
-        body {
-            font-family: arial;
-            font-size: 14px;
-        }
-                
-        .left-side, .right-side {
-            position: absolute;
-            overflow: hidden;
-        }
+body {
+    font-family: arial;
+    font-size: 14px;
+}
 
-        .left-side {
-            left: 0;
-            width: 600px; /*equals earth left*/
-        }
+ul {
+    list-style: none;
+    /*list-style:circle;*/
+}
 
-        .right-side {
-            left: 600px; /*equals filter-sort and list width*/
-            right: 0px;
-        }
+li {
+    margin-left: -6px;
+}
 
-        ul {
-            list-style:none;
-            /*list-style:circle;*/
-        }
+/*http://css-tricks.com/a-couple-of-use-cases-for-calc/*/
 
-        li {
-            margin-left: -6px;
-        }
+.app-content {
+    display: block;
+    position: absolute;
+    left: 100px;
+    background-color: lawngreen;
+    margin: 4px;
+    width: calc(100% - 120px);
+    height: calc(100% - 120px);
+}
 
-        .command-container {
-            float: left;
-            width: 100%;
-            height: 100%;
-        }
+.main-content {
+    position: absolute;
+    border: 3px double blue;
+    width: calc(100%);
+    height: calc(100%);
+}
 
-        .list-container {
-            float: right;
-            background-color: bisque;
-            width: 100%;
-            height: 100%;
-            overflow-y: scroll;
-        }
+.text-container {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    display: block;
+}
 
-        .details-container {
-            width: 100%;
-            height: 100%;
-        }
+.text-canvas {
+    background-color: lemonchiffon;
+    overflow-y: auto;
+    height: 1000px;
+    border: 1px dashed black;
+}
 
-        .main-content {
-            margin: 0px;
-            padding: 0px;
-        }
+.diagram-container {
+    position: absolute;
+    display: block;
+    height: calc(100%);
+    width: calc(100%);
+}
 
-        .drawing-canvas {
-            background-color: cornsilk;
-            margin: 0px;
-            padding: 0px;
-            border: 1px solid black;
-        }
-
-        .text-canvas {
-            background-color: lemonchiffon;
-            margin: 0px;
-            padding: 0px;
-            overflow-y: auto;
-            height: 1000px;
-        }
-
-        .text-view-item {
-            background-color: transparent;
-            background-position: 8px 12px, center right;
-            background-repeat: repeat;
-            text-align: left;
-            font-size: 1em;
-            overflow-x: hidden;
-        }
-
-
-            .text-view-item[data-type="note"] {
-                background-color: white;
-                /*border: 2px solid #999;*/
-            }
-
-            .text-view-item[data-type="annotation"] {
-                background-color: #C1FCA9;
-                /*border: 2px solid #999;*/
-            }
-
-            .selected {
-                background-color: gray;
-                /*border: 2px solid #999;*/
-            }
-
- 
-
-        .app-header {
-            /*position: absolute;*/
-            overflow-x: hidden;
-        }
-
-        .app-content {
-            /*position: absolute;*/
-        }
-
-        .app-footer {
-            position: absolute;
-            overflow-x: hidden;
-        }
-
-        .picture-in-picture {
-            position: absolute;
-        }
-
-        .picture-container {
-            position: absolute;
-            margin: 0;
-            padding: 0;
-            display:block;
-        }
-
-        .text-container {
-            position: absolute;
-            margin: 0;
-            padding: 0;
-            display:block;
-        }
-
-        .vertical-menu {
-            position: absolute;
-            display: block;
-            max-width: 100px;
-            overflow-x: hidden;
-            margin-left: 8px;
-        }
-
-        .horizontal-menu {
-            position: absolute;
-            margin-left: 8px;
-            display: none;
-            /*overflow-x:hidden; */
-        }
-
-        .vertical-menu-group {
-            min-width: 95px;
-            padding-bottom: 6px;
-            padding-left: 1px;
-            padding-right: 1px;
-            background-color: blanchedalmond;
-        }
+.diagram-canvas {
+    position: absolute;
+    display: block;
+    background-color: cornsilk;
+    border: 1px ridge black;
+}
 
 
 
+.picture-in-picture {
+    position: absolute;
+    background-color: orange;
+    left: 500px;
+    top: 300px;
+    border: 1px solid black;
+}
+
+.pan-zoom-canvas {
+    display: block;
+    background-color: cornsilk;
+    margin: 4px;
+}
+
+
+
+
+.app-header {
+    position: absolute;
+    overflow-x: hidden;
+}
+
+
+.app-footer {
+    position: absolute;
+    overflow-x: hidden;
+}
+
+
+
+
+.vertical-menu {
+    display: block;
+    position: absolute;
+
+    max-width: 100px;
+    overflow-x: hidden;
+    margin-left: 8px;
+}
+
+.horizontal-menu {
+    margin-left: 8px;
+    display: none;
+    /*overflow-x:hidden; */
+}
+
+.vertical-menu-group {
+    min-width: 95px;
+    padding-bottom: 6px;
+    padding-left: 1px;
+    padding-right: 1px;
+    background-color: blanchedalmond;
+}

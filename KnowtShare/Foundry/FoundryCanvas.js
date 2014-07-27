@@ -11712,7 +11712,7 @@ Foundry.canvas = Foundry.canvas || {};
 
         if (fo.digestLockCount == 0) {
             this.updateStage();
-            fo.publish('refreshPanZoom', []);
+            fo.publish('updatePanZoom', []);
         }
     }
 
@@ -11724,7 +11724,7 @@ Foundry.canvas = Foundry.canvas || {};
 
         if (fo.digestLockCount == 0) {
             shape.updateStage();
-            fo.publish('refreshPanZoom', []);
+            fo.publish('updatePanZoom', []);
         }
         return oldParent;
     }
@@ -12182,7 +12182,7 @@ Foundry.canvas = Foundry.canvas || {};
             subshape.render(rootStage || this.geom, context);
         });
 
-        fo.publish('refreshPanZoom', []);
+        this.updatePIP();
     };
 
 
@@ -12392,15 +12392,15 @@ Foundry.canvas = Foundry.canvas || {};
 
     Page2DCanvas.prototype.setPIPSize = function (width, height, element) {
         var page = this;
-        if (this.canvas && page.PIP) {
-            fo.publish('sizePanZoom', [page.PIP, page, width, height, element]);
+        if (this.canvas && page.getPIP()) {
+            fo.publish('sizePanZoom', [page.getPIP(), page, width, height, element]);
         }
     }
 
     Page2DCanvas.prototype.setPIPPosition = function (width, height, element) {
         var page = this;
-        if (this.canvas && page.PIP) {
-            fo.publish('positionPanZoom', [page.PIP, page, width, height, element]);
+        if (this.canvas && page.getPIP()) {
+            fo.publish('positionPanZoom', [page.getPIP(), page, width, height, element]);
         }
     }
 
@@ -12411,24 +12411,26 @@ Foundry.canvas = Foundry.canvas || {};
         geom.scaleX = geom.scaleY = 0;
         geom.rotation = -45;
 
+        var page = this;
         geom.visible = true;
 
         shape.MorphTo(geom, { scaleY: 1.0, scaleX: 1.0, rotation: 0 }, 200, create.Ease.linear, function () {  //backInOut
             geom.scaleY =  geom.scaleX = 1.0;
             geom.rotation = 0;
-            fo.publish('refreshPanZoom', []);
+            page.updatePIP();
         });
     }
 
     Page2DCanvas.prototype.farewellShape = function (shape, callback) {
         this.selectShape(undefined, true);
 
+        var page = this;
         var geom = shape.geom;
 
         shape.MorphTo(geom, { scaleY: 0, scaleX: 0, rotation: 45 }, 200, create.Ease.linear, function () {  //backInOut
             geom.visible = false;
             callback && callback();
-            fo.publish('refreshPanZoom', []);
+            page.updatePIP();
         });
     }
 
@@ -14349,14 +14351,6 @@ Foundry.createjs = this.createjs || {};
 
 
     var PanAndZoomWindow = function (properties, subcomponents, parent) {
-        var windowSpec = {
-            pageToRender: parent,
-            geom: function () {
-                var geom = new createjs.Shape();
-                geom.alpha = .3;
-                return geom;
-            },
-        }
 
         var panAndZoomSpec = {
             percentMargin: -0.02,
@@ -14367,10 +14361,10 @@ Foundry.createjs = this.createjs || {};
                 var result = new createjs.Shape();
                 return result;
             },
-            viewWindow: function () {
-                var result = ns.makeShape(windowSpec, {}, this);
-                this.addSubcomponent(result);
-                return result;
+            viewWindowGeom: function () {
+                var geom = new createjs.Shape();
+                geom.alpha = .3;
+                return geom;
             },
         };
 
@@ -14394,10 +14388,67 @@ Foundry.createjs = this.createjs || {};
 
         var properties = spec || {};
         properties.canvasElement = canvasElement;
-        var pz = new PanAndZoomWindow(properties, {}, parent);
+        var pzSelf = new PanAndZoomWindow(properties, {}, parent);
+        var pzSelfParent = pzSelf.myParent;
+
+        fo.subscribe('updatePanZoom', function (self, selfParent) {
+            if (self && self != pzSelf) return;
+            if (selfParent && selfParent != pzSelfParent) return;
+
+            fo.publish('warning', ['updatePanZoom']);
+            pzSelf.draw(pzSelfParent, 'green');
+        });
 
 
-        return pz;
+        fo.subscribe('ShapeReparented', function (child, oldParent, newParent, loc) {
+            fo.publish('info', ['ShapeReparented']);
+            pzSelf.draw(pzSelfParent, 'yellow');
+        });
+
+        fo.subscribe('ShapeMoved', function (uniqueID, model, shape) {
+            fo.publish('info', ['ShapeMoved']);
+            pzSelf.draw(pzSelfParent, 'black');
+        });
+
+        fo.subscribe('sizePanZoom', function (self, selfParent, width, height, element) {
+            if (self && self != pzSelf) return;
+            if (selfParent && selfParent != pzSelfParent) return;
+
+            //fo.publish('info', ['sizePanZoom']);
+            pzSelf.setCanvasWidth(width * pzSelf.percentSize);
+            pzSelf.setCanvasHeight(height * pzSelf.percentSize);
+            pzSelf.zoomToFit(function () {
+                pzSelf.draw(pzSelfParent);
+            });
+        });
+
+        //fo.subscribe('positionPanZoom', function (self, selfParent, width, height, element) {
+        //    if (self && self != pzSelf) return;
+        //    if (selfParent && selfParent != pzSelfParent) return;
+
+        //    fo.publish('info', ['positionPanZoom']);
+        //    element.style.left = width - ((width * pzSelf.percentMargin) + pzSelf.canvasWidth) + 'px';
+        //    element.style.top = height + 30 - ((height * pzSelf.percentMargin) + pzSelf.canvasHeight) + 'px';
+        //});
+
+
+
+        fo.subscribe('ShapeMoving', function (page, shape, ev) {
+            if (page && page != pzSelfParent) return;
+
+            var viewWindowGeom = pzSelf.viewWindowGeom;
+
+            //adjust the pan on the page
+           // fo.publish('info', ['ShapeMoving']);
+
+            var scale = page.scale;
+            var panX = viewWindowGeom.x * scale;
+            var panY = viewWindowGeom.y * scale;
+            page.setPanTo(-panX, -panY);
+        });
+
+
+        return pzSelf;
     };
 
     utils.isaPanAndZoomWindow = function (obj) {
@@ -14420,43 +14471,36 @@ Foundry.createjs = this.createjs || {};
             });
         }
 
-        var zoom = this;
-        var stage = zoom.stage;
+        var pzSelf = this;
+        var stage = pzSelf.stage;
 
-        fo.publish('error', ['try to draw']);
-        var pageToRender = page ? page : zoom.myParent;
-        if (!pageToRender) return;
+        var drawingGeom = pzSelf.drawingGeom;
+        pzSelf.establishChild(drawingGeom);
 
-        var drawing = zoom.drawingGeom;
-        zoom.establishChild(drawing);
-
-        var g = drawing.graphics;
+        var g = drawingGeom.graphics;
         g.clear();
         //SRS mod
-        if (pageToRender.Subcomponents.count) {
+        if (page.Subcomponents.count) {
             g.beginFill(color ? color : "black");
-            renderPageOutline(g, pageToRender, 0, 0);
+            renderPageOutline(g, page, 0, 0);
             g.endFill();
         }
 
 
-        fo.publish('error', ['draw complete']);
+        var viewWindowGeom = pzSelf.viewWindowGeom;
+        pzSelf.establishChild(viewWindowGeom);
 
-        var viewWindow = zoom.viewWindow;
-        viewWindow.pageToRender = pageToRender;
+        var psScale = pzSelf.scale;
+        var scale = page.scale;
+        var pinX = page.panX / scale;
+        var pinY = page.panY / scale;
+        var width  = page.canvasWidth / scale;
+        var height  = page.canvasHeight / scale;
+        viewWindowGeom.x = -pinX;
+        viewWindowGeom.y = -pinY;
 
-        var scale = pageToRender.scale;
-        var pinX = pageToRender.panX / scale;
-        var pinY = pageToRender.panY / scale;
-        var width = viewWindow.width =  pageToRender.canvasWidth / scale;
-        var height = viewWindow.height = pageToRender.canvasHeight / scale;
-        viewWindow.geom.x = -pinX;
-        viewWindow.geom.y = -pinY;
 
-        var view = zoom.viewWindow.geom;
-        stage.addChild(view);
-
-        var g = view.graphics;
+        var g = viewWindowGeom.graphics;
         g.clear();
         g.beginFill("red");
         g.drawRect(0, 0, width, height);
@@ -14465,63 +14509,9 @@ Foundry.createjs = this.createjs || {};
         stage.update();
     };
 
-    var defaultPage;
-    var defaultWindow;
-
-    fo.subscribe('updatePanZoom', function (self, selfParent) {
-        defaultWindow = zoom ? zoom : defaultWindow;
-        defaultPage = page ? page : defaultPage;
-        fo.publish('warning', ['updatePanZoom']);
-        defaultWindow && defaultWindow.draw(defaultPage, 'green');
-    });
-
-    fo.subscribe('refreshPanZoom', function (zoom, page) {
-        defaultWindow = zoom ? zoom : defaultWindow;
-        defaultPage = page ? page : defaultPage;
-        fo.publish('success', ['refreshPanZoom']);
-        defaultWindow && defaultWindow.draw(defaultPage, 'green');
-    });
-
-    fo.subscribe('ShapeReparented', function (child, oldParent, newParent, loc) {
-        fo.publish('info', ['ShapeReparented']);
-        defaultWindow && defaultWindow.draw(defaultPage, 'yellow');
-    });
-
-    fo.subscribe('ShapeMoved', function (uniqueID, model, shape) {
-        fo.publish('info', ['ShapeMoved']);
-        defaultWindow && defaultWindow.draw(defaultPage, 'black');
-    });
-
-    fo.subscribe('sizePanZoom', function (zoom, page, width, height, element) {
-        fo.publish('info', ['sizePanZoom']);
-        zoom.setCanvasWidth(width * zoom.percentSize);
-        zoom.setCanvasHeight(height * zoom.percentSize);
-        zoom.zoomToFit(function () {
-            zoom.draw(page);
-        });
-    });
-
-    fo.subscribe('positionPanZoom', function (zoom, page, width, height, element) {
-        fo.publish('info', ['positionPanZoom']);
-        element.style.left = width - ((width * zoom.percentMargin) + zoom.canvasWidth) + 'px';
-        element.style.top = height + 30 - ((height * zoom.percentMargin) + zoom.canvasHeight) + 'px';
-    });
 
 
-
-    fo.subscribe('ShapeMoving', function (page, shape, ev) {
-        var viewWindow = page.viewWindow;
-        if (viewWindow && viewWindow.pageToRender) {
-            //adjust the pan on the page
-            fo.publish('info', ['ShapeMoving']);
-            var pageToRender = viewWindow.pageToRender;
-            var scale = pageToRender.scale;
-            var panX = viewWindow.geom.x * scale;
-            var panY = viewWindow.geom.y * scale;
-            pageToRender.setPanTo(-panX, -panY);
-        }
-    });
-
+ 
 
 
     PanAndZoomWindow.prototype.computeViewPortOffset = function (x, y) {
@@ -14713,7 +14703,13 @@ Foundry.createjs = this.createjs || {};
 
     ns.makeDrawing = function (pageId, panZoomId, pipId, properties) {
         var result = new Drawing(pageId, panZoomId, pipId, properties);
-         return result;
+
+        fo.subscribe('canvasResize', function (element, width, height) {
+            if (result.pageElement == element) {
+                result.setScreenSize(width, height);
+            }
+        });
+        return result;
     }
 
     utils.isaDrawing = function (obj) {
@@ -14728,8 +14724,10 @@ Foundry.createjs = this.createjs || {};
             drawing.screenHeight = h,
             page.setCanvasWidth(w);
             page.setCanvasHeight(h);
-            drawing.panZoomElement && page.setPIPSize(drawing.viewWidth, drawing.viewHeight, drawing.panZoomElement);
-            drawing.pipElement && page.setPIPPosition(drawing.screenWidth, drawing.screenHeight, drawing.pipElement);
+
+            drawing.panZoom && page.setPIPSize(drawing.viewWidth, drawing.viewHeight, drawing.panZoomElement);
+
+            //drawing.pipElement && page.setPIPPosition(drawing.screenWidth, drawing.screenHeight, drawing.pipElement);
         });
     };
 

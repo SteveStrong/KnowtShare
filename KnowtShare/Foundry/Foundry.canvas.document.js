@@ -133,7 +133,13 @@ Foundry.createjs = this.createjs || {};
 
     ns.makeDrawing = function (pageId, panZoomId, pipId, properties) {
         var result = new Drawing(pageId, panZoomId, pipId, properties);
-         return result;
+
+        fo.subscribe('canvasResize', function (element, width, height) {
+            if (result.pageElement == element) {
+                result.setScreenSize(width, height);
+            }
+        });
+        return result;
     }
 
     utils.isaDrawing = function (obj) {
@@ -148,8 +154,10 @@ Foundry.createjs = this.createjs || {};
             drawing.screenHeight = h,
             page.setCanvasWidth(w);
             page.setCanvasHeight(h);
-            drawing.panZoomElement && page.setPIPSize(drawing.viewWidth, drawing.viewHeight, drawing.panZoomElement);
-            drawing.pipElement && page.setPIPPosition(drawing.screenWidth, drawing.screenHeight, drawing.pipElement);
+
+            drawing.panZoom && page.setPIPSize(drawing.viewWidth, drawing.viewHeight, drawing.panZoomElement);
+
+            //drawing.pipElement && page.setPIPPosition(drawing.screenWidth, drawing.screenHeight, drawing.pipElement);
         });
     };
 

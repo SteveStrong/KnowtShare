@@ -26,8 +26,6 @@
     <link href="css/noteDiagram.css" rel="stylesheet" />
 
 
-    <!--    http://stackoverflow.com/questions/15626952/twitter-bootstrap-and-canvas-positioning  -->
-
 </head>
 
 
@@ -73,7 +71,7 @@
                 <button class="btn btn-default navbar-btn" ng-click="vm.doResyncSession">
                     Resync
                 </button>
-                <button class="btn btn-default navbar-btn" ng-show=space.viewMenu.isDrawingView" ng-click="vm.doZoomToFit">
+                <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isDrawingView" ng-click="vm.doZoomToFit">
                     Fit
                 </button>
                 <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isDrawingView" ng-click="vm.doZoom1To1">
@@ -97,7 +95,7 @@
     <section id="appContent" class="app-content">
         <article id="mainContent" class="main-content">
 
-            <div id="textContainer" ng-show="space.viewMenu.isTextView" class="text-container" ng-controller="noteTreeView as viewModel">
+            <div id="textContainer" class="text-container" ng-show="space.viewMenu.isTextView" ng-controller="noteTreeView as viewModel">
                 <ul class="breadcrumb">
                     <li ng-repeat="crumb in viewModel.selectionPath">
                         <a class="btn btn-link " ng-click="viewModel.doPinAsRoot(crumb)">{{crumb.context ? crumb.context.headerText : crumb.myName}}</a>
@@ -111,19 +109,19 @@
                 </div>
             </div>
 
-            <div id="pictureContainer" ng-show="space.viewMenu.isDrawingView" class="picture-container" ng-controller="noteCanvasView as vm">
-                <ul class="breadcrumb">
-                    <li ng-repeat="page in viewModel.pages">
-                        <a class="btn btn-link " ng-click="viewModel.gotoPage(page)">{{page.context ? page.context.headerText : page.myName}}</a>
-                    </li>
-                </ul>
-                <canvas class="drawing-canvas" id="drawingCanvas" width="550" height="550"></canvas>
+            <div id="diagramContainer" class="diagram-container" ng-show="space.viewMenu.isDrawingView" ng-controller="noteCanvasView as vm">
+                <div id="diagramContainerNavigation">
+                    <button class="btn btn-success " ng-repeat="page in viewModel.pages" ng-click="viewModel.gotoPage(page)">
+                        {{page.context ? page.context.headerText : page.myName}}
+                    </button>
+                </div>
+                <canvas id="diagramCanvas" class="diagram-canvas" width="550" height="550"></canvas>
             </div>
 
         </article>
-        <article id="PIP" class="picture-in-picture">
 
-            <canvas class="drawing-canvas" id="panZoomCanvas" width="10" height="10"></canvas>
+        <article id="PIP" class="picture-in-picture" style="width:210px; height:160px">
+            <canvas id="panZoomCanvas" class="pan-zoom-canvas" width="200" height="150"></canvas>
         </article>
     </section>
 
@@ -191,8 +189,6 @@
         </div>
 
     </section>
-
-
 
     <aside id="verticalMenu" class="vertical-menu">
         <div id="menuNotes" class="btn-group-vertical dropdown vertical-menu-group" ng-controller="contentMenu as menu">
@@ -314,7 +310,7 @@
     <script type="text/javascript" src="Knowt/KnowtViewNgDialog.js"></script>
 
 
-    <script type="text/javascript" src="Knowt/KnowtViewLayout.js"></script>
+    <!--<script type="text/javascript" src="Knowt/KnowtViewLayout.js"></script>-->
 
     <script type="text/javascript" src="Knowt/KnowtViewStencil.js"></script>
     <script type="text/javascript" src="Knowt/KnowtViewStencilAnimals.js"></script>
@@ -329,6 +325,78 @@
     <script type="text/javascript" src="Knowt/KnowtViewNoteCanvasView.js"></script>
     <script type="text/javascript" src="Knowt/KnowtViewNoteTreeView.js"></script>
     <script type="text/javascript" src="Knowt/KnowtViewKeyEvents.js"></script>
+
+    <script>
+
+        (function (fo) {
+
+            var result = {};
+
+            result.onScreenResize = function () {
+                result.innerWidth = window.innerWidth;
+                result.innerHeight = window.innerHeight;
+
+                //fit the drawing canvas inside the container
+
+                var appHeader = window.document.getElementById('appHeader');
+                var appHeaderStyle = window.getComputedStyle(appHeader);
+
+                var appContent = window.document.getElementById('appContent');
+                var contentTop = parseInt(appHeaderStyle.getPropertyValue("height"));
+
+                var verticalMenu = window.document.getElementById('verticalMenu');
+
+                $(appContent).css("top", contentTop + 'px');
+                $(verticalMenu).css("top", contentTop + 'px');
+
+                var mainContent = window.document.getElementById('mainContent');
+                var appFooter = window.document.getElementById('appFooter');
+
+                var diagramContainer = window.document.getElementById('diagramContainer');
+                var diagramContainerStyle = window.getComputedStyle(diagramContainer);
+
+                var diagramContainerNavigation = window.document.getElementById('diagramContainerNavigation');
+                var diagramContainerNavigationStyle = window.getComputedStyle(diagramContainerNavigation);
+
+                var diagramCanvas = window.document.getElementById('diagramCanvas');
+                var diagramCanvasStyle = window.getComputedStyle(diagramCanvas);
+
+
+                var width = parseInt(diagramContainerStyle.getPropertyValue("width"));
+                diagramCanvas.width = width;
+
+                var top = parseInt(diagramContainerNavigationStyle.getPropertyValue("height"));
+                $(diagramCanvas).css("top", top + 'px');
+
+
+                var height = parseInt(diagramContainerStyle.getPropertyValue("height"));
+                diagramCanvas.height = height - top;
+
+                fo.publish('canvasResize', [diagramCanvas, diagramCanvas.width, diagramCanvas.height]);
+
+                //var pip = window.document.getElementById('PIP');
+                //var pipLeft = width / 2;
+                //var pipTop = 0.6 * diagramCanvas.height;
+                //$(pip).css("left", pipLeft + 'px');
+                //$(pip).css("top", pipTop + 'px');
+            }
+
+            result.autoResize = function (on) {
+                if (on) window.addEventListener('resize', result.onScreenResize, false);
+                if (!on) window.removeEventListener('resize', result.onScreenResize, false);
+                if (on) {
+                    setTimeout(result.onScreenResize, 200);
+                }
+            }
+
+            result.autoResize(true);
+            return result;
+
+
+        }(Foundry));
+
+    </script>
+
 
 </body>
 </html>

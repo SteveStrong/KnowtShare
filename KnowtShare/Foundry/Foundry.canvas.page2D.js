@@ -182,7 +182,7 @@ Foundry.canvas = Foundry.canvas || {};
             subshape.render(rootStage || this.geom, context);
         });
 
-        fo.publish('refreshPanZoom', []);
+        this.updatePIP();
     };
 
 
@@ -392,15 +392,15 @@ Foundry.canvas = Foundry.canvas || {};
 
     Page2DCanvas.prototype.setPIPSize = function (width, height, element) {
         var page = this;
-        if (this.canvas && page.PIP) {
-            fo.publish('sizePanZoom', [page.PIP, page, width, height, element]);
+        if (this.canvas && page.getPIP()) {
+            fo.publish('sizePanZoom', [page.getPIP(), page, width, height, element]);
         }
     }
 
     Page2DCanvas.prototype.setPIPPosition = function (width, height, element) {
         var page = this;
-        if (this.canvas && page.PIP) {
-            fo.publish('positionPanZoom', [page.PIP, page, width, height, element]);
+        if (this.canvas && page.getPIP()) {
+            fo.publish('positionPanZoom', [page.getPIP(), page, width, height, element]);
         }
     }
 
@@ -411,24 +411,26 @@ Foundry.canvas = Foundry.canvas || {};
         geom.scaleX = geom.scaleY = 0;
         geom.rotation = -45;
 
+        var page = this;
         geom.visible = true;
 
         shape.MorphTo(geom, { scaleY: 1.0, scaleX: 1.0, rotation: 0 }, 200, create.Ease.linear, function () {  //backInOut
             geom.scaleY =  geom.scaleX = 1.0;
             geom.rotation = 0;
-            fo.publish('refreshPanZoom', []);
+            page.updatePIP();
         });
     }
 
     Page2DCanvas.prototype.farewellShape = function (shape, callback) {
         this.selectShape(undefined, true);
 
+        var page = this;
         var geom = shape.geom;
 
         shape.MorphTo(geom, { scaleY: 0, scaleX: 0, rotation: 45 }, 200, create.Ease.linear, function () {  //backInOut
             geom.visible = false;
             callback && callback();
-            fo.publish('refreshPanZoom', []);
+            page.updatePIP();
         });
     }
 

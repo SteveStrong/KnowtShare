@@ -234,6 +234,7 @@
     <Content Include="Knowtify.html" />
     <Content Include="KnowtPad.html" />
     <Content Include="KnowtTaker.html" />
+    <Content Include="KnowtViewLayout.html" />
     <Content Include="KnowtView.Dialogs.html" />
     <Content Include="KnowtView.html" />
     <Content Include="Knowt\KnowtChirpApp.js" />
