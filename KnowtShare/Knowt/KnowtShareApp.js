@@ -60,9 +60,6 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
                 //pop some toast to
                 fo.publish('info', [ 'connected to service', 'ready']);
                 // workspaceService.serverLogin(shapeHub);
-
-
-
             });
         }
         else {
@@ -178,6 +175,10 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             workspace.rootPage.forceLayout();
             workspace.doSessionSave();
 
+            $scope.safeApply();
+        });
+
+        fo.subscribeComplete('workspaceSessionRestored', function () {
             $scope.safeApply();
         });
 

@@ -24,9 +24,6 @@
     <link href="content/toastr.min.css" rel="stylesheet" />
 
     <link href="css/noteDiagram.css" rel="stylesheet" />
-
-
-
 </head>
 
 
@@ -120,8 +117,8 @@
             </section>
         </article>
 
-        <article id="PIP" class="pictureInPicture">
-            <canvas class="drawing-canvas" id="panZoomCanvas" width="10" height="10"></canvas>
+        <article id="PIP" class="picture-in-picture">
+            <canvas id="panZoomCanvas" class="pan-zoom-canvas" width="10" height="10"></canvas>
         </article>
 
 
@@ -146,7 +143,11 @@
 
 
     <script type="text/javascript" src="http://foundryjs.azurewebsites.net/bundles/EaselJS"></script>
-    <script type="text/javascript" src="http://foundryjs.azurewebsites.net/Foundry/FoundryComplete.js"></script>
+    <!--<script type="text/javascript" src="http://foundryjs.azurewebsites.net/Foundry/FoundryComplete.js"></script>-->
+    <script type="text/javascript" src="Foundry/FoundryComplete.js"></script>
+    <script src="Foundry/Foundry.canvas.page2D.js"></script>
+    <script src="Foundry/Foundry.canvas.document.js"></script>
+    <script src="Foundry/Foundry.canvas.panzoom.js"></script>
 
     <script type="text/javascript" src="Knowt/KnowtPadApp.js"></script>
 

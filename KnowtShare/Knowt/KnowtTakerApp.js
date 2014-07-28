@@ -116,7 +116,9 @@ knowtApp.header = { title: 'Knowt Taker', help: 'knowtshareHelp.html' };
         });
 
 
-
+        fo.subscribeComplete('workspaceSessionRestored', function () {
+            $scope.safeApply();
+        });
 
         var rootModel = space.rootModel;
         rootModel.doTest = function () {

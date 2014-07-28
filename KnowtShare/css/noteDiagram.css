@@ -13,6 +13,22 @@ li {
     margin-left: -6px;
 }
 
+.left-side, .right-side {
+    position: absolute;
+    overflow: hidden;
+}
+
+.left-side {
+    left: 0;
+    width: 600px; /*equals earth left*/
+}
+
+.right-side {
+    left: 600px; /*equals filter-sort and list width*/
+    right: 0px;
+}
+
+
 /*http://css-tricks.com/a-couple-of-use-cases-for-calc/*/
 
 .app-content {
@@ -67,8 +83,10 @@ li {
 .picture-in-picture {
     position: absolute;
     background-color: orange;
-    left: 500px;
-    top: 300px;
+    left: calc(80%);
+    top: calc(70%);
+    height: calc(30%);
+    width: calc(30%);
     border: 1px solid black;
 }
 
