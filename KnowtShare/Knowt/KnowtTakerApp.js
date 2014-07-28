@@ -14,6 +14,8 @@ knowtApp.header = { title: 'Knowt Taker', help: 'knowtshareHelp.html' };
         return id;
     }
 
+
+
 }(knowtApp, Foundry));
 
 
@@ -31,6 +33,22 @@ knowtApp.header = { title: 'Knowt Taker', help: 'knowtshareHelp.html' };
         toastr.options = {
             positionClass: "toast-bottom-left",
         }
+
+        fo.subscribe('info', function (a, b) {
+            toastr.info(a, b);
+        });
+
+        fo.subscribe('warning', function (a, b) {
+            toastr.warning(a, b);
+        });
+
+        fo.subscribe('error', function (a, b) {
+            toastr.error(a, b);
+        });
+
+        fo.subscribe('success', function (a, b) {
+            toastr.success(a, b);
+        });
 
         //load templares for tialogs and shapes...
         fo.utils.loadTemplate('KnowtView.Dialogs.html');
@@ -85,6 +103,10 @@ knowtApp.header = { title: 'Knowt Taker', help: 'knowtshareHelp.html' };
             return space;
         };
 
+        this.activeWorkSpace = function () {
+            if (!space) throw new Error('Workspace is not initialized');
+            return space;
+        }
 
     }]);
 
@@ -111,8 +133,7 @@ knowtApp.header = { title: 'Knowt Taker', help: 'knowtshareHelp.html' };
         var space = workspaceService.workSpace({
             factory: fo.knowtTakerApp,
             dialogService: dialogService,
-            hasSelection: function () { return false; },
-            currentNote: function () { },
+            stencil: fo.KnowtShare,
         });
 
 
@@ -121,20 +142,7 @@ knowtApp.header = { title: 'Knowt Taker', help: 'knowtshareHelp.html' };
         });
 
         var rootModel = space.rootModel;
-        rootModel.doTest = function () {
-            dialogService.doPopupDialog({
-                //headerTemplate: 'ClearAllHeader.html',
-                bodyTemplate: 'ClearAllBody.html',
-                //footerTemplate: 'ClearAllFooter.html',
-            });
-        }
-
-        rootModel.deleteNote = function (note) {
-            note.isSelected = false;
-            note.removeFromModel();
-            rootModel.smashProperty('hasSelection');
-            rootModel.smashProperty('currentNote');
-        }
+ 
 
         //root model should be designed to manage what item is selected
         $scope.toggleSelection = function (note) {
@@ -163,17 +171,39 @@ knowtApp.header = { title: 'Knowt Taker', help: 'knowtshareHelp.html' };
         $scope.notes = rootModel.Subcomponents.elements;
 
 
-        $scope.vm = fo.knowtTakerApp.newMenuContent({}, space);
-
-        fo.subscribe('info', function(a,b){
-            toastr.info(a,b);
-        });
 
         //fo.subscribeComplete('noteAdded', function (note) {
         //    //$scope.safeApply();
         //});
 
         return space;
+    });
+
+}(knowtApp, Foundry));
+
+//now create the noteMenu controller
+(function (app, fo, undefined) {
+
+    app.controller('contentMenu', function ($log, workspaceService, dialogService) {
+        var space = workspaceService.activeWorkSpace();
+
+        if (!space.contentMenu) {
+            var menu = space.contentMenu = space.factory.newMenuContent({}, space);
+
+            menu.animals = space.factory.newStencilAnimalNotes({}, menu);
+
+            fo.subscribe('doubleClick', function (shape, context, action) {
+                if (context.hasNoteUri && space.keyPressedState && space.keyPressedState.CTRLKEY) {
+                    window.open(context.noteUri, "_blank");
+                }
+                else {
+                    space.contentMenu.openEdit(context);
+                }
+                shape.doUpdate();
+            });
+
+        }
+        return space.contentMenu;
     });
 
 }(knowtApp, Foundry));

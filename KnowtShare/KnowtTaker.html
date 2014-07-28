@@ -54,15 +54,17 @@
 
 
     <section id="appContent" class="appContent">
-        <article id="mainContent" class="mainContent">
-            <button class="btn btn-success" ng-click="vm.doAddNote">Add Note</button>
-            <button class="btn btn-danger" ng-disabled="!vm.canDoDelete" ng-click="vm.doConfirmDelete">Delete Note</button>
-            <button class="btn btn-info" ng-disabled="!vm.canOpenSelected" ng-click="vm.doOpenSelected">Edit Note</button>
-            <button class="btn btn-default" ng-click="vm.doSave">Save</button>
-            <button class="btn btn-default" ng-click="vm.doConfirmClear">Clear</button>
-            <button class="btn btn-default" ng-click="vm.doRestore">Restore</button>
-            <button class="btn btn-default" ng-click="space.rootModel.doTest()">dialog test</button>
+        <article id="mainContent" class="mainContent" ng-controller="contentMenu as menu">
+            <button class="btn btn-success" ng-click="menu.doAddNote">Add Note</button>
+            <button class="btn btn-danger" ng-disabled="!menu.canDoDelete" ng-click="menu.doConfirmDelete">Delete Note</button>
+            <button class="btn btn-info" ng-disabled="!menu.canOpenSelected" ng-click="menu.doOpenSelected">Edit Note</button>
+            <button class="btn btn-default" ng-click="menu.doConfirmClear">Clear</button>
+            <div>
+                <button class="btn btn-default" ng-click="space.doSave">Save Session</button>
+                <button class="btn btn-default" ng-click="space.doRestore">Restore Session</button>
+            </div>
         </article>
+
         <h1>notes</h1>
         <div class="note-wrapper">
             <div ng-repeat="context in notes" ng-class="{isSelected: context.isSelected}" ng-click="markSelected(context)">
