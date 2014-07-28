@@ -156,8 +156,7 @@ Foundry.createjs = this.createjs || {};
             page.setCanvasHeight(h);
 
             drawing.panZoom && page.setPIPSize(drawing.viewWidth, drawing.viewHeight, drawing.panZoomElement);
-
-            //drawing.pipElement && page.setPIPPosition(drawing.screenWidth, drawing.screenHeight, drawing.pipElement);
+            drawing.pipElement && page.setPIPPosition(drawing.screenWidth, drawing.screenHeight, drawing.pipElement);
         });
     };
 

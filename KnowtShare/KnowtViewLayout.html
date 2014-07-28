@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<!--http://www.html5rocks.com/en/mobile/touch/-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+
+<html ng-app="knowtShareApp" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+    <title>KnowtShare: Session</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <meta name="description" content="knowtshare: collaborative modeling " />
+    <meta name="author" content="Apprentice Systems" />
+
+    <meta name="application-name" content="knowtshare" />
+    <meta name="msapplication-TileColor" content="#a63fa6" />
+    <meta name="msapplication-square70x70logo" content="images/KnowtShareBadge.png" />
+    <meta name="msapplication-square150x150logo" content="images/KnowtShareLogo.png" />
+    <meta name="msapplication-wide310x150logo" content="images/KnowtShareWideLogo.png" />
+    <meta name="msapplication-square310x310logo" content="images/KnowtShareWideLogo.png" />
+
+
+    <link href="content/bootstrap.min.css" rel="stylesheet" />
+    <link href="content/toastr.min.css" rel="stylesheet" />
+
+    <link href="css/noteDiagram.css" rel="stylesheet" />
+
+
+    <!--    http://stackoverflow.com/questions/15626952/twitter-bootstrap-and-canvas-positioning  -->
+
+</head>
+
+
+<body ng-cloak ng-controller="workSpace as space" style="overflow-y:hidden">
+
+    <header id="appHeader" class="app-header">
+        <div>
+            <span class="label label-info " style="margin-left:10px">doc: {{space.documentName}}</span>
+            <span class="label label-info " style="margin-left:1px">ext: {{space.documentExt}}</span>
+            <span class="label label-info " style="margin-left:1px">doc title: {{space.documentTitle}}</span>
+        </div>
+        <nav>
+            <h1 class="label label-info " style="margin-left:10px">{{space.clientCount}}</h1>
+            <span class="label label-success " ng-show="space.hasSessionKey">{{space.traffic}}</span>
+            <img ng-click="space.updateAllViews()" id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
+            <span style="margin-right:10px">{{space.documentTitle}}</span>
+            <span style="margin-right:10px">{{space.sessionTitle}}</span>
+            <span style="margin-right:10px">{{space.clientMode}}</span>
+
+            <span style="margin-right:10px">:{{space.sessionKey}}</span>
+            <span style="margin-right:10px">:{{space.userId}}</span>
+            <span style="margin-right:10px">:{{space.userNickName}}</span>
+
+        </nav>
+    </header>
+
+    <section id="appContent" class="app-content">
+
+        <article id="mainContent" class="main-content">
+
+            <!--<div id="textContainer" class="text-container" ng-show="space.viewMenu.isTextView" ng-controller="noteTreeView as viewModel">
+                <ul  id="textContainerNavigation" class="breadcrumb">
+                    <li ng-repeat="crumb in viewModel.selectionPath">
+                        <a class="btn btn-link " ng-click="viewModel.doPinAsRoot(crumb)">{{crumb.context ? crumb.context.headerText : crumb.myName}}</a>
+                    </li>
+                </ul>
+
+                <div id="textCanvas" class="text-canvas">
+                    <ul>
+                        <li ng-repeat="shape in viewModel.shapeElements" ng-include=" 'shapeTreeItem.html' "></li>
+                    </ul>
+                </div>
+            </div>
+                -->
+
+
+            <div id="diagramContainer" class="diagram-container" ng-show="space.viewMenu.isDrawingView" ng-controller="noteCanvasView as vm">
+                <div id="diagramContainerNavigation"  >
+                    <button class="btn btn-success " ng-repeat="page in viewModel.pages" ng-click="viewModel.gotoPage(page)">
+                        {{page.context ? page.context.headerText : page.myName}}
+                    </button>
+                </div>
+                <canvas id="diagramCanvas" class="diagram-canvas" width="950" height="350"></canvas>
+            </div>
+
+        </article>
+        <article id="PIP" class="picture-in-picture" style="width:210px; height:160px">
+            <canvas id="panZoomCanvas" class="pan-zoom-canvas" width="200" height="150"></canvas>
+        </article>
+    </section>
+
+    <footer id="appFooter" class="app-footer"></footer>
+    <script src="Scripts/jquery-2.1.1.min.js"></script>
+    <script>
+
+        (function (fo) {
+
+            var result = {};
+
+            result.onScreenResize = function () {
+                result.innerWidth = window.innerWidth;
+                result.innerHeight = window.innerHeight;
+
+                //fit the drawing canvas inside the container
+
+                var diagramContainer = window.document.getElementById('diagramContainer');
+                var diagramContainerStyle = window.getComputedStyle(diagramContainer);
+
+                var diagramContainerNavigation = window.document.getElementById('diagramContainerNavigation');
+                var diagramContainerNavigationStyle = window.getComputedStyle(diagramContainerNavigation);
+
+                var diagramCanvas = window.document.getElementById('diagramCanvas');
+                var diagramCanvasStyle = window.getComputedStyle(diagramCanvas);
+
+
+                var width = parseInt(diagramContainerStyle.getPropertyValue("width"));
+                diagramCanvas.width = width;
+
+                var top = parseInt(diagramContainerNavigationStyle.getPropertyValue("height")) / 2;
+                $(diagramCanvas).css("top", top + 'px');
+                //diagramCanvas.style.top = 5;
+                //diagramCanvas.style.setProperty('top', isNaN(top) ? 0 : top / 2);
+               //diagramCanvasStyle.setProperty('top', 5);
+
+                var height = parseInt(diagramContainerStyle.getPropertyValue("height"));
+                diagramCanvas.height = height - top;
+
+
+                var pip = window.document.getElementById('PIP');
+                var pipLeft = width / 2;
+                var pipTop = 0.3 * diagramCanvas.height;
+                $(pip).css("left", pipLeft + 'px');
+                $(pip).css("top", pipTop + 'px');
+            }
+
+            result.autoResize = function (on) {
+                if (on) window.addEventListener('resize', result.onScreenResize, false);
+                if (!on) window.removeEventListener('resize', result.onScreenResize, false);
+                if (on) {
+                    setTimeout(result.onScreenResize, 200);
+                }
+            }
+
+            result.autoResize(true);
+            return result;
+
+            
+        }({}));
+
+    </script>
+
+</body>
+</html>

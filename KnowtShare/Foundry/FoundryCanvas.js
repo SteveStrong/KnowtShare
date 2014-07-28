@@ -11712,7 +11712,7 @@ Foundry.canvas = Foundry.canvas || {};
 
         if (fo.digestLockCount == 0) {
             this.updateStage();
-            fo.publish('updatePanZoom', []);
+            //fo.publish('updatePanZoom', []);
         }
     }
 
@@ -11724,7 +11724,7 @@ Foundry.canvas = Foundry.canvas || {};
 
         if (fo.digestLockCount == 0) {
             shape.updateStage();
-            fo.publish('updatePanZoom', []);
+            //fo.publish('updatePanZoom', []);
         }
         return oldParent;
     }
@@ -12182,7 +12182,7 @@ Foundry.canvas = Foundry.canvas || {};
             subshape.render(rootStage || this.geom, context);
         });
 
-        this.updatePIP();
+        //this.updatePIP();
     };
 
 
@@ -12382,7 +12382,6 @@ Foundry.canvas = Foundry.canvas || {};
         page.updatePIP = function () {
             fo.publish('updatePanZoom', [page.pictureInPicture, page]);
         }
-        page.updatePIP();
         return page.pictureInPicture;
     }
 
@@ -12607,7 +12606,7 @@ Foundry.canvas = Foundry.canvas || {};
 
 
     Page2DCanvas.prototype.selectShapeHitTest = function (gX, gY) {
-        var elements = this.selectionSet.elements
+        var elements = this.selectionSet.elements;
         for (var i = 0; i < elements.length; i++) {
             var subShape = elements[i];
             if (subShape.myParent != this) continue;
@@ -12773,10 +12772,25 @@ Foundry.canvas = Foundry.canvas || {};
         var isPullingCount = 0;
         var isPullingStart = 10;
         var isPullingMAX = 18;
+        var panOffset = { x: 0, y: 0 };
 
         page.allowSingleTouchPan = false;
         page.publishTouchBoxingEvents = false;
-        var panOffset = { x: 0, y: 0 };
+
+
+        if (stage && stage.addEventListener) {
+            stage.addEventListener("stagemousedown", onMouseDownState, false);
+            stage.addEventListener("stagemousemove", onMouseMoveState, false);
+            stage.addEventListener("stagemouseup", onMouseUpState, false);
+
+            stage.addEventListener("dblclick", onStageDoubleClick, false);
+        }
+
+
+        if (canvas && canvas.addEventListener && this.canDoWheelZoom) {
+            canvas.addEventListener("mousewheel", mouseWheelHandler, false);
+            canvas.addEventListener("DOMMouseScroll", mouseWheelHandler, false);
+        }
 
         function makeBox(s, f) {
             var box = {
@@ -13196,19 +13210,7 @@ Foundry.canvas = Foundry.canvas || {};
             }
         }
 
-        if (stage && stage.addEventListener) {
-            stage.addEventListener("stagemousedown", onMouseDownState, false);
-            stage.addEventListener("stagemousemove", onMouseMoveState, false);
-            stage.addEventListener("stagemouseup", onMouseUpState, false);
 
-            stage.addEventListener("dblclick", onStageDoubleClick, false);
-        }
-
-
-        if (canvas && canvas.addEventListener && this.canDoWheelZoom) {
-            canvas.addEventListener("mousewheel", mouseWheelHandler, false);
-            canvas.addEventListener("DOMMouseScroll", mouseWheelHandler, false);
-        }
 
         //http://stackoverflow.com/questions/5189968/zoom-canvas-to-mouse-cursor
 
@@ -14352,6 +14354,15 @@ Foundry.createjs = this.createjs || {};
 
     var PanAndZoomWindow = function (properties, subcomponents, parent) {
 
+        //define a hit testable object to render and represent the true drawing size
+        var viewWindowSpec = {
+            geom: function () {
+                var geom = new createjs.Shape();
+                geom.alpha = .3;
+                return geom;
+            },
+        }
+
         var panAndZoomSpec = {
             percentMargin: -0.02,
             percentSize: .25,
@@ -14361,9 +14372,13 @@ Foundry.createjs = this.createjs || {};
                 var result = new createjs.Shape();
                 return result;
             },
+            viewWindowShape: function () {
+                var result = ns.makeShape(viewWindowSpec, {}, this);
+                this.addSubcomponent(result);
+                return result;
+            },
             viewWindowGeom: function () {
-                var geom = new createjs.Shape();
-                geom.alpha = .3;
+                var geom = this.viewWindowShape.geom;
                 return geom;
             },
         };
@@ -14395,7 +14410,7 @@ Foundry.createjs = this.createjs || {};
             if (self && self != pzSelf) return;
             if (selfParent && selfParent != pzSelfParent) return;
 
-            fo.publish('warning', ['updatePanZoom']);
+            //fo.publish('warning', ['updatePanZoom']);
             pzSelf.draw(pzSelfParent, 'green');
         });
 
@@ -14406,7 +14421,7 @@ Foundry.createjs = this.createjs || {};
         });
 
         fo.subscribe('ShapeMoved', function (uniqueID, model, shape) {
-            fo.publish('info', ['ShapeMoved']);
+            //fo.publish('info', ['ShapeMoved']);
             pzSelf.draw(pzSelfParent, 'black');
         });
 
@@ -14422,19 +14437,22 @@ Foundry.createjs = this.createjs || {};
             });
         });
 
-        //fo.subscribe('positionPanZoom', function (self, selfParent, width, height, element) {
-        //    if (self && self != pzSelf) return;
-        //    if (selfParent && selfParent != pzSelfParent) return;
+        fo.subscribe('positionPanZoom', function (self, selfParent, width, height, element) {
+            if (self && self != pzSelf) return;
+            if (selfParent && selfParent != pzSelfParent) return;
 
-        //    fo.publish('info', ['positionPanZoom']);
-        //    element.style.left = width - ((width * pzSelf.percentMargin) + pzSelf.canvasWidth) + 'px';
-        //    element.style.top = height + 30 - ((height * pzSelf.percentMargin) + pzSelf.canvasHeight) + 'px';
-        //});
+           // fo.publish('info', ['positionPanZoom']);
+            //element.style.left = width - ((width * pzSelf.percentMargin) + pzSelf.canvasWidth) + 'px';
+            //element.style.top = height + 30 - ((height * pzSelf.percentMargin) + pzSelf.canvasHeight) + 'px';
+            element.style.width = 10 + (width * pzSelf.percentSize) + 'px';
+            element.style.height = 10 + (height * pzSelf.percentSize) + 'px';
+        });
 
 
-
+        //this is used to move the small redish window that pans the drawing surface
         fo.subscribe('ShapeMoving', function (page, shape, ev) {
-            if (page && page != pzSelfParent) return;
+            if (page && page != pzSelf) return;
+            if (shape && shape != pzSelf.viewWindowShape) return;
 
             var viewWindowGeom = pzSelf.viewWindowGeom;
 
@@ -14486,7 +14504,7 @@ Foundry.createjs = this.createjs || {};
             g.endFill();
         }
 
-
+        var viewWindowShape = pzSelf.viewWindowShape;
         var viewWindowGeom = pzSelf.viewWindowGeom;
         pzSelf.establishChild(viewWindowGeom);
 
@@ -14495,7 +14513,11 @@ Foundry.createjs = this.createjs || {};
         var pinX = page.panX / scale;
         var pinY = page.panY / scale;
         var width  = page.canvasWidth / scale;
-        var height  = page.canvasHeight / scale;
+        var height = page.canvasHeight / scale;
+
+        viewWindowShape.width = width;
+        viewWindowShape.height = height;
+
         viewWindowGeom.x = -pinX;
         viewWindowGeom.y = -pinY;
 
@@ -14508,10 +14530,6 @@ Foundry.createjs = this.createjs || {};
 
         stage.update();
     };
-
-
-
- 
 
 
     PanAndZoomWindow.prototype.computeViewPortOffset = function (x, y) {
@@ -14726,8 +14744,7 @@ Foundry.createjs = this.createjs || {};
             page.setCanvasHeight(h);
 
             drawing.panZoom && page.setPIPSize(drawing.viewWidth, drawing.viewHeight, drawing.panZoomElement);
-
-            //drawing.pipElement && page.setPIPPosition(drawing.screenWidth, drawing.screenHeight, drawing.pipElement);
+            drawing.pipElement && page.setPIPPosition(drawing.screenWidth, drawing.screenHeight, drawing.pipElement);
         });
     };
 

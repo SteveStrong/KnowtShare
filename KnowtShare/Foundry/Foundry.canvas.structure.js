@@ -57,7 +57,7 @@ Foundry.canvas = Foundry.canvas || {};
 
         if (fo.digestLockCount == 0) {
             this.updateStage();
-            fo.publish('updatePanZoom', []);
+            //fo.publish('updatePanZoom', []);
         }
     }
 
@@ -69,7 +69,7 @@ Foundry.canvas = Foundry.canvas || {};
 
         if (fo.digestLockCount == 0) {
             shape.updateStage();
-            fo.publish('updatePanZoom', []);
+            //fo.publish('updatePanZoom', []);
         }
         return oldParent;
     }

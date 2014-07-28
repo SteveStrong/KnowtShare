@@ -182,7 +182,7 @@ Foundry.canvas = Foundry.canvas || {};
             subshape.render(rootStage || this.geom, context);
         });
 
-        this.updatePIP();
+        //this.updatePIP();
     };
 
 
@@ -382,7 +382,6 @@ Foundry.canvas = Foundry.canvas || {};
         page.updatePIP = function () {
             fo.publish('updatePanZoom', [page.pictureInPicture, page]);
         }
-        page.updatePIP();
         return page.pictureInPicture;
     }
 
@@ -607,7 +606,7 @@ Foundry.canvas = Foundry.canvas || {};
 
 
     Page2DCanvas.prototype.selectShapeHitTest = function (gX, gY) {
-        var elements = this.selectionSet.elements
+        var elements = this.selectionSet.elements;
         for (var i = 0; i < elements.length; i++) {
             var subShape = elements[i];
             if (subShape.myParent != this) continue;
@@ -773,10 +772,25 @@ Foundry.canvas = Foundry.canvas || {};
         var isPullingCount = 0;
         var isPullingStart = 10;
         var isPullingMAX = 18;
+        var panOffset = { x: 0, y: 0 };
 
         page.allowSingleTouchPan = false;
         page.publishTouchBoxingEvents = false;
-        var panOffset = { x: 0, y: 0 };
+
+
+        if (stage && stage.addEventListener) {
+            stage.addEventListener("stagemousedown", onMouseDownState, false);
+            stage.addEventListener("stagemousemove", onMouseMoveState, false);
+            stage.addEventListener("stagemouseup", onMouseUpState, false);
+
+            stage.addEventListener("dblclick", onStageDoubleClick, false);
+        }
+
+
+        if (canvas && canvas.addEventListener && this.canDoWheelZoom) {
+            canvas.addEventListener("mousewheel", mouseWheelHandler, false);
+            canvas.addEventListener("DOMMouseScroll", mouseWheelHandler, false);
+        }
 
         function makeBox(s, f) {
             var box = {
@@ -1196,19 +1210,7 @@ Foundry.canvas = Foundry.canvas || {};
             }
         }
 
-        if (stage && stage.addEventListener) {
-            stage.addEventListener("stagemousedown", onMouseDownState, false);
-            stage.addEventListener("stagemousemove", onMouseMoveState, false);
-            stage.addEventListener("stagemouseup", onMouseUpState, false);
 
-            stage.addEventListener("dblclick", onStageDoubleClick, false);
-        }
-
-
-        if (canvas && canvas.addEventListener && this.canDoWheelZoom) {
-            canvas.addEventListener("mousewheel", mouseWheelHandler, false);
-            canvas.addEventListener("DOMMouseScroll", mouseWheelHandler, false);
-        }
 
         //http://stackoverflow.com/questions/5189968/zoom-canvas-to-mouse-cursor
 
