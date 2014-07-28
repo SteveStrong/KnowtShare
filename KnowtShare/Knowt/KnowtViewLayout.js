@@ -3,122 +3,68 @@
 
 (function (app, fo, undefined) {
 
-    var $appHeader = $('#appHeader');
-    var $appFooter = $('#appFooter');
-    var $verticalMenu = $('#verticalMenu');
-    var $horizontalMenu = $('#horizontalMenu');
-    var $pictureContainer = $('#pictureContainer');
-    var $textContainer = $('#textContainer');
-    var $textCanvas = $('#textCanvas');
+    var result = {};
+
+    result.onScreenResize = function () {
+        result.innerWidth = window.innerWidth;
+        result.innerHeight = window.innerHeight;
+
+        //fit the drawing canvas inside the container
+
+        var appHeader = window.document.getElementById('appHeader');
+        var appHeaderStyle = window.getComputedStyle(appHeader);
+
+        var appContent = window.document.getElementById('appContent');
+        var contentTop = parseInt(appHeaderStyle.getPropertyValue("height"));
+
+        var verticalMenu = window.document.getElementById('verticalMenu');
+
+        $(appContent).css("top", contentTop + 'px');
+        $(verticalMenu).css("top", contentTop + 'px');
+
+        var mainContent = window.document.getElementById('mainContent');
+        var appFooter = window.document.getElementById('appFooter');
+
+        var diagramContainer = window.document.getElementById('diagramContainer');
+        var diagramContainerStyle = window.getComputedStyle(diagramContainer);
+
+        var diagramContainerNavigation = window.document.getElementById('diagramContainerNavigation');
+        var diagramContainerNavigationStyle = window.getComputedStyle(diagramContainerNavigation);
+
+        var diagramCanvas = window.document.getElementById('diagramCanvas');
+        var diagramCanvasStyle = window.getComputedStyle(diagramCanvas);
 
 
-    var spec = {
-        isViewOnlySession: false,
-        innerWidth: window.innerWidth,
-        innerHeight: window.innerHeight,
-        margin: 5,
-        aspectRatio: function () {
-            return this.innerWidth / this.innerHeight;
-        },
-        headerHeight: function () {
-            return $appHeader.height();
-        },
-        footerHeight: function () {
-            return $appFooter.height();
-        },
-        canvasTop: function () {
-            return this.headerHeight + this.horizontalMenuHeight;
-        },
-        canvasLeft: function () {
-            return this.verticalMenuWidth + this.margin;
-        },
-        canvasWidth: function () {
-            return this.innerWidth - this.verticalMenuWidth - 2 * this.margin;
-        },
-        canvasHeight: function () {
-            return this.innerHeight - this.canvasTop - this.footerHeight - 2 * this.margin;
-        },
-        verticalMenuWidth: function () {
-            var result = $verticalMenu.width();
-            if (this.aspectRatio < 1 || this.isViewOnlySession) result = 0;
-            return result;
-        },
-        horizontalMenuHeight: function () {
-            var result = $horizontalMenu.height();
-            if (this.aspectRatio > 1 || this.isViewOnlySession) result = 0;
-            return result;
-        },
- 
+        var width = parseInt(diagramContainerStyle.getPropertyValue("width"));
+        diagramCanvas.width = width;
+
+        var top = parseInt(diagramContainerNavigationStyle.getPropertyValue("height"));
+        $(diagramCanvas).css("top", top + 'px');
+
+
+        var height = parseInt(diagramContainerStyle.getPropertyValue("height"));
+        diagramCanvas.height = height - top;
+
+        fo.publish('canvasResize', [diagramCanvas, diagramCanvas.width, diagramCanvas.height]);
+
+        var pip = window.document.getElementById('PIP');
+        var pipLeft = 0.6 * result.innerWidth
+        var pipTop = 0.6 * result.innerHeight;
+        $(pip).css("left", pipLeft + 'px');
+        $(pip).css("top", pipTop + 'px');
     }
 
-    fo.defineType(app.defaultNS('mainLayout'), spec, function (properties, subcomponents, parent) {
-        var result = fo.makeAdaptor(properties);
-
-        result.doResize = function () {
-            var top = 0;
-            var left = 0;
-            $appHeader.css("top", top + 'px');
-            $appHeader.css("left", left + 'px');
-
-
-            if (this.aspectRatio > 1) {
-                $verticalMenu.css("display", 'block');
-                $horizontalMenu.css("display", 'none');
-            }
-            else {
-                $verticalMenu.css("display", 'none');
-                $horizontalMenu.css("display", 'block');
-            }
-
-            if (this.isViewOnlySession) {
-                $verticalMenu.css("display", 'none');
-                $horizontalMenu.css("display", 'none');
-            }
-
-            $verticalMenu.css("top", this.canvasTop + 'px');
-            $verticalMenu.css("left", left + 'px');
-
-            $horizontalMenu.css("top", this.headerHeight + 'px');
-            $horizontalMenu.css("left", left + 'px');
-
-            $pictureContainer.css("top", this.canvasTop + 'px');
-            $pictureContainer.css("left", this.canvasLeft + 'px');
-
-            $textContainer.css("top", this.canvasTop + 'px');
-            $textContainer.css("left", this.canvasLeft + 'px');
-            $textContainer.css("width", this.canvasWidth + 'px');
-
-
-            $textCanvas.css("height", this.canvasHeight + 'px');
-
-            $appFooter.css("top", this.canvasTop + this.canvasHeight + 'px');
-            $appFooter.css("left", left + 'px');
+    result.autoResize = function (on) {
+        if (on) window.addEventListener('resize', result.onScreenResize, false);
+        if (!on) window.removeEventListener('resize', result.onScreenResize, false);
+        if (on) {
+            setTimeout(result.onScreenResize, 200);
         }
+    }
 
-        var drawing = result.drawing;
-        result.onScreenResize = function () {
-            result.innerWidth = window.innerWidth;
-            result.innerHeight = window.innerHeight;
+    result.autoResize(true);
 
-            drawing.setScreenSize(result.canvasWidth, result.canvasHeight);
-
-            result.doResize();
-        }
-
-        result.autoResize = function (on) {
-            if (on) window.addEventListener('resize', result.onScreenResize, false);
-            if (!on) window.removeEventListener('resize', result.onScreenResize, false);
-            if (on) {
-                setTimeout(result.onScreenResize, 200);
-            }
-        }
-
-        return result;
-    });
 
 }(knowtApp, Foundry));
 
-(function (app, fo, undefined) {
-
-}(knowtApp, Foundry));
 

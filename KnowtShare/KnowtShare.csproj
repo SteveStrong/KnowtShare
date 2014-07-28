@@ -242,6 +242,7 @@
     <Content Include="Knowt\KnowtPadApp.js" />
     <Content Include="Knowt\KnowtShareApp.js" />
     <Content Include="Knowt\KnowtTakerApp.js" />
+    <Content Include="Knowt\KnowtViewLayout - Copy.js" />
     <Content Include="Knowt\older\KnowtViewController.js" />
     <Content Include="Knowt\KnowtViewErrorReport.js" />
     <Content Include="Knowt\KnowtViewKeyEvents.js" />

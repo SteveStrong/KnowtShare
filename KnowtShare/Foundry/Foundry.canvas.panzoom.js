@@ -125,18 +125,23 @@ Foundry.createjs = this.createjs || {};
 
         //this is used to move the small redish window that pans the drawing surface
         fo.subscribe('ShapeMoving', function (page, shape, ev) {
-            if (page && page != pzSelf) return;
-            if (shape && shape != pzSelf.viewWindowShape) return;
-
-            var viewWindowGeom = pzSelf.viewWindowGeom;
+            if (!shape || !page) return;
 
             //adjust the pan on the page
-           // fo.publish('info', ['ShapeMoving']);
+            // fo.publish('info', ['ShapeMoving']);
 
-            var scale = page.scale;
-            var panX = viewWindowGeom.x * scale;
-            var panY = viewWindowGeom.y * scale;
-            page.setPanTo(-panX, -panY);
+            if (page == pzSelf && shape == pzSelf.viewWindowShape) {
+                var viewWindowGeom = pzSelf.viewWindowGeom;
+                var scale = page.scale;
+                var panX = viewWindowGeom.x * scale;
+                var panY = viewWindowGeom.y * scale;
+                page.setPanTo(-panX, -panY);
+            }
+            else {
+                pzSelf.draw(pzSelfParent, 'blue');
+            }
+
+
         });
 
 
