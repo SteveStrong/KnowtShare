@@ -98,7 +98,7 @@ namespace KnowtShare
         {
             await Groups.Add(Context.ConnectionId, sessionKey);
             Clients.OthersInGroup(sessionKey).authorReceiveJoinSessionFromPlayer(sessionKey, userId, payload);
-            Clients.Caller.confirmJoinSession(sessionKey, userId);
+            Clients.Caller.confirmCreateSession(sessionKey, userId);
         }
 
         public async Task PlayerJoinSession(string sessionKey, string userId, string payload)

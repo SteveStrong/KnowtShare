@@ -44,7 +44,7 @@
 
         fo.subscribeComplete('WorkspaceClear', function (space) {
             result.smashProperty('pinAsRootShape');
-            $scope.safeApply();
+            //$scope.safeApply();
         });
 
         result.selectShape = function (shape) {

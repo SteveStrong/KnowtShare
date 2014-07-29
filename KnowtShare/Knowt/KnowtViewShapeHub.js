@@ -11,9 +11,7 @@
             window.open(url, "_blank");
         }
 
-        //fo.subscribe('ShapeSelected', function (view, shape, selections) {
-        //    obj.smashProperty('hasSelection');
-        //});
+
 
         obj.doSayHello = function () {
             shapeHub.server.sayHello();
@@ -52,6 +50,41 @@
         /////////////////////////////////////////////////////////////////////////////////////////////////////
         /// session management //
         /////////////////////////////////////////////////////////////////////////////////////////////////////
+        obj.updateSessionTraffic = function (bytesOut, bytesIn) {
+            if (space.hasSessionKey) {
+                fo.publish('sessionTraffic', [bytesOut, bytesIn]);
+            }       
+        };
+
+        shapeHub.client.clientCountChanged = function (total) {
+            fo.publish('sessionClientCount', [total]);
+            fo.publish('client', ['clientCountChanged']);
+        }
+
+        obj.doCreateSession = function (session) {
+            if (space.hasSessionKey || !session) {
+                fo.publish('error', ['cannot create a new session']);
+                return
+            }
+            space.sessionKey = session;
+
+            var payload = space.currentModelToPayload();
+            shapeHub.server.playerCreateSession(space.sessionKey, space.userId, payload);
+        }
+
+        shapeHub.client.confirmCreateSession = function (sessionKey, userId) {
+            if (!space.matchesSession(sessionKey)) {
+                fo.publish('error', ['this session does not match key']);
+                return
+            }
+            if (space.matchesUser(userId)) {
+                //fo.publish('error', ['user cannot join their own session']);
+                return
+            }
+
+            fo.publish('success', ['confirmCreateSession']);
+            fo.publish('client', ['confirmCreateSession', sessionKey, userId]);
+        }
 
         obj.doJoinSession = function (session) {
             if (space.hasSessionKey || !session) {
@@ -61,6 +94,8 @@
             space.sessionKey = session;
 
             var payload = space.currentModelToPayload();
+            obj.updateSessionTraffic(payload.length,0);
+
             shapeHub.server.playerJoinSession(space.sessionKey, space.userId, payload);
         }
 
@@ -70,7 +105,7 @@
                 return
             }
             if (space.matchesUser(userId)) {
-                fo.publish('error', ['user cannot join their own session']);
+                //fo.publish('error', ['user cannot join their own session']);
                 return
             }
 
@@ -95,16 +130,18 @@
                 return
             }
             if (space.matchesUser(userId)) {
-                fo.publish('error', ['user cannot join their own session']);
+                //fo.publish('error', ['user cannot join their own session']);
                 return
             }
 
             fo.publish('info', ['authorReceiveJoinSessionFromPlayer']);
+            obj.updateSessionTraffic(0, payload ? payload.length: 0);
 
             space.payloadToCurrentModel(payload);
             fo.publish('client', ['authorReceiveJoinSessionFromPlayer', sessionKey, userId, payload]);
 
             var newPayload = space.currentModelToPayload();
+            obj.updateSessionTraffic(newPayload.length,0);
 
             fo.publish('success', ['authorSendJoinSessionModelToPlayers']);
             shapeHub.server.authorSendJoinSessionModelToPlayers(space.sessionKey, space.userId, newPayload);
@@ -112,29 +149,35 @@
 
         shapeHub.client.playerReceiveJoinSessionModel = function (sessionKey, userId, payload) {
             fo.publish('info', ['playerReceiveJoinSessionModel']);
+            obj.updateSessionTraffic(0, payload ? payload.length: 0);
 
             space.payloadToCurrentModel(payload);
             fo.publish('success', ['playerSendModelToAuthor']);
             fo.publish('client', ['playerSendModelToAuthor', sessionKey, userId, payload]);
 
             var newPayload = space.currentModelToPayload();
+            obj.updateSessionTraffic(newPayload.length,0);
+
             shapeHub.server.playerSendModelToAuthor(space.sessionKey, space.userId, '', newPayload);
         }
 
         shapeHub.client.authorReceiveModelFromPlayer = function (sessionKey, userId, playerId, payload) {
             fo.publish('info', ['authorReceiveModelFromPlayer']);
+            obj.updateSessionTraffic(0, payload ? payload.length: 0);
 
             space.payloadToCurrentModel(payload);
             fo.publish('success', ['authorSendModelToPlayers']);
             fo.publish('client', ['authorSendModelToPlayers', sessionKey, userId, playerId, payload]);
 
             var newPayload = space.currentModelToPayload();
+            obj.updateSessionTraffic(newPayload.length,0);
 
             shapeHub.server.authorSendModelToPlayers(space.sessionKey, space.userId, '', newPayload);
         }
 
         shapeHub.client.playersReceiveSynchronizedModelFromAuthor = function (sessionKey, userId, playerId, payload) {
             fo.publish('info', ['playersReceiveSynchronizedModelFromAuthor']);
+            obj.updateSessionTraffic(0, payload ? payload.length: 0);
 
             space.payloadToCurrentModel(payload);
             fo.publish('success', ['playersReceiveSynchronizedModelFromAuthor']);
@@ -153,12 +196,30 @@
                     model: note ? [note.dehydrate(false)] : note,
                 };
                 var newPayload = fo.stringifyPayload(spec);
+                obj.updateSessionTraffic(newPayload.length,0);
 
                 shapeHub.server.authorPayloadAdded(space.sessionKey, space.userId, newPayload);
             }
 
-            //$scope.$apply();
         }
+
+        obj.doAddPayload = function (model, uniqueID, shape) {
+            if (space.hasSessionKey) {
+
+                var spec = {
+                    uniqueID: uniqueID || model.myName,
+                    model: fo.utils.isManaged(model) ? [model.dehydrate(false)] : model,
+                    drawing: shape ? [shape.dehydrate(false, { isSelected: false, isActiveTarget: false, })] : [],
+                };
+                var newPayload = fo.stringifyPayload(spec);
+                obj.updateSessionTraffic(newPayload.length,0);
+
+                shapeHub.server.authorPayloadAdded(space.sessionKey, space.userId, newPayload);
+            }
+        }
+
+
+
 
         shapeHub.client.payloadAdded = function (sessionKey, userId, payload) {
             fo.publish('info', ['payloadAdded']);
@@ -167,6 +228,8 @@
                 if (!space.matchesSession(sessionKey)) {
                     return;
                 }
+                obj.updateSessionTraffic(0, payload ? payload.length: 0);
+
                 space.payloadToCurrentModel(payload);
                 fo.publish('client', ['payloadAdded', sessionKey, userId, payload]);
             } catch (e) {
@@ -184,14 +247,28 @@
                         model: item ? [item.dehydrate(false)] : item,
                     };
                     var newPayload = fo.stringifyPayload(spec);
+                    obj.updateSessionTraffic(newPayload.length,0);
+
                     shapeHub.server.authorPayloadDeleted(space.sessionKey, space.userId, newPayload);
                 }
                 //item.removeFromModel();
             });
-            //$scope.$apply();
         }
 
+       obj.doDeletePayload = function (model, uniqueID, shape) {
+           if (space.hasSessionKey) {
 
+               var spec = {
+                   uniqueID: uniqueID || model.myName,
+                   model: fo.utils.isManaged(model) ? [model.dehydrate(false)] : model,
+                   drawing: shape ? [shape.dehydrate(false, { isSelected: false, isActiveTarget: false, })] : [],
+               };
+               var newPayload = fo.stringifyPayload(spec);
+               obj.updateSessionTraffic(newPayload.length,0);
+
+               shapeHub.server.authorPayloadDeleted(space.sessionKey, space.userId, newPayload);
+           }
+       }
 
        shapeHub.client.payloadDeleted = function (sessionKey, userId, payload) {
            fo.publish('info', ['payloadDeleted']);
@@ -200,6 +277,8 @@
                 if (!space.matchesSession(sessionKey)) {
                     return;
                 }
+                obj.updateSessionTraffic(0, payload ? payload.length: 0);
+
                 var spec = fo.parsePayload(payload);
                 var uniqueID = spec.uniqueID;
                 var context = model.getSubcomponent(uniqueID, true);
@@ -227,6 +306,21 @@
 
                 var spec = note.dehydrate(false);
                 var newPayload = fo.stringifyPayload(spec);
+                obj.updateSessionTraffic(newPayload.length,0);
+
+                shapeHub.server.authorChangedModel(space.sessionKey, space.userId, newPayload);
+            }
+        }
+
+        obj.doUpdatePayload = function (model, uniqueID) {
+            if (space.hasSessionKey) {
+
+                var spec = {
+                    uniqueID: uniqueID || model.myName,
+                    model: fo.utils.isManaged(model) ? [model.dehydrate(false)] : model,
+                };
+                var newPayload = fo.stringifyPayload(spec);
+                obj.updateSessionTraffic(newPayload.length,0);
 
                 shapeHub.server.authorChangedModel(space.sessionKey, space.userId, newPayload);
             }
@@ -239,6 +333,8 @@
                 if (!space.matchesSession(sessionKey)) {
                     return;
                 }
+                obj.updateSessionTraffic(0, payload ? payload.length: 0);
+
                 var rootModel = space.rootModel;
 
                 var spec = fo.parsePayload(payload);
@@ -258,6 +354,7 @@
 
         fo.subscribe('Reparented', function (childID, oldParentID, newParentID) {
             if (space.hasSessionKey) {
+                obj.updateSessionTraffic(10,0);
                 shapeHub.server.authorReparentModelTo(space.sessionKey, childID, oldParentID, newParentID);
             };
         });
@@ -268,7 +365,7 @@
                 if (!space.matchesSession(sessionKey)) {
                     return;
                 }
-
+                obj.updateSessionTraffic(0, 10);
                 //parent id's can be null so you must assume root model or page
                 var rootModel = space.rootModel;
 

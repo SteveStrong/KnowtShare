@@ -14,6 +14,7 @@
 
         sessionKey: fo.fromParent,
         hasSessionKey: fo.fromParent,
+        proxy: undefined,
 
         knowtshareSessionUrl: function () {
             var loc = window.location;
@@ -45,8 +46,16 @@
         doStopSharing: function () {
             this.smashProperty('sessionKey');
         },
+
+        canDoJoinSession: function () {
+            return this.proxy != undefined;
+        },
         doJoinSession: function () {
             this.joinSessionDialog();
+        },
+
+        canDoCreateSession: function () {
+            return this.proxy != undefined;
         },
 
         doCreateSession: function () {
@@ -60,14 +69,13 @@
             this.createFriendInvitation();
         },
         canDoCollaborate: function () {
-            return this.hasUserId;
+            return this.proxy &&  this.hasUserId;
         },
 
         doCollaborate: function () {
-            var ctrl = this;
             var sessionKey = fo.utils.generateUUID();
-            if (ctrl.hasUserId) {
-                ctrl.sessionKey = sessionKey;
+            if (this.hasUserId) {
+                this.sessionKey = sessionKey;
             }
             this.createCollaborationList(function (links) {
                 links.forEach(function (link) {
@@ -83,6 +91,11 @@
         var obj = fo.makeComponent(properties, subcomponents, parent);
         //subscribe to any do* of goto* messages...
         obj.subscribeToCommands();
+
+
+        fo.subscribe('proxyStarted', function (proxy, hub) {
+            obj.proxy = proxy;
+        });
 
         obj.createSessionDialog = function (onComplete) {
 
@@ -106,7 +119,8 @@
             {
                 onExit: onComplete,
                 onOK: function ($modalInstance, context) {
-                    space.createSession(context.sessionKey, { presenter: context.presenter });
+
+                    obj.proxy.doCreateSession(context.sessionKey, { presenter: context.presenter });
                     $modalInstance.close(context);
                 },
             });
@@ -128,7 +142,7 @@
             {
                 onExit: onComplete,
                 onOK: function ($modalInstance, context) {
-                    space.joinSession(context.sessionKey);
+                    obj.proxy.doJoinSession(context.sessionKey);
                     $modalInstance.close(context);
                 },
             });

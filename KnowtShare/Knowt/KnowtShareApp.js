@@ -23,10 +23,6 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
     app.run(function ($log, workspaceService) {
 
         //http://www.asp.net/signalr/overview/signalr-20/getting-started-with-signalr-20/introduction-to-signalr
-        // Reference the auto-generated proxy for the hub.
-        $.connection.hub.logging = true;
-
-        var shapeHub = $.connection.shapeHub;
 
         //http://codeseven.github.io/toastr/demo.html
         toastr.options = {
@@ -52,23 +48,6 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         //load templares for tialogs and shapes...
         fo.utils.loadTemplate('KnowtView.Dialogs.html');
         fo.utils.loadTemplate('KnowtView.NoteTemplate.html');
-
-
-
-        if (shapeHub) {
-            //make sure you init the hub with callbacks before you call start!!
-
-            $.connection.hub.start().done(function () {
-                //pop some toast to
-                fo.publish('info', [ 'connected to service', 'ready']);
-                // workspaceService.serverLogin(shapeHub);
-            });
-        }
-        else {
-            fo.publish('warning', [ 'but everything loaded', 'did not connected to service']);
-        }
-
-
     });
 
 }(knowtApp, Foundry));
@@ -115,6 +94,28 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
                     space.doSessionRestore();
                 }, 100);
             }
+
+            // Reference the auto-generated proxy for the hub.
+            $.connection.hub.logging = true;
+
+            var shapeHub = $.connection.shapeHub;
+            if (shapeHub) {
+                //make sure you init the hub with callbacks before you call start!!
+                var proxy = app.newShapeHub(shapeHub, space);
+
+
+                $.connection.hub.start().done(function () {
+                    //pop some toast to
+                    fo.publish('info', ['connected to service', 'ready']);
+                    fo.publish('proxyStarted', [proxy, shapeHub])
+
+                });
+            }
+            else {
+                fo.publish('warning', ['but everything loaded', 'did not connected to service']);
+            }
+
+
 
             return space;
         };
@@ -206,9 +207,15 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         //    obj.autoResize(true);
         //});
 
- 
+        fo.subscribe('proxyStarted', function (proxy, hub) {
+            space.proxy = proxy;
+            space.traffic = fo.knowtShareApp.newTraffic({}, space);
+        });
 
-
+        fo.subscribeComplete('client', function () {
+            rootPage.forceLayout();
+            $scope.safeApply();
+        })
 
         //root model should be designed to manage what item is selected
         $scope.toggleSelection = function (note) {
@@ -223,6 +230,7 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
 
 
         fo.subscribeComplete('Reparented', function (shape, oldParent, newParent, loc) {
+            rootPage.forceLayout();
             space.doSessionSave();
             space.isDocumentSaved = false;
             $scope.safeApply();
@@ -231,19 +239,31 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         fo.subscribeComplete('ModelChanged', function (note) {
             space.doSessionSave();
             space.isDocumentSaved = false;
+            if (space.proxy) {
+                space.proxy.doUpdatePayload(note, note.myName);
+            }
             $scope.safeApply();
         });
 
         fo.subscribeComplete('Deleted', function (name, note, shape) {
             space.doSessionSave();
             space.isDocumentSaved = false;
-            $scope.safeApply();
+            if (space.proxy) {
+                space.proxy.doDeletePayload(note, name, shape);
+            }
+            //$scope.safeApply();
         });
 
         fo.subscribeComplete('Added', function (name, note, shape) {
             space.doSessionSave();
             space.isDocumentSaved = false;
-            $scope.safeApply();
+            if (space.proxy) {
+                space.proxy.doAddPayload(note, name, shape);
+            }
+            if (note.myParent != rootModel) {
+                rootPage.forceLayout();
+            }
+            //$scope.safeApply();
         });
 
         fo.subscribeComplete('doToggleView', function () {
@@ -392,6 +412,21 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             }, space);
         }
         return space.noteCanvasView;
+    })
+
+}(knowtApp, Foundry));
+
+
+//now create the traffic monitor controller
+(function (app, fo, undefined) {
+
+    app.controller('trafficController', function ($log, workspaceService, dialogService) {
+        var space = workspaceService.activeWorkSpace();
+
+        if (!space.traffic) {
+            space.traffic = space.factory.newTraffic({}, space);
+        }
+        return space.traffic;
     })
 
 }(knowtApp, Foundry));

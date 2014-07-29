@@ -51,8 +51,8 @@
             <span class="label label-danger " style="margin-left:1px">ext: {{space.activeDocument.documentExt}}</span>
         </div>
         <nav>
-            <h1 class="label label-info " style="margin-left:10px">{{space.clientCount}}</h1>
-            <span class="label label-success " ng-show="space.hasSessionKey">{{space.traffic}}</span>
+            <h1 class="label label-info " style="margin-left:10px">{{space.traffic.clientCount}}</h1>
+            <span class="label label-success " ng-show="space.hasSessionKey">{{space.traffic.trafficDetails}}</span>
             <img ng-click="space.updateAllViews()" id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
             <span style="margin-right:10px">{{space.documentTitle}}</span>
             <span style="margin-right:10px">{{space.sessionTitle}}</span>
@@ -310,10 +310,10 @@
     <script src="Foundry/Foundry.canvas.panzoom.js"></script>
 
     <script type="text/javascript" src="Knowt/KnowtShareApp.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewShapeHub.js"></script>
+    <script src="Knowt/KnowtViewTraffic.js"></script>
     <script type="text/javascript" src="Knowt/KnowtViewNgDialog.js"></script>
 
-
-    <!--<script type="text/javascript" src="Knowt/KnowtViewLayout.js"></script>-->
 
     <script type="text/javascript" src="Knowt/KnowtViewStencil.js"></script>
     <script type="text/javascript" src="Knowt/KnowtViewStencilAnimals.js"></script>
