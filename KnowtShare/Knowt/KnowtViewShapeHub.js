@@ -28,6 +28,7 @@
 
         shapeHub.client.receive = function (name, message) {
             fo.publish('success', [name, message]);
+            fo.publish('client', ['receive', name, message]);
         }
 
         obj.doPing = function (senderId) {
@@ -36,6 +37,7 @@
 
         shapeHub.client.receivePing = function (sessionKey, sender, senderId) {
             fo.publish('success', [sender, senderId]);
+            fo.publish('client', ['receivePing', sessionKey, sender, senderId]);
         }
 
         obj.doSendMessage = function (senderId, textMessage) {
@@ -44,6 +46,7 @@
 
         shapeHub.client.receiveMessage = function (sessionKey, sender, senderId, textMessage) {
             fo.publish('info', [senderId, textMessage]);
+            fo.publish('client', ['receiveMessage', sessionKey, sender, senderId, textMessage]);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,6 +75,7 @@
             }
 
             fo.publish('success', ['confirmJoinSession']);
+            fo.publish('client', ['confirmJoinSession', sessionKey, userId]);
         }
 
         obj.doExitSession = function () {
@@ -98,7 +102,8 @@
             fo.publish('info', ['authorReceiveJoinSessionFromPlayer']);
 
             space.payloadToCurrentModel(payload);
-            //$scope.$apply();
+            fo.publish('client', ['authorReceiveJoinSessionFromPlayer', sessionKey, userId, payload]);
+
             var newPayload = space.currentModelToPayload();
 
             fo.publish('success', ['authorSendJoinSessionModelToPlayers']);
@@ -109,10 +114,10 @@
             fo.publish('info', ['playerReceiveJoinSessionModel']);
 
             space.payloadToCurrentModel(payload);
-            //$scope.$apply();
-            var newPayload = space.currentModelToPayload();
-
             fo.publish('success', ['playerSendModelToAuthor']);
+            fo.publish('client', ['playerSendModelToAuthor', sessionKey, userId, payload]);
+
+            var newPayload = space.currentModelToPayload();
             shapeHub.server.playerSendModelToAuthor(space.sessionKey, space.userId, '', newPayload);
         }
 
@@ -120,10 +125,11 @@
             fo.publish('info', ['authorReceiveModelFromPlayer']);
 
             space.payloadToCurrentModel(payload);
-            //$scope.$apply();
+            fo.publish('success', ['authorSendModelToPlayers']);
+            fo.publish('client', ['authorSendModelToPlayers', sessionKey, userId, playerId, payload]);
+
             var newPayload = space.currentModelToPayload();
 
-            fo.publish('success', ['authorSendModelToPlayers']);
             shapeHub.server.authorSendModelToPlayers(space.sessionKey, space.userId, '', newPayload);
         }
 
@@ -131,7 +137,8 @@
             fo.publish('info', ['playersReceiveSynchronizedModelFromAuthor']);
 
             space.payloadToCurrentModel(payload);
-            //$scope.$apply();
+            fo.publish('success', ['playersReceiveSynchronizedModelFromAuthor']);
+            fo.publish('client', ['playersReceiveSynchronizedModelFromAuthor', sessionKey, userId, playerId, payload]);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -161,7 +168,7 @@
                     return;
                 }
                 space.payloadToCurrentModel(payload);
-                //$scope.$apply();
+                fo.publish('client', ['payloadAdded', sessionKey, userId, payload]);
             } catch (e) {
                 fo.publish('error', ['payloadAdded', e.message]);
             }
@@ -198,7 +205,7 @@
                 var context = model.getSubcomponent(uniqueID, true);
                 if (context) {
                     context.removeFromModel();
-                    //$scope.$apply();
+                    fo.publish('client', ['payloadDeleted', sessionKey, userId, payload]);
                 }
             } catch (e) {
                 fo.publish('error', ['payloadDeleted', e.message]);
@@ -232,12 +239,14 @@
                 if (!space.matchesSession(sessionKey)) {
                     return;
                 }
+                var rootModel = space.rootModel;
+
                 var spec = fo.parsePayload(payload);
                 var uniqueID = spec.uniqueID;
-                var context = model.getSubcomponent(uniqueID, true);
+                var context = rootModel.getSubcomponent(uniqueID, true);
                 if (context) {
                     fo.utils.extend(context, spec);
-                    //$scope.$apply();
+                    fo.publish('client', ['updateModel', sessionKey, userId, payload]);
                 }
             } catch (e) {
                 fo.publish('error', ['updateModel', e.message]);
@@ -266,10 +275,8 @@
                 var item = rootModel.getSubcomponent(uniqueID, true);
                 var newParent = newParentID ? rootModel.getSubcomponent(newParentID, true) : rootModel;
                 if (item && newParent) {
-
                     var oldParent = newParent.capture(item);
-                    //$scope.$apply();
-                    //too much fo.publish('Reparented', [model.myName, oldParent.myName, parent.myName])
+                    fo.publish('client', ['parentModelTo', sessionKey, uniqueID, oldParentID, newParentID]);
                 }
             } catch (e) {
                 fo.publish('info', ['parentModelTo', e.message]);

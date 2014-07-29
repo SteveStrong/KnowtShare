@@ -242,7 +242,7 @@
     <Content Include="Knowt\KnowtPadApp.js" />
     <Content Include="Knowt\KnowtShareApp.js" />
     <Content Include="Knowt\KnowtTakerApp.js" />
-    <Content Include="Knowt\KnowtViewLayout - Copy.js" />
+    <Content Include="Knowt\older\KnowtViewLayout - Copy.js" />
     <Content Include="Knowt\older\KnowtViewController.js" />
     <Content Include="Knowt\KnowtViewErrorReport.js" />
     <Content Include="Knowt\KnowtViewKeyEvents.js" />
@@ -256,7 +256,7 @@
     <Content Include="Knowt\KnowtViewNgDialog.js" />
     <Content Include="Knowt\KnowtViewNoteCanvasView.js" />
     <Content Include="Knowt\KnowtViewNoteTreeView.js" />
-    <Content Include="Knowt\KnowtViewShapeHub - Copy.js" />
+    <Content Include="Knowt\older\KnowtViewShapeHub - Copy.js" />
     <Content Include="Knowt\KnowtViewShapeHub.js" />
     <Content Include="Knowt\KnowtViewStencil.js" />
     <Content Include="Knowt\KnowtViewTraffic.js" />

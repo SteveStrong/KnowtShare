@@ -56,6 +56,8 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
 
 
         if (shapeHub) {
+            //make sure you init the hub with callbacks before you call start!!
+
             $.connection.hub.start().done(function () {
                 //pop some toast to
                 fo.publish('info', [ 'connected to service', 'ready']);
