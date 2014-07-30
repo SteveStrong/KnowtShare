@@ -195,6 +195,11 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         var rootModel = space.rootModel;
         var rootPage = space.rootPage;
 
+        var sp = fo.myWorkspace(rootPage);
+        if (space != sp) {
+            alert('no parent for page')
+        }
+
         //listen for key events...
         var keyPressedState = space.factory.newKeyPressedEvents({}, space);
         space.updateAllViews = function () {
