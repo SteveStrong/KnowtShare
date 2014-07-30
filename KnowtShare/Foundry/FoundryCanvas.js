@@ -4082,6 +4082,7 @@ var fo = Foundry;
     ns.makeModel = function (template, parent) {
         var model = ns.makeComponent(template.spec, template.Subcomponents, parent);
         model.myName = template.myName;
+        model.myParent = parent; //models should be aware of their workspace
         return model;
     };
 
@@ -7991,9 +7992,6 @@ Foundry.ws = Foundry.workspace;
         title: function () { return this.rootModel ? this.rootModel.title : undefined },
         subTitle: function () { return this.rootModel ? this.rootModel.subTitle : undefined },
 
-        clientCount: '#',
-        traffic: '0',
-
         //knowtshareSessionUrl: function () {
         //    var loc = window.location;
         //    var url = "{0}//{1}/Home/KnowtShare/{2}".format(loc.protocol, loc.host, this.sessionKey);
@@ -8349,6 +8347,7 @@ Foundry.ws = Foundry.workspace;
 
         if (!space.rootModel) {
             space.rootModel = fo.makeModel(defaultTemplate, space);
+            space.rootModel.myParent = space;
         }
 
 
@@ -14639,7 +14638,7 @@ Foundry.createjs = this.createjs || {};
             return result;
         },
         page: function () {
-            var page = ns.makePage2D(this.pageId);
+            var page = ns.makePage2D(this.pageId, {}, this);
             return page;
         },
         pipId: 'PIP',

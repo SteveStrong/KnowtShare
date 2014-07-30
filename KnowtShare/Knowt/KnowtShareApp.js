@@ -242,7 +242,7 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         fo.subscribeComplete('ModelChanged', function (note) {
             space.doSessionSave();
             space.isDocumentSaved = false;
-            if (space.proxy) {
+            if (space.hasSessionKey) {
                 space.proxy.doUpdatePayload(note, note.myName);
             }
             $scope.safeApply();
@@ -251,7 +251,7 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         fo.subscribeComplete('Deleted', function (name, note, shape) {
             space.doSessionSave();
             space.isDocumentSaved = false;
-            if (space.proxy) {
+            if (space.hasSessionKey) {
                 space.proxy.doDeletePayload(note, name, shape);
             }
             //$scope.safeApply();
@@ -260,7 +260,7 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         fo.subscribeComplete('Added', function (name, note, shape) {
             space.doSessionSave();
             space.isDocumentSaved = false;
-            if (space.proxy) {
+            if (space.hasSessionKey) {
                 space.proxy.doAddPayload(note, name, shape);
             }
             if (note.myParent != rootModel) {

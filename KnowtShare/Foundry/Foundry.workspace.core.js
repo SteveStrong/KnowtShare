@@ -76,9 +76,6 @@ Foundry.ws = Foundry.workspace;
         title: function () { return this.rootModel ? this.rootModel.title : undefined },
         subTitle: function () { return this.rootModel ? this.rootModel.subTitle : undefined },
 
-        clientCount: '#',
-        traffic: '0',
-
         //knowtshareSessionUrl: function () {
         //    var loc = window.location;
         //    var url = "{0}//{1}/Home/KnowtShare/{2}".format(loc.protocol, loc.host, this.sessionKey);
@@ -434,6 +431,7 @@ Foundry.ws = Foundry.workspace;
 
         if (!space.rootModel) {
             space.rootModel = fo.makeModel(defaultTemplate, space);
+            space.rootModel.myParent = space;
         }
 
 

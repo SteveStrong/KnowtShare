@@ -46,7 +46,7 @@ Foundry.createjs = this.createjs || {};
             return result;
         },
         page: function () {
-            var page = ns.makePage2D(this.pageId);
+            var page = ns.makePage2D(this.pageId, {}, this);
             return page;
         },
         pipId: 'PIP',

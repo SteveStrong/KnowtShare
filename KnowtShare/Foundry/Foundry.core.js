@@ -4080,6 +4080,7 @@ var fo = Foundry;
     ns.makeModel = function (template, parent) {
         var model = ns.makeComponent(template.spec, template.Subcomponents, parent);
         model.myName = template.myName;
+        model.myParent = parent; //models should be aware of their workspace
         return model;
     };
 
