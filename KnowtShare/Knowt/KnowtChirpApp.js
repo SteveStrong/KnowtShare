@@ -95,6 +95,7 @@ knowtApp.header = { title: 'Knowt Chirp', help: 'knowtshareHelp.html' };
                 hub.start().done(function () {
                     //pop some toast to
                     fo.publish('info', ['connected to service', 'ready to chirp']);
+                    proxy.doJoinSession(sessionKey || 'chirp');
 
                     fo.publish('proxyStarted', [proxy, shapeHub])
 
@@ -145,8 +146,6 @@ knowtApp.header = { title: 'Knowt Chirp', help: 'knowtshareHelp.html' };
         $scope.rootModel = space.rootModel;
 
         fo.subscribe('proxyStarted', function (proxy, hub) {
-
-            proxy.doJoinSession('chirp');
 
             proxy.doPing('my ping')
 

@@ -28,7 +28,7 @@
             result.bytesInTraffic = result.bytesInTraffic + bytesIn;
         })
 
-        fo.subscribe('sessionClientCount', function (count) {
+        fo.subscribe('sessionClientCount', function (count, status) {
             result.clientCount = count;
         })
 

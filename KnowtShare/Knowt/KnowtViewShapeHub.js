@@ -56,9 +56,9 @@
             }       
         };
 
-        shapeHub.client.clientCountChanged = function (total) {
-            fo.publish('sessionClientCount', [total]);
-            fo.publish('client', ['clientCountChanged']);
+        shapeHub.client.clientCountChanged = function (total, status) {
+            fo.publish('sessionClientCount', [total, status]);
+            fo.publish('client', ['clientCountChanged', status]);
         }
 
         obj.doCreateSession = function (session) {

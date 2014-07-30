@@ -91,7 +91,7 @@ Foundry.createjs = this.createjs || {};
 
         fo.subscribe('ShapeReparented', function (child, oldParent, newParent, loc) {
             fo.publish('info', ['ShapeReparented']);
-            pzSelf.draw(pzSelfParent, 'yellow');
+            pzSelf.draw(pzSelfParent, 'red');
         });
 
         fo.subscribe('ShapeMoved', function (uniqueID, model, shape) {

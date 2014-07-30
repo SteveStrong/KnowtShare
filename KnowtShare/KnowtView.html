@@ -61,7 +61,7 @@
             <span style="margin-right:10px">:{{space.sessionKey}}</span>
             <span style="margin-right:10px">:{{space.userId}}</span>
             <span style="margin-right:10px">:{{space.userNickName}}</span>
-            <span ng-show="space.isViewOnlySession">
+            <span ng-if="space.isViewOnlySession">
                 <button class="btn btn-default navbar-btn" ng-click="vm.doAddAnnotation">
                     Annotate
                 </button>
@@ -95,7 +95,7 @@
     <section id="appContent" class="app-content">
         <article id="mainContent" class="main-content">
 
-            <div id="textContainer" class="text-container" ng-show="space.viewMenu.isTextView" ng-controller="noteTreeView as viewModel">
+            <div id="textContainer" class="text-container" ng-if="space.viewMenu.isTextView" ng-controller="noteTreeView as viewModel">
                 <ul class="breadcrumb" style="margin:0">
                     <li ng-repeat="crumb in viewModel.selectionPath">
                         <a class="btn btn-link " ng-click="viewModel.doPinAsRoot(crumb)">{{crumb.context ? crumb.context.headerText : crumb.myName}}</a>
@@ -109,7 +109,7 @@
                 </div>
             </div>
 
-            <div id="diagramContainer" class="diagram-container" ng-show="space.viewMenu.isDrawingView" ng-controller="noteCanvasView as vm">
+            <div id="diagramContainer" class="diagram-container" ng-if="space.viewMenu.isDrawingView" ng-controller="noteCanvasView as vm">
                 <div id="diagramContainerNavigation">
                     <button class="btn btn-success " ng-repeat="page in viewModel.pages" ng-click="viewModel.gotoPage(page)">
                         {{page.context ? page.context.headerText : page.myName}}

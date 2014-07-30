@@ -24,20 +24,20 @@ namespace KnowtShare
         public override Task OnConnected()
         {
             _connections.TryAdd(Context.ConnectionId, null);
-            return Clients.All.clientCountChanged(_connections.Count);
+            return Clients.All.clientCountChanged(_connections.Count, "connected");
         }
 
         public override Task OnReconnected()
         {
             _connections.TryAdd(Context.ConnectionId, null);
-            return Clients.All.clientCountChanged(_connections.Count);
+            return Clients.All.clientCountChanged(_connections.Count,"reconnected");
         }
 
         public override Task OnDisconnected()
         {
             object value;
             _connections.TryRemove(Context.ConnectionId, out value);
-            return Clients.All.clientCountChanged(_connections.Count);
+            return Clients.All.clientCountChanged(_connections.Count,"disconnected");
         }
 
         #endregion

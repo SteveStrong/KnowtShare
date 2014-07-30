@@ -102,12 +102,13 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             if (shapeHub) {
                 //make sure you init the hub with callbacks before you call start!!
                 var proxy = app.newShapeHub(shapeHub, space);
-
+                space.traffic = fo.knowtShareApp.newTraffic({}, space);
 
                 $.connection.hub.start().done(function () {
                     //pop some toast to
                     fo.publish('info', ['connected to service', 'ready']);
-                    fo.publish('proxyStarted', [proxy, shapeHub])
+
+                    fo.publish('proxyStarted', [proxy, shapeHub, defaultSession])
 
                 });
             }
@@ -207,9 +208,11 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         //    obj.autoResize(true);
         //});
 
-        fo.subscribe('proxyStarted', function (proxy, hub) {
+        fo.subscribe('proxyStarted', function (proxy, hub, sessionKey) {
             space.proxy = proxy;
-            space.traffic = fo.knowtShareApp.newTraffic({}, space);
+
+            sessionKey && proxy.doJoinSession(sessionKey);
+            $scope.safeApply();
         });
 
         fo.subscribeComplete('client', function () {
