@@ -17,6 +17,13 @@
             }
             return path.reverse();
         },
+        title: function () {
+            return this.currentPage.title;
+        },
+        pageStats: function () {
+            var page = this.currentPage;
+            return page.canvasWH + ' ' + page.drawingWH + ' scale:' + parseInt(100 * page.scale) /100;
+        }
     });
 
 

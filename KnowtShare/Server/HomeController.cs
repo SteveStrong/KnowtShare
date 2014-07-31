@@ -6,7 +6,7 @@ namespace ShapeSignal
     {
         public ActionResult Index()
         {
-            return Redirect(Url.Content("~/Start.html"));
+            return Redirect(Url.Content("~/index.html"));
         }
 
         public ActionResult Start()

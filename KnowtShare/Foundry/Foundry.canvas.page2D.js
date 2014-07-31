@@ -59,11 +59,24 @@ Foundry.canvas = Foundry.canvas || {};
             headerText: function () {
                 return this.myName;
             },
+            title: function () {
+                return this.headerText;
+            },
             canvasWidth: function () {
                 return this.canvas ? this.canvas.width : 0;
             },
             canvasHeight: function () {
                 return this.canvas ? this.canvas.height : 0;
+            },
+            canvasWH: function () {
+                var width = this.canvasWidth;
+                var height = this.canvasHeight;
+                return 'W:{0}  H:{1}'.format(width, height)
+            },
+            drawingWH: function () {
+                var width = this.drawingWidth / this.pixelsPerInch;
+                var height = this.drawingHeight / this.pixelsPerInch;
+                return 'sz[{0}x{1}]in'.format(width, height)
             },
             pixelsPerInch: 150,
             drawingWidth: function () { return 16 * this.pixelsPerInch; },  //16 inches wide
@@ -323,15 +336,15 @@ Foundry.canvas = Foundry.canvas || {};
     Page2DCanvas.prototype.setCanvasWidth = function (width) {
         if (this.canvas && this.canvas.width != width) {
             this.canvas.width = width;
-            this.smashProperty('canvasWidth');
         }
+        this.smashProperty('canvasWidth');
     }
 
     Page2DCanvas.prototype.setCanvasHeight = function (height) {
         if (this.canvas && this.canvas.height != height) {
             this.canvas.height = height;
-            this.smashProperty('canvasHeight');
         }
+        this.smashProperty('canvasHeight');
     }
 
     Page2DCanvas.prototype.establishChild = function (child, index) {
@@ -788,8 +801,11 @@ Foundry.canvas = Foundry.canvas || {};
 
 
         if (canvas && canvas.addEventListener && this.canDoWheelZoom) {
-            canvas.addEventListener("mousewheel", mouseWheelHandler, false);
-            canvas.addEventListener("DOMMouseScroll", mouseWheelHandler, false);
+            if (!canvas.canDoWheelZoom) {
+                canvas.addEventListener("mousewheel", mouseWheelHandler, false);
+                canvas.addEventListener("DOMMouseScroll", mouseWheelHandler, false);
+                canvas.canDoWheelZoom = true;
+            }
         }
 
         function makeBox(s, f) {
@@ -1218,6 +1234,9 @@ Foundry.canvas = Foundry.canvas || {};
 
         function mouseWheelHandler(ev) {
             cancelBubble(ev);
+            if (!page.canDoWheelZoom) {
+                return;
+            }
 
             var scale = 1.1;
             var zoom = Math.max(-1, Math.min(1, (ev.wheelDelta || -ev.detail))) > 0 ? scale : 1 / scale;

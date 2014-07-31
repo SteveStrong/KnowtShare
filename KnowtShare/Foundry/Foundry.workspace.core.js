@@ -214,7 +214,7 @@ Foundry.ws = Foundry.workspace;
         }
         delete self.localData;
         fo.publish('WorkspaceClear', [self])
-
+        fo.publish('info', ['Workspace Cleared']);
         //fo.digestLock && fo.digestLock(self.rootPage, function () {
         //    self.rootPage.clear();
         //    self.rootPage.updateStage(true);
@@ -477,6 +477,9 @@ Foundry.ws = Foundry.workspace;
         space.drawing = cv.makeDrawing(canvasId, panZoomCanvasId, pipId, properties);
         space.drawing.myParent = space;
 
+        //bindable to PIP header bar
+        space.pip = space.drawing.panZoom;
+
 
         //setup root page
         space.rootPage = space.drawing.page;
@@ -498,17 +501,21 @@ Foundry.ws = Foundry.workspace;
 
         space.doSessionSave = function () {
             var self = this;
+            //fo.publish('info', ['Saving Session']);
             var payload = self.currentModelToPayload({}, true, true);
             self.saveSession(payload, self.localStorageKey, function () {
+                //fo.publish('success', ['Session Saved']);
             });
         };
 
         space.doSessionRestore = function () {
             var self = this;
             self.restoreSession(self.localStorageKey, function (payload) {
+                //fo.publish('info', ['Restoring Session']);
                 self.clear();
                 self.digestLock(function () {
                     self.payloadToCurrentModel(payload);
+                    //fo.publish('success', ['Session Restored']);
                 });
             });
         };

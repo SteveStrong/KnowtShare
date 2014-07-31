@@ -90,6 +90,12 @@ li {
     border: 1px solid black;
 }
 
+.pan-zoom-header {
+    display: block;
+    background-color: #ff6a00;
+    margin: 4px;
+}
+
 .pan-zoom-canvas {
     display: block;
     background-color: cornsilk;

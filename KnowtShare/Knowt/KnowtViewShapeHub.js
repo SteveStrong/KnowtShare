@@ -350,14 +350,19 @@
         }
 
 
+        obj.doReparentModelTo = function (childID, oldParentID, newParentID) {
+            try {
+                if (!space.matchesSession(sessionKey)) {
+                    return;
+                }
+                obj.updateSessionTraffic(0, 10);
 
-
-        fo.subscribe('Reparented', function (childID, oldParentID, newParentID) {
-            if (space.hasSessionKey) {
-                obj.updateSessionTraffic(10,0);
                 shapeHub.server.authorReparentModelTo(space.sessionKey, childID, oldParentID, newParentID);
-            };
-        });
+
+            } catch (e) {
+                fo.publish('error', ['doReparentModelTo', e.message]);
+            }
+        }
 
         shapeHub.client.parentModelTo = function (sessionKey, uniqueID, oldParentID, newParentID) {
             //fo.trace && fo.trace.funcTrace(arguments, "parentModelTo");
@@ -380,11 +385,55 @@
             }
         };
 
+        obj.doMovedShapeTo = function (shape, uniqueID) {
+            try {
+                if (!space.matchesSession(sessionKey)) {
+                    return;
+                }
+                obj.updateSessionTraffic(0, 10);
 
-        //fo.subscribeComplete('Reparented', function (shape, oldParent, newParent, loc) {
-        //    // space.doSessionSave();
-        //    $scope.$apply();
-        //});
+                var pinX = shape.pinX;
+                var pinY = shape.pinY;
+                var angle = shape.angle ? shape.angle : 0.0;
+
+                shapeHub.server.authorReparentModelTo(space.sessionKey, uniqueID || shape.myName, pinX, pinY, angle);
+
+            } catch (e) {
+                fo.publish('error', ['doMovedShapeTo', e.message]);
+            }
+        }
+
+        shapeHub.client.repositionShapeTo = function (sessionKey, uniqueID, pinX, pinY, angle) {
+            //fo.trace && fo.trace.funcTrace(arguments, "repositionShapeTo");
+            try {
+                if (!space.matchesSession(sessionKey)) {
+                    return;
+                }
+                //if (ctrl.isPresenterSession) return;
+                //fo.trace && fo.trace.writeLog("received: Acting On repositionShapeTo", uniqueID, pinX, pinY, angle);
+
+                obj.updateSessionTraffic(10, 0);
+                //parent id's can be null so you must assume root model or page
+                var rootPage = space.rootPage;
+
+                var shape = rootPage.getSubcomponent(uniqueID);
+                if (shape) {
+                    shape.repositionTo(pinX, pinY, angle, function () {
+                        if (shape.myParent == rootPage) {
+                            rootPage.Subcomponents.sortOn('pinX'); //try to make is so outline reads from left to right
+                        }
+                    });
+                    //SRS todo make sure to save the session assuming the 
+                    //people 
+                    //ctrl.doSessionSave;
+                }
+
+            } catch (e) {
+                fo.publish('error', ['repositionShapeTo', e.message]);
+            }
+        };
+
+
 
         obj.doMoveRight = function (list) {
             fo.publish('info', ['doMoveRight']);

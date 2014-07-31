@@ -109,19 +109,25 @@
                 </div>
             </div>
 
-            <div id="diagramContainer" class="diagram-container" ng-show="space.viewMenu.isDrawingView" ng-controller="noteCanvasView as vm">
-                <div id="diagramContainerNavigation">
+            <div id="diagramContainer" class="diagram-container" ng-show="space.viewMenu.isDrawingView" ng-controller="noteCanvasView as viewModel">
+                <div id="diagramContainerNavigation" >
                     <button class="btn btn-success " ng-repeat="page in viewModel.pages" ng-click="viewModel.gotoPage(page)">
-                        {{page.context ? page.context.headerText : page.myName}}
+                        {{page.context ? page.context.headerText : page.title}}
                     </button>
+                    <div class="pan-zoom-header" style="float:right">
+                        page name: {{viewModel.title}} {{viewModel.pageStats}}
+                    </div>
                 </div>
                 <canvas id="diagramCanvas" class="diagram-canvas" width="550" height="550"></canvas>
             </div>
 
         </article>
 
-        <article id="PIP" class="picture-in-picture" style="width:210px; height:160px">
-            <canvas id="panZoomCanvas" class="pan-zoom-canvas" width="200" height="150"></canvas>
+        <article id="PIP" class="picture-in-picture" style="width:210px; height:160px" ng-controller="pipController as pip">
+            <div class="pan-zoom-header">
+                {{pip.pageStats()}}  {{pip.status}}
+            </div>
+            <canvas id="panZoomCanvas" class="pan-zoom-canvas" width="10" height="5"></canvas>
         </article>
     </section>
 
@@ -304,6 +310,7 @@
 
     <script type="text/javascript" src="http://foundryjs.azurewebsites.net/bundles/EaselJS"></script>
     <!--<script type="text/javascript" src="http://foundryjs.azurewebsites.net/Foundry/FoundryComplete.js"></script>-->
+
     <script type="text/javascript" src="Foundry/FoundryComplete.js"></script>
     <script src="Foundry/Foundry.canvas.page2D.js"></script>
     <script src="Foundry/Foundry.canvas.document.js"></script>
@@ -311,7 +318,7 @@
 
     <script type="text/javascript" src="Knowt/KnowtShareApp.js"></script>
     <script type="text/javascript" src="Knowt/KnowtViewShapeHub.js"></script>
-    <script src="Knowt/KnowtViewTraffic.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewTraffic.js"></script>
     <script type="text/javascript" src="Knowt/KnowtViewNgDialog.js"></script>
 
 

@@ -236,11 +236,26 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             $scope.safeApply();
         });
 
+        fo.subscribeComplete('ShapeMoved', function (uniqueID, model, shape) {
+            if (shape.myParent == rootPage) {
+                rootPage.Subcomponents.sortOn('pinX'); //try to make is so outline reads from left to right
+            }
 
-        fo.subscribeComplete('Reparented', function (shape, oldParent, newParent, loc) {
+            space.doSessionSave();
+            space.isDocumentSaved = false;
+            if (space.hasSessionKey) {
+                space.proxy.doMovedShapeTo(shape, shape.myName);
+            }
+            $scope.safeApply();
+        });
+
+        fo.subscribeComplete('Reparented', function (childID, oldParentID, newParentID, loc) {
             rootPage.forceLayout();
             space.doSessionSave();
             space.isDocumentSaved = false;
+            if (space.hasSessionKey) {
+                space.proxy.doReparentModelTo(childID, oldParentID, newParentID);
+            }
             $scope.safeApply();
         });
 
@@ -411,13 +426,17 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
 //now create the noteCanvasView controller
 (function (app, fo, undefined) {
 
-    app.controller('noteCanvasView', function ($log, workspaceService, dialogService) {
+    app.controller('noteCanvasView', function ($scope, $log, workspaceService, dialogService) {
         var space = workspaceService.activeWorkSpace();
 
         if (!space.noteCanvasView) {
             space.noteCanvasView = space.factory.newNoteCanvasView({
                 space: space,
             }, space);
+
+            fo.subscribe('pip', function (status) {
+                $scope.$apply();
+            });
         }
         return space.noteCanvasView;
     })
@@ -428,13 +447,26 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
 //now create the traffic monitor controller
 (function (app, fo, undefined) {
 
-    app.controller('trafficController', function ($log, workspaceService, dialogService) {
+    app.controller('pipController', function ($scope, $log, workspaceService, dialogService) {
         var space = workspaceService.activeWorkSpace();
 
-        if (!space.traffic) {
-            space.traffic = space.factory.newTraffic({}, space);
+        if (!space.pipPanZoom) {
+            var pip = space.drawing.panZoom;
+
+            pip.status = '*';
+            fo.subscribe('pip', function (status) {
+                pip.status = status;
+                $scope.$apply();
+            });
+
+            pip.pageStats = function () {
+                var page = pip.myParent;
+                return pip.canvasWH + ' scaleFactor:' + parseInt(100 * pip.scaleFactor) / 100;
+            }
+
+            space.pipPanZoom = pip;
         }
-        return space.traffic;
+        return space.pipPanZoom;
     })
 
 }(knowtApp, Foundry));

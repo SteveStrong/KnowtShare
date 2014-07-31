@@ -8130,7 +8130,7 @@ Foundry.ws = Foundry.workspace;
         }
         delete self.localData;
         fo.publish('WorkspaceClear', [self])
-
+        fo.publish('info', ['Workspace Cleared']);
         //fo.digestLock && fo.digestLock(self.rootPage, function () {
         //    self.rootPage.clear();
         //    self.rootPage.updateStage(true);
@@ -8393,6 +8393,9 @@ Foundry.ws = Foundry.workspace;
         space.drawing = cv.makeDrawing(canvasId, panZoomCanvasId, pipId, properties);
         space.drawing.myParent = space;
 
+        //bindable to PIP header bar
+        space.pip = space.drawing.panZoom;
+
 
         //setup root page
         space.rootPage = space.drawing.page;
@@ -8414,17 +8417,21 @@ Foundry.ws = Foundry.workspace;
 
         space.doSessionSave = function () {
             var self = this;
+            //fo.publish('info', ['Saving Session']);
             var payload = self.currentModelToPayload({}, true, true);
             self.saveSession(payload, self.localStorageKey, function () {
+                //fo.publish('success', ['Session Saved']);
             });
         };
 
         space.doSessionRestore = function () {
             var self = this;
             self.restoreSession(self.localStorageKey, function (payload) {
+                //fo.publish('info', ['Restoring Session']);
                 self.clear();
                 self.digestLock(function () {
                     self.payloadToCurrentModel(payload);
+                    //fo.publish('success', ['Session Restored']);
                 });
             });
         };
@@ -12058,11 +12065,24 @@ Foundry.canvas = Foundry.canvas || {};
             headerText: function () {
                 return this.myName;
             },
+            title: function () {
+                return this.headerText;
+            },
             canvasWidth: function () {
                 return this.canvas ? this.canvas.width : 0;
             },
             canvasHeight: function () {
                 return this.canvas ? this.canvas.height : 0;
+            },
+            canvasWH: function () {
+                var width = this.canvasWidth;
+                var height = this.canvasHeight;
+                return 'W:{0}  H:{1}'.format(width, height)
+            },
+            drawingWH: function () {
+                var width = this.drawingWidth / this.pixelsPerInch;
+                var height = this.drawingHeight / this.pixelsPerInch;
+                return 'sz[{0}x{1}]in'.format(width, height)
             },
             pixelsPerInch: 150,
             drawingWidth: function () { return 16 * this.pixelsPerInch; },  //16 inches wide
@@ -12322,15 +12342,15 @@ Foundry.canvas = Foundry.canvas || {};
     Page2DCanvas.prototype.setCanvasWidth = function (width) {
         if (this.canvas && this.canvas.width != width) {
             this.canvas.width = width;
-            this.smashProperty('canvasWidth');
         }
+        this.smashProperty('canvasWidth');
     }
 
     Page2DCanvas.prototype.setCanvasHeight = function (height) {
         if (this.canvas && this.canvas.height != height) {
             this.canvas.height = height;
-            this.smashProperty('canvasHeight');
         }
+        this.smashProperty('canvasHeight');
     }
 
     Page2DCanvas.prototype.establishChild = function (child, index) {
@@ -12787,8 +12807,11 @@ Foundry.canvas = Foundry.canvas || {};
 
 
         if (canvas && canvas.addEventListener && this.canDoWheelZoom) {
-            canvas.addEventListener("mousewheel", mouseWheelHandler, false);
-            canvas.addEventListener("DOMMouseScroll", mouseWheelHandler, false);
+            if (!canvas.canDoWheelZoom) {
+                canvas.addEventListener("mousewheel", mouseWheelHandler, false);
+                canvas.addEventListener("DOMMouseScroll", mouseWheelHandler, false);
+                canvas.canDoWheelZoom = true;
+            }
         }
 
         function makeBox(s, f) {
@@ -13217,6 +13240,9 @@ Foundry.canvas = Foundry.canvas || {};
 
         function mouseWheelHandler(ev) {
             cancelBubble(ev);
+            if (!page.canDoWheelZoom) {
+                return;
+            }
 
             var scale = 1.1;
             var zoom = Math.max(-1, Math.min(1, (ev.wheelDelta || -ev.detail))) > 0 ? scale : 1 / scale;
@@ -14357,16 +14383,28 @@ Foundry.createjs = this.createjs || {};
         var viewWindowSpec = {
             geom: function () {
                 var geom = new createjs.Shape();
-                geom.alpha = .3;
+                geom.alpha = .2;
                 return geom;
             },
         }
 
         var panAndZoomSpec = {
+            title: 'pan zoom',
+            canvasWH: function () {
+                var width = this.canvasWidth;
+                var height = this.canvasHeight;
+                return 'w:{0}  h:{1}'.format(width, height)
+            },
             percentMargin: -0.02,
             percentSize: .25,
             draggable: true,
             canDoWheelZoom: false,
+            parentScale: function() {
+                return this.myParent ?  this.myParent.scale : 1.0;
+            },
+            scaleFactor: function () {
+                return this.scale / this.parentScale;
+            },
             drawingGeom: function () {
                 var result = new createjs.Shape();
                 return result;
@@ -14409,19 +14447,21 @@ Foundry.createjs = this.createjs || {};
             if (self && self != pzSelf) return;
             if (selfParent && selfParent != pzSelfParent) return;
 
-            //fo.publish('warning', ['updatePanZoom']);
             pzSelf.draw(pzSelfParent, 'green');
+            fo.publish('pip', ['update']);
         });
 
 
         fo.subscribe('ShapeReparented', function (child, oldParent, newParent, loc) {
-            fo.publish('info', ['ShapeReparented']);
+            //fo.publish('info', ['ShapeReparented']);
             pzSelf.draw(pzSelfParent, 'red');
+            fo.publish('pip', ['reparent']);
         });
 
         fo.subscribe('ShapeMoved', function (uniqueID, model, shape) {
             //fo.publish('info', ['ShapeMoved']);
             pzSelf.draw(pzSelfParent, 'black');
+            fo.publish('pip', ['moved']);
         });
 
         fo.subscribe('sizePanZoom', function (self, selfParent, width, height, element) {
@@ -14434,6 +14474,7 @@ Foundry.createjs = this.createjs || {};
             pzSelf.zoomToFit(function () {
                 pzSelf.draw(pzSelfParent);
             });
+            fo.publish('pip', ['resize']);
         });
 
         fo.subscribe('positionPanZoom', function (self, selfParent, width, height, element) {
@@ -14445,6 +14486,7 @@ Foundry.createjs = this.createjs || {};
             //element.style.top = height + 30 - ((height * pzSelf.percentMargin) + pzSelf.canvasHeight) + 'px';
             element.style.width = 10 + (width * pzSelf.percentSize) + 'px';
             element.style.height = 10 + (height * pzSelf.percentSize) + 'px';
+            fo.publish('pip', ['repositioned']);
         });
 
 
@@ -14465,8 +14507,7 @@ Foundry.createjs = this.createjs || {};
             else {
                 pzSelf.draw(pzSelfParent, 'blue');
             }
-
-
+            fo.publish('pip', ['moving']);
         });
 
 
@@ -14499,20 +14540,35 @@ Foundry.createjs = this.createjs || {};
         var drawingGeom = pzSelf.drawingGeom;
         pzSelf.establishChild(drawingGeom);
 
+        var psScale = pzSelf.scale;
+        var viewWindowShape = pzSelf.viewWindowShape;
+        var viewWindowGeom = pzSelf.viewWindowGeom;
+
+
         var g = drawingGeom.graphics;
         g.clear();
-        //SRS mod
+
+        //do all the to draw the gray page outline
+        //SRS mod draw the page size and location
+        var x = pzSelf.drawingMargin;
+        var y = pzSelf.drawingMargin;
+        var w = pzSelf.drawingWidth;
+        var h = pzSelf.drawingHeight;
+        g.beginFill("gray").drawRect(x, y, w, h).endFill();
+
         if (page.Subcomponents.count) {
             g.beginFill(color ? color : "black");
             renderPageOutline(g, page, 0, 0);
             g.endFill();
         }
 
-        var viewWindowShape = pzSelf.viewWindowShape;
-        var viewWindowGeom = pzSelf.viewWindowGeom;
+
+
+        //do all the to draw the redish window
+        //maybe manage this geometry the same way as a 2D Shape
         pzSelf.establishChild(viewWindowGeom);
 
-        var psScale = pzSelf.scale;
+        //this is an anti scale pattern
         var scale = page.scale;
         var pinX = page.panX / scale;
         var pinY = page.panY / scale;
@@ -14528,9 +14584,7 @@ Foundry.createjs = this.createjs || {};
 
         var g = viewWindowGeom.graphics;
         g.clear();
-        g.beginFill("red");
-        g.drawRect(0, 0, width, height);
-        g.endFill();
+        g.beginFill("red").drawRect(0, 0, width, height).endFill();
 
         stage.update();
     };
