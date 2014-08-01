@@ -112,6 +112,7 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             }
 
             space = fo.ws.makeNoteWorkspace("KnowtShare", fo.utils.union(spec, properties), modelTemplate);
+            space.debug = false;
 
             space.isDocumentEmpty = function () {
                 //var total = (this.rootPage.Subcomponents.count * this.rootModel.Subcomponents.count) / 2;
@@ -236,6 +237,9 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         var keyPressedState = space.factory.newKeyPressedEvents({}, space);
         space.updateAllViews = function () {
             rootPage.forceLayout();
+            if (keyPressedState && keyPressedState.CTRLKEY) {
+                space.debug = !space.debug;
+            }
             $scope.safeApply();
         }
 

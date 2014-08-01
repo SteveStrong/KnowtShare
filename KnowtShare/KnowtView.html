@@ -32,7 +32,7 @@
 <body ng-cloak ng-controller="workSpace as space">
 
     <header id="appHeader" class="app-header">
-        <div>
+        <div ng-show="space.debug">
             <span class="label label-info " style="margin-left:10px">doc: {{space.documentName}}</span>
             <span class="label label-info " style="margin-left:1px">ext: {{space.documentExt}}</span>
             <span class="label label-info " style="margin-left:1px">doc title: {{space.documentTitle}}</span>
@@ -51,46 +51,51 @@
             <span class="label label-danger " style="margin-left:1px">ext: {{space.activeDocument.documentExt}}</span>
         </div>
         <nav>
-            <h1 class="label label-info " style="margin-left:10px">{{space.traffic.clientCount}}</h1>
-            <span class="label label-success " ng-show="space.hasSessionKey">{{space.traffic.trafficDetails}}</span>
-            <span class="label label-warning " >{{space.traffic.storageDetails}}</span>
-           <img ng-click="space.updateAllViews()" id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
-            <span style="margin-right:10px">{{space.documentTitle}}</span>
-            <span style="margin-right:10px">{{space.sessionTitle}}</span>
-            <span style="margin-right:10px">{{space.clientMode}}</span>
+            <div style="display:inline">
+                <span class="label label-info " style="margin-left:10px">{{space.traffic.clientCount}}</span>
+                <span class="label label-success " ng-show="space.hasSessionKey">{{space.traffic.trafficDetails}}</span>
+                <span class="label label-warning " ng-show="space.debug">{{space.traffic.storageDetails}}</span>
+            </div>
+            <img ng-click="space.updateAllViews()" id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
+            <div style="display:inline">
+                <span style="margin-right:10px">{{space.documentTitle}}</span>
+                <span style="margin-right:10px">{{space.sessionTitle}}</span>
+                <span style="margin-right:10px">{{space.clientMode}}</span>
+            </div>
+            <div style="display:inline" ng-show="space.hasSessionKey">
+                <span style="margin-right:10px">:{{space.sessionKey}}</span>
+                <span style="margin-right:10px">:{{space.userId}}</span>
+                <span style="margin-right:10px">:{{space.userNickName}}</span>
+            </div>
+                <span ng-if="space.isViewOnlySession">
+                    <button class="btn btn-default navbar-btn" ng-click="vm.doAddAnnotation">
+                        Annotate
+                    </button>
+                    <button class="btn btn-default navbar-btn" ng-click="vm.doSaveFilePicker">
+                        Save
+                    </button>
+                    <button class="btn btn-default navbar-btn" ng-click="vm.doResyncSession">
+                        Resync
+                    </button>
+                    <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isDrawingView" ng-click="vm.doZoomToFit">
+                        Fit
+                    </button>
+                    <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isDrawingView" ng-click="vm.doZoom1To1">
+                        1:1
+                    </button>
+                    <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isDrawingView" ng-click="vm.gotoTextView">
+                        Text
+                    </button>
+                    <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isTextView" ng-click="vm.gotoDrawingView">
+                        Note
+                    </button>
 
-            <span style="margin-right:10px">:{{space.sessionKey}}</span>
-            <span style="margin-right:10px">:{{space.userId}}</span>
-            <span style="margin-right:10px">:{{space.userNickName}}</span>
-            <span ng-if="space.isViewOnlySession">
-                <button class="btn btn-default navbar-btn" ng-click="vm.doAddAnnotation">
-                    Annotate
-                </button>
-                <button class="btn btn-default navbar-btn" ng-click="vm.doSaveFilePicker">
-                    Save
-                </button>
-                <button class="btn btn-default navbar-btn" ng-click="vm.doResyncSession">
-                    Resync
-                </button>
-                <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isDrawingView" ng-click="vm.doZoomToFit">
-                    Fit
-                </button>
-                <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isDrawingView" ng-click="vm.doZoom1To1">
-                    1:1
-                </button>
-                <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isDrawingView" ng-click="vm.gotoTextView">
-                    Text
-                </button>
-                <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isTextView" ng-click="vm.gotoDrawingView">
-                    Note
-                </button>
+                    <button type="button" class="btn navbar-btn" ng-show="ng-click=" vm.dotogglepanzoomwindow">
+                        {{vm.zoomText}}
+                    </button>
+                </span>
 
-                <button type="button" class="btn navbar-btn" ng-show="ng-click=" vm.dotogglepanzoomwindow">
-                    {{vm.zoomText}}
-                </button>
-            </span>
-
-        </nav>
+</nav>
     </header>
 
     <section id="appContent" class="app-content">
@@ -112,12 +117,12 @@
 
             <div id="diagramContainer" class="diagram-container" ng-show="space.viewMenu.isDrawingView" ng-controller="noteCanvasView as viewModel">
                 <div id="diagramContainerNavigation" >
-                    <button class="btn btn-success " ng-repeat="page in viewModel.pages" ng-click="viewModel.gotoPage(page)">
+                    <!--<button class="btn btn-success " ng-repeat="page in viewModel.pages" ng-click="viewModel.gotoPage(page)">
                         {{page.context ? page.context.headerText : page.title}}
                     </button>
                     <div class="pan-zoom-header" style="float:right">
                         page name: {{viewModel.title}} {{viewModel.pageStats}}
-                    </div>
+                    </div>-->
                 </div>
                 <canvas id="diagramCanvas" class="diagram-canvas" width="550" height="550"></canvas>
             </div>
@@ -125,9 +130,9 @@
         </article>
 
         <article id="PIP" class="picture-in-picture" style="width:210px; height:160px" ng-controller="pipController as pip">
-            <div class="pan-zoom-header">
+            <!--<div class="pan-zoom-header">
                 {{pip.pageStats()}}  {{pip.status}}
-            </div>
+            </div>-->
             <canvas id="panZoomCanvas" class="pan-zoom-canvas" width="10" height="5"></canvas>
         </article>
     </section>
