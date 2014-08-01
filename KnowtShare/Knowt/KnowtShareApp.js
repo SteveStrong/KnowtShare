@@ -236,10 +236,13 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         //listen for key events...
         var keyPressedState = space.factory.newKeyPressedEvents({}, space);
         space.updateAllViews = function () {
-            rootPage.forceLayout();
             if (keyPressedState && keyPressedState.CTRLKEY) {
                 space.debug = !space.debug;
             }
+
+            rootPage.forceLayout();
+            app.forceResizeRefresh && app.forceResizeRefresh();
+
             $scope.safeApply();
         }
 

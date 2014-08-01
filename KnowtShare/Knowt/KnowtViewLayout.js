@@ -64,6 +64,9 @@
 
     result.autoResize(true);
 
+    app.forceResizeRefresh = function () {
+        result.onScreenResize();
+    }
 
 }(knowtApp, Foundry));
 

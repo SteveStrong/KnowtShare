@@ -129,10 +129,10 @@
 
         </article>
 
-        <article id="PIP" class="picture-in-picture" style="width:210px; height:160px" ng-controller="pipController as pip">
+        <article id="PIP" class="picture-in-picture" style="width:210px; height:160px" ng-controller="pipController as pip" ng-show="space.viewMenu.isDrawingView">
             <!--<div class="pan-zoom-header">
-                {{pip.pageStats()}}  {{pip.status}}
-            </div>-->
+            {{pip.pageStats()}}  {{pip.status}}
+        </div>-->
             <canvas id="panZoomCanvas" class="pan-zoom-canvas" width="10" height="5"></canvas>
         </article>
     </section>
@@ -182,8 +182,8 @@
                 <li ng-click="menu.doOpenFilePicker"><a href="#"> Open </a></li>
                 <li ng-click="menu.doSaveFilePicker"><a href="#"> Save </a></li>
                 <li ng-click="menu.doCloseDocument"><a href="#"> Close </a></li>
-                <li ng-click="menu.doSaveAsHTMLFilePicker" ng-show="menu.isTextView"><a href="#"> HTML </a></li>
-                <li ng-click="menu.doSaveAsPNGFilePicker" ng-show="menu.isDrawingView"><a href="#"> Screenshot </a></li>
+                <li ng-click="menu.doSaveAsHTMLFilePicker" ng-show="space.viewMenu.isTextView"><a href="#"> HTML </a></li>
+                <li ng-click="menu.doSaveAsPNGFilePicker" ng-show="space.viewMenu.isDrawingView"><a href="#"> Screenshot </a></li>
             </ul>
         </div>
 
@@ -207,7 +207,7 @@
             <button class="btn btn-sm" ng-click="menu.doAddNote">
                 Add Note
             </button>
-            <button class="btn btn-sm" ng-click="menu.animals.doAddNote">
+            <button class="btn btn-sm" ng-click="menu.animals.doAddNote" ng-show="space.debug">
                 Add Animal
             </button>
             <button class="btn btn-sm" ng-click="menu.doOpenSelected" ng-disabled="!menu.hasSelection">
@@ -238,7 +238,7 @@
             </button>
         </div>
 
-        <div id="menuPanZoom" class="btn-group-vertical dropdown vertical-menu-group" ng-hide="menu.isTextView" ng-controller="panZoomMenu as menu">
+        <div id="menuPanZoom" class="btn-group-vertical dropdown vertical-menu-group" ng-hide="space.viewMenu.isTextView" ng-controller="panZoomMenu as menu">
             <button class="btn  btn-sm" ng-click="menu.doTogglePanZoomWindow">
                 {{menu.zoomText}}
             </button>
@@ -263,10 +263,10 @@
             <button class="btn  btn-sm" ng-click="menu.doCloseDocument">
                 Close
             </button>
-            <button class="btn  btn-sm" ng-click="menu.doSaveAsHTMLFilePicker" ng-show="menu.isTextView">
+            <button class="btn  btn-sm" ng-click="menu.doSaveAsHTMLFilePicker" ng-show="space.viewMenu.isTextView">
                 HTML
             </button>
-            <button class="btn  btn-sm" ng-click="menu.doSaveAsPNGFilePicker" ng-show="menu.isDrawingView">
+            <button class="btn  btn-sm" ng-click="menu.doSaveAsPNGFilePicker" ng-show="space.viewMenu.isDrawingView">
                 Screenshot
             </button>
         </div>
