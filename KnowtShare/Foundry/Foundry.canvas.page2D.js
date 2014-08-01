@@ -792,11 +792,14 @@ Foundry.canvas = Foundry.canvas || {};
 
 
         if (stage && stage.addEventListener) {
-            stage.addEventListener("stagemousedown", onMouseDownState, false);
-            stage.addEventListener("stagemousemove", onMouseMoveState, false);
-            stage.addEventListener("stagemouseup", onMouseUpState, false);
+            if (!canvas.canDoMouse) {
+                stage.addEventListener("stagemousedown", onMouseDownState, false);
+                stage.addEventListener("stagemousemove", onMouseMoveState, false);
+                stage.addEventListener("stagemouseup", onMouseUpState, false);
 
-            stage.addEventListener("dblclick", onStageDoubleClick, false);
+                stage.addEventListener("dblclick", onStageDoubleClick, false);
+                canvas.canDoMouse = true;
+            }
         }
 
 

@@ -53,7 +53,8 @@
         <nav>
             <h1 class="label label-info " style="margin-left:10px">{{space.traffic.clientCount}}</h1>
             <span class="label label-success " ng-show="space.hasSessionKey">{{space.traffic.trafficDetails}}</span>
-            <img ng-click="space.updateAllViews()" id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
+            <span class="label label-warning " >{{space.traffic.storageDetails}}</span>
+           <img ng-click="space.updateAllViews()" id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
             <span style="margin-right:10px">{{space.documentTitle}}</span>
             <span style="margin-right:10px">{{space.sessionTitle}}</span>
             <span style="margin-right:10px">{{space.clientMode}}</span>

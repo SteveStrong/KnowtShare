@@ -45,10 +45,7 @@ Foundry.createjs = this.createjs || {};
             if ( result ) result.style.position = 'absolute';
             return result;
         },
-        page: function () {
-            var page = ns.makePage2D(this.pageId, {}, this);
-            return page;
-        },
+
         pipId: 'PIP',
         pipElement: function () {
             var result = document.getElementById(this.pipId);
@@ -60,15 +57,7 @@ Foundry.createjs = this.createjs || {};
             var result = document.getElementById(this.panZoomId); 
             return result;
         },
-        panZoom: function () {
-            var page = this.page;
-            if (!page.pictureInPicture && this.panZoomId) {
-                //once created this value shoul dnot be smashed!!!
-                var panZoom = ns.makePanZoomWindow2D(this.panZoomId, {}, page);
-                page.setPIP(panZoom);
-            }
-            return page.pictureInPicture;
-        },
+
 
         //code to manage the scale of the drawing
         doUpdatePIP: function() {
@@ -118,7 +107,18 @@ Foundry.createjs = this.createjs || {};
         this.base = fo.Component;
         this.base(spec, subcomponents, parent);
         this.myType = 'Drawing';
-        this.setScreenSize(this.screenWidth, this.screenHeight)
+
+        //once created this value shoul dnot be smashed!!!
+        this.page = ns.makePage2D(this.pageId, {}, this);
+        if (!this.page.pictureInPicture && this.panZoomId) {
+            this.panZoom = ns.makePanZoomWindow2D(this.panZoomId, {}, this.page);
+            this.page.setPIP(this.panZoom);
+        };
+
+        this.setScreenSize(this.screenWidth, this.screenHeight);
+
+        //this.tracePropertyLifecycle('page');
+
         return this;
     }
 

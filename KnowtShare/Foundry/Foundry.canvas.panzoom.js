@@ -24,7 +24,7 @@ Foundry.createjs = this.createjs || {};
 (function (ns, fo, createjs, undefined) {
     var utils = fo.utils;
 
-
+    var panning = false;
 
     var PanAndZoomWindow = function (properties, subcomponents, parent) {
 
@@ -107,11 +107,7 @@ Foundry.createjs = this.createjs || {};
             fo.publish('pip', ['reparent']);
         });
 
-        fo.subscribe('ShapeMoved', function (uniqueID, model, shape) {
-            //fo.publish('info', ['ShapeMoved']);
-            pzSelf.draw(pzSelfParent, 'black');
-            fo.publish('pip', ['moved']);
-        });
+
 
         fo.subscribe('sizePanZoom', function (self, selfParent, width, height, element) {
             if (self && self != pzSelf) return;
@@ -139,6 +135,16 @@ Foundry.createjs = this.createjs || {};
         });
 
 
+        fo.subscribe('ShapeMoved', function (uniqueID, model, shape) {
+            //if model is undefined then you are panning
+            //so just repaint in black
+            panning = false;
+
+            //fo.publish('info', ['ShapeMoved']);
+            model && pzSelf.draw(pzSelfParent, 'black');
+            fo.publish('pip', ['moved']);
+        });
+
         //this is used to move the small redish window that pans the drawing surface
         fo.subscribe('ShapeMoving', function (page, shape, ev) {
             if (!shape || !page) return;
@@ -148,12 +154,14 @@ Foundry.createjs = this.createjs || {};
 
             if (page == pzSelf && shape == pzSelf.viewWindowShape) {
                 var viewWindowGeom = pzSelf.viewWindowGeom;
-                var scale = page.scale;
+                var scale = pzSelfParent.scale;
                 var panX = viewWindowGeom.x * scale;
                 var panY = viewWindowGeom.y * scale;
-                page.setPanTo(-panX, -panY);
+                pzSelfParent.setPanTo(-panX, -panY);
+                pzSelf.draw(pzSelfParent, 'yellow');
+                panning = true;
             }
-            else {
+            else if (!panning) {
                 pzSelf.draw(pzSelfParent, 'blue');
             }
             fo.publish('pip', ['moving']);

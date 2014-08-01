@@ -3752,7 +3752,7 @@ var fo = Foundry;
                     deep && item.applyToChildren(funct, deep);
                 }
             });
-            return result;
+            return self;
         },
 
         applyToSelfAndSiblings: function (funct, deep) {
@@ -4052,6 +4052,25 @@ var fo = Foundry;
 
     ns.isDialogOpen = false;
     ns.Component = Component;
+
+
+    Component.prototype.tracePropertyLifecycle = function (name, search) {
+        var self = this;
+        var prop = this.getProperty(name, search);
+
+        if (prop) {
+            prop.onValueDetermined = function (value, formula, owner) {
+                fo.publish('info', [prop.asLocalReference(), ' onValueDetermined:' + owner.myName + '  value=' + value]);
+            }
+            prop.onValueSmash = function (value, formula, owner) {
+                fo.publish('error', [prop.asLocalReference(), ' onValueSmash:' + owner.myName]);
+            }
+            prop.onValueSet = function (value, formula, owner) {
+                fo.publish('warning', [prop.asLocalReference(), ' onValueSet:' + owner.myName + '  value=' + value]);
+            }
+            return true;
+        }
+    }
 
     ns.fromParent = function (propertyName) {
         //var result = this.resolvePropertyReference(propertyName + '@');

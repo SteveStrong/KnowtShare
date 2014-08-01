@@ -505,6 +505,8 @@ Foundry.ws = Foundry.workspace;
             var payload = self.currentModelToPayload({}, true, true);
             self.saveSession(payload, self.localStorageKey, function () {
                 //fo.publish('success', ['Session Saved']);
+                fo.publish('sessionStorage', [payload.length,0]);
+                fo.publish('sessionSaved', [payload]);
             });
         };
 
@@ -512,9 +514,11 @@ Foundry.ws = Foundry.workspace;
             var self = this;
             self.restoreSession(self.localStorageKey, function (payload) {
                 //fo.publish('info', ['Restoring Session']);
-                self.clear();
+                //I think cording a clear here is bad and unnecessary   self.clear();
                 self.digestLock(function () {
                     self.payloadToCurrentModel(payload);
+                    fo.publish('sessionStorage', [0, payload.length]);
+                    fo.publish('sessionRestored', [payload]);
                     //fo.publish('success', ['Session Restored']);
                 });
             });

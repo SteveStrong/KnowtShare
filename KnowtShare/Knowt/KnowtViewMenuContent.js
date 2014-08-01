@@ -24,7 +24,10 @@
         },
 
         doAddNote: function () {
-            return this.doCreateNote();
+            var self = this;
+            this.doCreateNote({}, function (obj) {
+                obj.note && self.openEdit(obj.note);
+            });
         },
         canOpenSelected: function () {
             return this.hasSelection;
@@ -365,8 +368,8 @@
 
 
         obj.doCreateNote = function (properties, onComplete) {
-            obj.createAndCaptureNote(properties);
-            onComplete && onComplete();
+            var result = obj.createAndCaptureNote(properties);
+            onComplete && onComplete(result);
         }
 
 
@@ -493,7 +496,7 @@
 
         obj.doClearAsync = function (onComplete) {
             //do not run if page is empty
-            if (space.isDocumentEmpty() || space.isDocumentSaved ) {
+            if (space.isDocumentEmpty() ) {
                 space.clear(); //this make sure we are in a known state
                 onComplete && onComplete();
                 return;

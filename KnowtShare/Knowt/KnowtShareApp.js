@@ -13,6 +13,38 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         return id;
     }
 
+    //app.provider({
+    //    $exceptionHandler: function () {
+
+    //        var handler = function (exception, cause) {
+    //            fo.publish('error', exception, cause);
+    //        };
+
+    //        this.$get = function () {
+    //            return handler;
+    //        };
+    //    }
+    //});
+
+    //Instead of stomping on the provider, use a decorator to intercept the exception handler, and then don’t delegate to the underlying handler. I’m theorizing, but this should work…
+    //angular.module('exceptionHandlingApp')
+    //  .config(function($provide) {
+    //      $provide.decorator('$exceptionHandler', ['$log', '$rootScope', '$delegate',
+    //        function($log, $rootScope, $delegate) {
+    //            return function(exception, cause) {
+    //                if ($rootScope.inDevelopment) {
+    //                    $log.debug('My own handling of the exception:', exception);
+    //                } else {
+    //                    // the default implementation of $exceptionHandler
+    //                    $delegate(exception, cause);  
+    //                }
+    //            };
+    //        }
+    //      ]);
+    //  });
+
+
+
 }(knowtApp, Foundry));
 
 //initial document and run implemented...
@@ -88,6 +120,7 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             };
 
 
+            space.traffic = fo.knowtShareApp.newTraffic({}, space);
  
             if (!defaultSession) {
                 setTimeout(function () {
@@ -102,7 +135,6 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             if (shapeHub) {
                 //make sure you init the hub with callbacks before you call start!!
                 var proxy = app.newShapeHub(shapeHub, space);
-                space.traffic = fo.knowtShareApp.newTraffic({}, space);
 
                 $.connection.hub.start().done(function () {
                     //pop some toast to
@@ -444,7 +476,7 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
 }(knowtApp, Foundry));
 
 
-//now create the traffic monitor controller
+//now create the pipController monitor controller
 (function (app, fo, undefined) {
 
     app.controller('pipController', function ($scope, $log, workspaceService, dialogService) {

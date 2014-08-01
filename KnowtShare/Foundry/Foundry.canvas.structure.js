@@ -74,24 +74,7 @@ Foundry.canvas = Foundry.canvas || {};
         return oldParent;
     }
 
-    prototype.tracePropertyLifecycle = function (name,search) {
-        var prop = this.getProperty(name, search);
-        var self = this;
 
-        //prop.onValueDetermined = function (value, formula, owner) {
-        //    var note = self.gcsIndent(prop.asLocalReference() + ' onValueDetermined:' + owner.myName + '  value=' + value)
-        //    fo.trace.info(note);
-        //}
-
-        //prop.onValueSmash = function (value, formula, owner) {
-        //    var note = self.gcsIndent(prop.asLocalReference() + ' onValueSmash:' + owner.myName)
-        //    fo.trace.error(note);
-        //}
-        //prop.onValueSet = function (value, formula, owner) {
-        //    var note = self.gcsIndent(prop.asLocalReference() + ' onValueSet:' + owner.myName + '  value=' + value)
-        //    fo.trace.warn(note);
-        //}
-    }
 
     prototype.fxMod = function (extra) {
         if (!this.myParent || utils.isaDrawing(this.myParent)) return;

@@ -3754,7 +3754,7 @@ var fo = Foundry;
                     deep && item.applyToChildren(funct, deep);
                 }
             });
-            return result;
+            return self;
         },
 
         applyToSelfAndSiblings: function (funct, deep) {
@@ -4054,6 +4054,25 @@ var fo = Foundry;
 
     ns.isDialogOpen = false;
     ns.Component = Component;
+
+
+    Component.prototype.tracePropertyLifecycle = function (name, search) {
+        var self = this;
+        var prop = this.getProperty(name, search);
+
+        if (prop) {
+            prop.onValueDetermined = function (value, formula, owner) {
+                fo.publish('info', [prop.asLocalReference(), ' onValueDetermined:' + owner.myName + '  value=' + value]);
+            }
+            prop.onValueSmash = function (value, formula, owner) {
+                fo.publish('error', [prop.asLocalReference(), ' onValueSmash:' + owner.myName]);
+            }
+            prop.onValueSet = function (value, formula, owner) {
+                fo.publish('warning', [prop.asLocalReference(), ' onValueSet:' + owner.myName + '  value=' + value]);
+            }
+            return true;
+        }
+    }
 
     ns.fromParent = function (propertyName) {
         //var result = this.resolvePropertyReference(propertyName + '@');
@@ -8421,6 +8440,8 @@ Foundry.ws = Foundry.workspace;
             var payload = self.currentModelToPayload({}, true, true);
             self.saveSession(payload, self.localStorageKey, function () {
                 //fo.publish('success', ['Session Saved']);
+                fo.publish('sessionStorage', [payload.length,0]);
+                fo.publish('sessionSaved', [payload]);
             });
         };
 
@@ -8428,9 +8449,11 @@ Foundry.ws = Foundry.workspace;
             var self = this;
             self.restoreSession(self.localStorageKey, function (payload) {
                 //fo.publish('info', ['Restoring Session']);
-                self.clear();
+                //I think cording a clear here is bad and unnecessary   self.clear();
                 self.digestLock(function () {
                     self.payloadToCurrentModel(payload);
+                    fo.publish('sessionStorage', [0, payload.length]);
+                    fo.publish('sessionRestored', [payload]);
                     //fo.publish('success', ['Session Restored']);
                 });
             });
@@ -9963,24 +9986,7 @@ Foundry.canvas = Foundry.canvas || {};
         return oldParent;
     }
 
-    prototype.tracePropertyLifecycle = function (name,search) {
-        var prop = this.getProperty(name, search);
-        var self = this;
 
-        //prop.onValueDetermined = function (value, formula, owner) {
-        //    var note = self.gcsIndent(prop.asLocalReference() + ' onValueDetermined:' + owner.myName + '  value=' + value)
-        //    fo.trace.info(note);
-        //}
-
-        //prop.onValueSmash = function (value, formula, owner) {
-        //    var note = self.gcsIndent(prop.asLocalReference() + ' onValueSmash:' + owner.myName)
-        //    fo.trace.error(note);
-        //}
-        //prop.onValueSet = function (value, formula, owner) {
-        //    var note = self.gcsIndent(prop.asLocalReference() + ' onValueSet:' + owner.myName + '  value=' + value)
-        //    fo.trace.warn(note);
-        //}
-    }
 
     prototype.fxMod = function (extra) {
         if (!this.myParent || utils.isaDrawing(this.myParent)) return;
@@ -11026,11 +11032,14 @@ Foundry.canvas = Foundry.canvas || {};
 
 
         if (stage && stage.addEventListener) {
-            stage.addEventListener("stagemousedown", onMouseDownState, false);
-            stage.addEventListener("stagemousemove", onMouseMoveState, false);
-            stage.addEventListener("stagemouseup", onMouseUpState, false);
+            if (!canvas.canDoMouse) {
+                stage.addEventListener("stagemousedown", onMouseDownState, false);
+                stage.addEventListener("stagemousemove", onMouseMoveState, false);
+                stage.addEventListener("stagemouseup", onMouseUpState, false);
 
-            stage.addEventListener("dblclick", onStageDoubleClick, false);
+                stage.addEventListener("dblclick", onStageDoubleClick, false);
+                canvas.canDoMouse = true;
+            }
         }
 
 
@@ -12603,7 +12612,7 @@ Foundry.createjs = this.createjs || {};
 (function (ns, fo, createjs, undefined) {
     var utils = fo.utils;
 
-
+    var panning = false;
 
     var PanAndZoomWindow = function (properties, subcomponents, parent) {
 
@@ -12686,11 +12695,7 @@ Foundry.createjs = this.createjs || {};
             fo.publish('pip', ['reparent']);
         });
 
-        fo.subscribe('ShapeMoved', function (uniqueID, model, shape) {
-            //fo.publish('info', ['ShapeMoved']);
-            pzSelf.draw(pzSelfParent, 'black');
-            fo.publish('pip', ['moved']);
-        });
+
 
         fo.subscribe('sizePanZoom', function (self, selfParent, width, height, element) {
             if (self && self != pzSelf) return;
@@ -12718,6 +12723,16 @@ Foundry.createjs = this.createjs || {};
         });
 
 
+        fo.subscribe('ShapeMoved', function (uniqueID, model, shape) {
+            //if model is undefined then you are panning
+            //so just repaint in black
+            panning = false;
+
+            //fo.publish('info', ['ShapeMoved']);
+            model && pzSelf.draw(pzSelfParent, 'black');
+            fo.publish('pip', ['moved']);
+        });
+
         //this is used to move the small redish window that pans the drawing surface
         fo.subscribe('ShapeMoving', function (page, shape, ev) {
             if (!shape || !page) return;
@@ -12727,12 +12742,14 @@ Foundry.createjs = this.createjs || {};
 
             if (page == pzSelf && shape == pzSelf.viewWindowShape) {
                 var viewWindowGeom = pzSelf.viewWindowGeom;
-                var scale = page.scale;
+                var scale = pzSelfParent.scale;
                 var panX = viewWindowGeom.x * scale;
                 var panY = viewWindowGeom.y * scale;
-                page.setPanTo(-panX, -panY);
+                pzSelfParent.setPanTo(-panX, -panY);
+                pzSelf.draw(pzSelfParent, 'yellow');
+                panning = true;
             }
-            else {
+            else if (!panning) {
                 pzSelf.draw(pzSelfParent, 'blue');
             }
             fo.publish('pip', ['moving']);
@@ -12919,10 +12936,7 @@ Foundry.createjs = this.createjs || {};
             if ( result ) result.style.position = 'absolute';
             return result;
         },
-        page: function () {
-            var page = ns.makePage2D(this.pageId, {}, this);
-            return page;
-        },
+
         pipId: 'PIP',
         pipElement: function () {
             var result = document.getElementById(this.pipId);
@@ -12934,15 +12948,7 @@ Foundry.createjs = this.createjs || {};
             var result = document.getElementById(this.panZoomId); 
             return result;
         },
-        panZoom: function () {
-            var page = this.page;
-            if (!page.pictureInPicture && this.panZoomId) {
-                //once created this value shoul dnot be smashed!!!
-                var panZoom = ns.makePanZoomWindow2D(this.panZoomId, {}, page);
-                page.setPIP(panZoom);
-            }
-            return page.pictureInPicture;
-        },
+
 
         //code to manage the scale of the drawing
         doUpdatePIP: function() {
@@ -12992,7 +12998,18 @@ Foundry.createjs = this.createjs || {};
         this.base = fo.Component;
         this.base(spec, subcomponents, parent);
         this.myType = 'Drawing';
-        this.setScreenSize(this.screenWidth, this.screenHeight)
+
+        //once created this value shoul dnot be smashed!!!
+        this.page = ns.makePage2D(this.pageId, {}, this);
+        if (!this.page.pictureInPicture && this.panZoomId) {
+            this.panZoom = ns.makePanZoomWindow2D(this.panZoomId, {}, this.page);
+            this.page.setPIP(this.panZoom);
+        };
+
+        this.setScreenSize(this.screenWidth, this.screenHeight);
+
+        //this.tracePropertyLifecycle('page');
+
         return this;
     }
 
