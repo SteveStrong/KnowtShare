@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<!--http://www.html5rocks.com/en/mobile/touch/-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+
+<html ng-app="knowtChirpAppV2" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+    <title>KnowtChirp V2</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <meta name="description" content="knowtshare: collaborative modeling " />
+    <meta name="author" content="Apprentice Systems" />
+
+    <meta name="application-name" content="knowtshare" />
+    <meta name="msapplication-TileColor" content="#a63fa6" />
+    <meta name="msapplication-square70x70logo" content="images/KnowtShareBadge.png" />
+    <meta name="msapplication-square150x150logo" content="images/KnowtShareLogo.png" />
+    <meta name="msapplication-wide310x150logo" content="images/KnowtShareWideLogo.png" />
+    <meta name="msapplication-square310x310logo" content="images/KnowtShareWideLogo.png" />
+
+
+    <link href="content/bootstrap.min.css" rel="stylesheet" />
+    <link href="content/toastr.min.css" rel="stylesheet" />
+
+    <style type="text/css">
+        .container {
+            background-color: #99CCFF;
+            border: thick solid #808080;
+            padding: 20px;
+            margin: 20px;
+        }
+
+        .pannel {
+            background-color: #c5dff8;
+            border: solid #808080;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        .selected {
+            border: thick solid #ff0000;
+            /*border: 2px solid #999;*/
+        }
+    </style>
+
+</head>
+
+
+<body ng-cloak ng-controller="workSpace as space" >
+
+    <header id="appHeader" class="app-header">
+        <div ng-show="space.debug">
+            <span class="label label-info " style="margin-left:10px">doc: {{space.documentName}}</span>
+            <span class="label label-info " style="margin-left:1px">ext: {{space.documentExt}}</span>
+            <span class="label label-info " style="margin-left:1px">doc title: {{space.documentTitle}}</span>
+
+            <span class="label label-success " style="margin-left:10px">ses title: {{space.sessionTitle}}</span>
+            <span class="label label-success " style="margin-left:1px">mode: {{space.clientMode}}</span>
+
+            <span class="label label-warning " style="margin-left:10px">key: {{space.sessionKey}}</span>
+            <span class="label label-warning " style="margin-left:1px">id: {{space.userId}}</span>
+            <span class="label label-warning " style="margin-left:1px">name: {{space.userNickName}}</span>
+
+            <span class="label label-success " style="margin-left:10px">saved: {{space.isDocumentSaved}}</span>
+            <span class="label label-success " style="margin-left:1px">empty: {{space.isDocumentEmpty()}}</span>
+
+            <span class="label label-danger " style="margin-left:10px">doc: {{space.activeDocument.documentName}}</span>
+            <span class="label label-danger " style="margin-left:1px">ext: {{space.activeDocument.documentExt}}</span>
+        </div>
+        <nav>
+            <div style="display:inline">
+                <span class="label label-info " style="margin-left:10px">{{space.traffic.clientCount}}</span>
+                <span class="label label-success " ng-show="space.hasSessionKey">{{space.traffic.trafficDetails}}</span>
+                <span class="label label-warning " ng-show="space.debug">{{space.traffic.storageDetails}}</span>
+            </div>
+            <img  id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
+            <div style="display:inline">
+                <span style="margin-right:10px">{{space.documentTitle}}</span>
+                <span style="margin-right:10px">{{space.sessionTitle}}</span>
+                <span style="margin-right:10px">{{space.clientMode}}</span>
+            </div>
+            <div style="display:inline" ng-show="space.hasSessionKey">
+                <span style="margin-right:10px">:{{space.sessionKey}}</span>
+                <span style="margin-right:10px">:{{space.userId}}</span>
+                <span style="margin-right:10px">:{{space.userNickName}}</span>
+            </div>
+        </nav>
+    </header>
+
+
+    <section id="appContent" class="appContent">
+        <article id="mainContent" class="mainContent">
+            <button class="btn btn-info" ng-disabled="!space.hasSessionKey" ng-click="doPing()">Ping</button>
+            <button class="btn btn-info" ng-disabled="space.hasSessionKey" ng-click="doJoinSession()">Join Session</button>
+            <button class="btn btn-info" ng-disabled="!space.hasSessionKey" ng-click="doChirp()">Chirp</button>
+            <button class="btn btn-info" ng-disabled="!space.hasSessionKey" ng-click="doSendMessage()">message</button>
+            <button class="btn btn-success" ng-click="doNewPage()">new page</button>
+        </article>
+        <h1>The Chirp V2</h1>
+        <div class="container">
+
+            <script type="text/ng-template" id="noteTreeBody.html">
+                <strong>{{ note.myName}}</strong>:&nbsp;&nbsp;{{ note.headerText}}
+                <button ng-click="doSendNoteChanges(note)">Send Changes</button>
+                <input type="text" ng-model="note.noteText" placeholder="enter your note text" style="width:100%" />
+            </script>
+
+            <script type="text/ng-template" id="noteTreeItem.html">
+                <article data-type="{{note.myType}}">
+                    <div ng-click="toggleSelect(note)" class="pannel" ng-class="{'selected': note.isSelected}">
+                        <div ng-include=" 'noteTreeBody.html' "></div>
+                    </div>
+
+                    <ul>
+                        <li ng-repeat="note in note.Subcomponents.elements" ng-include=" 'noteTreeItem.html' "></li>
+                    </ul>
+                </article>
+            </script>
+
+            <ul>
+                <li ng-repeat="note in rootModel.Subcomponents.elements" ng-include=" 'noteTreeItem.html' "></li>
+            </ul>
+        </div>
+
+        <div ng-repeat="prop in chirp.Properties.elements">
+            <span><strong>{{prop.myName}}:</strong></span>  <span><em>{{prop.asDisplayValue()}}</em></span>
+        </div>
+
+    </section>
+
+
+    <footer id="appFooter" class="appFooter"></footer>
+
+
+
+    <script src="Scripts/jquery-2.1.1.min.js"></script>
+
+    <script src="Scripts/angular.js"></script>
+    <script src="Scripts/angular-route.js"></script>
+    <script src="Scripts/angular-animate.js"></script>
+    <script src="Scripts/angular-touch.js"></script>
+
+    <script src="Scripts/angular-ui/ui-bootstrap.min.js"></script>
+    <script src="Scripts/angular-ui/ui-bootstrap-tpls.min.js"></script>
+
+    <script src="Scripts/toastr.min.js"></script>
+
+
+    <!--Reference the autogenerated SignalR hub script. -->
+    <script src="Scripts/jquery.signalR-2.1.0.min.js"></script>
+    <script src="signalr/hubs"></script>
+
+
+    <script type="text/javascript" src="http://foundryjs.azurewebsites.net/bundles/EaselJS"></script>
+    <!--<script type="text/javascript" src="http://foundryjs.azurewebsites.net/Foundry/FoundryComplete.js"></script>-->
+    <script type="text/javascript" src="Foundry/FoundryComplete.js"></script>
+    <script src="Foundry/Foundry.canvas.page2D.js"></script>
+    <script src="Foundry/Foundry.canvas.document.js"></script>
+    <script src="Foundry/Foundry.canvas.panzoom.js"></script>
+
+    <script type="text/javascript" src="Knowt/KnowtChirpAppV2.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewShapeHub.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewTraffic.js"></script>
+
+    <script type="text/javascript" src="Knowt/KnowtViewNgDialog.js"></script>
+
+    <script type="text/javascript" src="Knowt/KnowtViewMenuContent.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewStencil.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewStencilAnimals.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewMenuSession.js"></script>
+
+
+</body>
+</html>

@@ -51,9 +51,10 @@
         /// session management //
         /////////////////////////////////////////////////////////////////////////////////////////////////////
         obj.updateSessionTraffic = function (bytesOut, bytesIn) {
-            if (space.hasSessionKey) {
-                fo.publish('sessionTraffic', [bytesOut, bytesIn]);
-            }       
+            if (!space.hasSessionKey) return false;
+
+            fo.publish('sessionTraffic', [bytesOut, bytesIn]);
+            return true;
         };
 
         shapeHub.client.clientCountChanged = function (total, status) {
@@ -77,10 +78,10 @@
                 fo.publish('error', ['this session does not match key']);
                 return
             }
-            if (space.matchesUser(userId)) {
-                //fo.publish('error', ['user cannot join their own session']);
-                return
-            }
+            //if (space.matchesUser(userId)) {
+            //    //fo.publish('error', ['user cannot join their own session']);
+            //    return
+            //}
 
             fo.publish('success', ['confirmCreateSession']);
             fo.publish('client', ['confirmCreateSession', sessionKey, userId]);
@@ -104,10 +105,10 @@
                 fo.publish('error', ['this session does not match key']);
                 return
             }
-            if (space.matchesUser(userId)) {
-                //fo.publish('error', ['user cannot join their own session']);
-                return
-            }
+            //if (space.matchesUser(userId)) {
+            //    //fo.publish('error', ['user cannot join their own session']);
+            //    return
+            //}
 
             fo.publish('success', ['confirmJoinSession']);
             fo.publish('client', ['confirmJoinSession', sessionKey, userId]);
@@ -129,10 +130,10 @@
                 fo.publish('error', ['this session does not match key']);
                 return
             }
-            if (space.matchesUser(userId)) {
-                //fo.publish('error', ['user cannot join their own session']);
-                return
-            }
+            //if (space.matchesUser(userId)) {
+            //    //fo.publish('error', ['user cannot join their own session']);
+            //    return
+            //}
 
             fo.publish('info', ['authorReceiveJoinSessionFromPlayer']);
             obj.updateSessionTraffic(0, payload ? payload.length: 0);
@@ -189,7 +190,7 @@
         /////////////////////////////////////////////////////////////////////////////////////////////////////
 
         obj.doAddNote = function (note) {
-            if (space.hasSessionKey) {
+            if (!space.hasSessionKey) return false;
 
                 var spec = {
                     uniqueID: note.myName,
@@ -199,23 +200,22 @@
                 obj.updateSessionTraffic(newPayload.length,0);
 
                 shapeHub.server.authorPayloadAdded(space.sessionKey, space.userId, newPayload);
-            }
-
+                return true;
         }
 
         obj.doAddPayload = function (model, uniqueID, shape) {
-            if (space.hasSessionKey) {
+            if (!space.hasSessionKey) return false;
 
-                var spec = {
-                    uniqueID: uniqueID || model.myName,
-                    model: fo.utils.isManaged(model) ? [model.dehydrate(false)] : model,
-                    drawing: shape ? [shape.dehydrate(false, { isSelected: false, isActiveTarget: false, })] : [],
-                };
-                var newPayload = fo.stringifyPayload(spec);
-                obj.updateSessionTraffic(newPayload.length,0);
+            var spec = {
+                uniqueID: uniqueID || model.myName,
+                model: fo.utils.isManaged(model) ? [model.dehydrate(false)] : model,
+                drawing: shape ? [shape.dehydrate(false, { isSelected: false, isActiveTarget: false, })] : [],
+            };
+            var newPayload = fo.stringifyPayload(spec);
+            obj.updateSessionTraffic(newPayload.length,0);
 
-                shapeHub.server.authorPayloadAdded(space.sessionKey, space.userId, newPayload);
-            }
+            shapeHub.server.authorPayloadAdded(space.sessionKey, space.userId, newPayload);
+            return true;
         }
 
 
@@ -237,37 +237,38 @@
             }
         }
 
-       obj.doDeleteNote = function (list) {
+        obj.doDeleteNote = function (list) {
+            if (!space.hasSessionKey) return false;
+
            fo.publish('warning', ['doDeleteNote']);
 
            list.forEach(function (item) {
-                if (space.hasSessionKey) {
-                    var spec = {
-                        uniqueID: item.myName,
-                        model: item ? [item.dehydrate(false)] : item,
-                    };
-                    var newPayload = fo.stringifyPayload(spec);
-                    obj.updateSessionTraffic(newPayload.length,0);
+                var spec = {
+                    uniqueID: item.myName,
+                    model: item ? [item.dehydrate(false)] : item,
+                };
+                var newPayload = fo.stringifyPayload(spec);
+                obj.updateSessionTraffic(newPayload.length,0);
 
-                    shapeHub.server.authorPayloadDeleted(space.sessionKey, space.userId, newPayload);
-                }
+                shapeHub.server.authorPayloadDeleted(space.sessionKey, space.userId, newPayload);
                 //item.removeFromModel();
-            });
+           });
+           return true;
         }
 
        obj.doDeletePayload = function (model, uniqueID, shape) {
-           if (space.hasSessionKey) {
+           if (!space.hasSessionKey) return false;
 
-               var spec = {
-                   uniqueID: uniqueID || model.myName,
-                   model: fo.utils.isManaged(model) ? [model.dehydrate(false)] : model,
-                   drawing: shape ? [shape.dehydrate(false, { isSelected: false, isActiveTarget: false, })] : [],
-               };
-               var newPayload = fo.stringifyPayload(spec);
-               obj.updateSessionTraffic(newPayload.length,0);
+            var spec = {
+                uniqueID: uniqueID || model.myName,
+                model: fo.utils.isManaged(model) ? [model.dehydrate(false)] : model,
+                drawing: shape ? [shape.dehydrate(false, { isSelected: false, isActiveTarget: false, })] : [],
+            };
+            var newPayload = fo.stringifyPayload(spec);
+            obj.updateSessionTraffic(newPayload.length,0);
 
-               shapeHub.server.authorPayloadDeleted(space.sessionKey, space.userId, newPayload);
-           }
+            shapeHub.server.authorPayloadDeleted(space.sessionKey, space.userId, newPayload);
+            return true;
        }
 
        shapeHub.client.payloadDeleted = function (sessionKey, userId, payload) {
@@ -293,37 +294,40 @@
 
 
 
-        obj.doClearNotes = function () {
+       obj.doClearNotes = function () {
+           if (!space.hasSessionKey) return false;
+
             fo.publish('warning', ['doClearNotes']);
             space.clear();
-            //$scope.$apply();
-        }
+            return true;
+       }
 
-        obj.doSendNoteChanges = function (note) {
+       obj.doSendNoteChanges = function (note) {
+           if (!space.hasSessionKey) return false;
+
             fo.publish('warning', ['doSendNoteChanges']);
 
-            if (space.hasSessionKey) {
+            var spec = note.dehydrate(false);
+            var newPayload = fo.stringifyPayload(spec);
+            obj.updateSessionTraffic(newPayload.length,0);
 
-                var spec = note.dehydrate(false);
-                var newPayload = fo.stringifyPayload(spec);
-                obj.updateSessionTraffic(newPayload.length,0);
-
-                shapeHub.server.authorChangedModel(space.sessionKey, space.userId, newPayload);
-            }
+            shapeHub.server.authorChangedModel(space.sessionKey, space.userId, newPayload);
+            return true;
         }
 
         obj.doUpdatePayload = function (model, uniqueID) {
-            if (space.hasSessionKey) {
+            if (!space.hasSessionKey) return false;
 
-                var spec = {
-                    uniqueID: uniqueID || model.myName,
-                    model: fo.utils.isManaged(model) ? [model.dehydrate(false)] : model,
-                };
-                var newPayload = fo.stringifyPayload(spec);
-                obj.updateSessionTraffic(newPayload.length,0);
+            //send a single model object
+            var spec = {
+                uniqueID: uniqueID || model.myName,
+                model: fo.utils.isManaged(model) ? model.dehydrate(false) : model,
+            };
+            var newPayload = fo.stringifyPayload(spec);
+            obj.updateSessionTraffic(newPayload.length,0);
 
-                shapeHub.server.authorChangedModel(space.sessionKey, space.userId, newPayload);
-            }
+            shapeHub.server.authorChangedModel(space.sessionKey, space.userId, newPayload);
+            return true;
         }
 
         shapeHub.client.updateModel = function (sessionKey, userId, payload) {
@@ -340,8 +344,9 @@
                 var spec = fo.parsePayload(payload);
                 var uniqueID = spec.uniqueID;
                 var context = rootModel.getSubcomponent(uniqueID, true);
-                if (context) {
-                    fo.utils.extend(context, spec);
+                var model = spec.model;
+                if (context && model ) {
+                    fo.utils.extend(context, model);
                     fo.publish('client', ['updateModel', sessionKey, userId, payload]);
                 }
             } catch (e) {
@@ -351,17 +356,12 @@
 
 
         obj.doReparentModelTo = function (childID, oldParentID, newParentID) {
-            try {
-                if (!space.matchesSession(sessionKey)) {
-                    return;
-                }
-                obj.updateSessionTraffic(0, 10);
+            if (!space.hasSessionKey) return false;
+ 
+            obj.updateSessionTraffic(0, 10);
 
-                shapeHub.server.authorReparentModelTo(space.sessionKey, childID, oldParentID, newParentID);
-
-            } catch (e) {
-                fo.publish('error', ['doReparentModelTo', e.message]);
-            }
+            shapeHub.server.authorReparentModelTo(space.sessionKey, childID, oldParentID, newParentID);
+            return true;
         }
 
         shapeHub.client.parentModelTo = function (sessionKey, uniqueID, oldParentID, newParentID) {
@@ -378,6 +378,16 @@
                 var newParent = newParentID ? rootModel.getSubcomponent(newParentID, true) : rootModel;
                 if (item && newParent) {
                     var oldParent = newParent.capture(item);
+
+                    //now do the page
+                    var rootPage = space.rootPage;
+                    if (rootPage) {
+                        var shape = rootPage.getSubcomponent(uniqueID, true);
+                        var group = newParentID ? rootPage.getSubcomponent(newParentID, true) : rootPage;
+
+                        group.capture(shape);
+                    }
+
                     fo.publish('client', ['parentModelTo', sessionKey, uniqueID, oldParentID, newParentID]);
                 }
             } catch (e) {
@@ -386,21 +396,22 @@
         };
 
         obj.doMovedShapeTo = function (shape, uniqueID) {
+            if (!space.hasSessionKey) return false;
+
             try {
-                if (!space.matchesSession(sessionKey)) {
-                    return;
-                }
+
                 obj.updateSessionTraffic(0, 10);
 
                 var pinX = shape.pinX;
                 var pinY = shape.pinY;
                 var angle = shape.angle ? shape.angle : 0.0;
 
-                shapeHub.server.authorReparentModelTo(space.sessionKey, uniqueID || shape.myName, pinX, pinY, angle);
+                shapeHub.server.authorMovedShapeTo(space.sessionKey, uniqueID || shape.myName, pinX, pinY, angle);
 
             } catch (e) {
                 fo.publish('error', ['doMovedShapeTo', e.message]);
             }
+            return true;
         }
 
         shapeHub.client.repositionShapeTo = function (sessionKey, uniqueID, pinX, pinY, angle) {

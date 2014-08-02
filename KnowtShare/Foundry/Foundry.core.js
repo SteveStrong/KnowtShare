@@ -3446,7 +3446,7 @@ var fo = Foundry;
                 if (isFiltered && !modify[name]) return;
 
                 var notExist = 'given'.matches(mp.status) ? false : mp.formula !== undefined;
-                if (notExist) return;
+                if (notExist && !mp.canExport) return;
 
                 //you do not want to send commands right?
                 //and because mp.value contains the last computed value it should be undefined

@@ -130,26 +130,23 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             }
 
             // Reference the auto-generated proxy for the hub.
-            $.connection.hub.logging = true;
+            var connection = $.hubConnection();
+            connection.logging = true;
+
 
             var shapeHub = $.connection.shapeHub;
             if (shapeHub) {
                 //make sure you init the hub with callbacks before you call start!!
                 var proxy = app.newShapeHub(shapeHub, space);
 
-                $.connection.hub.start().done(function () {
-                    //pop some toast to
-                    fo.publish('info', ['connected to service', 'ready']);
-
+                var hub = $.connection.hub;
+                hub.start().done(function () {
                     fo.publish('proxyStarted', [proxy, shapeHub, defaultSession])
-
                 });
             }
             else {
                 fo.publish('warning', ['but everything loaded', 'did not connected to service']);
             }
-
-
 
             return space;
         };
@@ -254,6 +251,10 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
 
         fo.subscribe('proxyStarted', function (proxy, hub, sessionKey) {
             space.proxy = proxy;
+
+            //pop some toast to
+            fo.publish('info', ['connected to service', 'ready']);
+
 
             sessionKey && proxy.doJoinSession(sessionKey);
             $scope.safeApply();
