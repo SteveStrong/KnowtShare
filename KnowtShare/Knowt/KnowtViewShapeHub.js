@@ -57,7 +57,7 @@
             return true;
         };
 
-        shapeHub.client.clientCountChanged = function (total, status) {
+        shapeHub.client.clientCountChanged = function (total, status, groupTotal) {
             fo.publish('sessionClientCount', [total, status]);
             fo.publish('client', ['clientCountChanged', status]);
         }
@@ -100,6 +100,7 @@
             shapeHub.server.playerJoinSession(space.sessionKey, space.userId, payload);
         }
 
+        var waitingForResync = false;
         shapeHub.client.confirmJoinSession = function (sessionKey, userId) {
             if (!space.matchesSession(sessionKey)) {
                 fo.publish('error', ['this session does not match key']);
@@ -110,19 +111,91 @@
             //    return
             //}
 
-            fo.publish('success', ['confirmJoinSession']);
+            var msg = waitingForResync ? 'confirmResyncSession' : 'confirmJoinSession'
+
+            waitingForResync = false;
+            fo.publish('success', [msg]);
             fo.publish('client', ['confirmJoinSession', sessionKey, userId]);
+        }
+
+        obj.doResyncSession = function () {
+            if (!space.hasSessionKey) {
+                fo.publish('error', ['cannot doResyncSession']);
+                return
+            }
+
+            waitingForResync = true;
+            shapeHub.server.authorResyncSession(space.sessionKey, space.userId);
+        }
+
+        shapeHub.client.confirmResyncSession = function (sessionKey, userId, total) {
+            if (!space.matchesSession(sessionKey)) {
+                fo.publish('error', ['this session does not match key']);
+                return
+            }
+
+            //if (total <= 1) {
+            //    //you are the only one resynce will not help
+            //    fo.publish('warning', ['there is noone on line. your session can be resynced']);
+            //    return;
+            //}
+
+            //delete my current model and then ask someone to send me one
+            space.clear();
+            var payload = space.currentModelToPayload();
+            obj.updateSessionTraffic(payload.length, 0);
+
+            shapeHub.server.playerJoinSession(space.sessionKey, space.userId, payload);
+            fo.publish('client', ['confirmResyncSession', sessionKey, userId, total]);
         }
 
         obj.doExitSession = function () {
             if (!space.hasSessionKey) {
-                fo.publish('error', ['cannot quit']);
+                fo.publish('error', ['cannot doExitSession']);
                 return
             }
 
-            space.smashProperty('sessionKey');
-            fo.publish('success', ['doExitSession']);
+            var payload = space.currentModelToPayload();
+            shapeHub.server.playerExitSession(space.sessionKey, space.userId, payload);
         }
+
+        shapeHub.client.confirmExitSession = function (sessionKey, userId) {
+            if (!space.matchesSession(sessionKey)) {
+                fo.publish('error', ['this session does not match key']);
+                return
+            }
+
+            //call to exit on server 
+            space.smashProperty('sessionKey');
+            fo.publish('success', ['confirmExitSession']);
+            fo.publish('client', ['confirmExitSession', sessionKey, userId]);
+        }
+
+        shapeHub.client.receiveExitSessionFromPlayer = function (sessionKey, userId, payload) {
+            if (!space.matchesSession(sessionKey)) {
+                fo.publish('error', ['this session does not match key']);
+                return
+            }
+
+            //should I consume their last payload?
+
+
+            fo.publish('info', ['Player is exiting Session', userId]);
+            fo.publish('client', ['receiveExitSessionFromPlayer', sessionKey, userId]);
+        }
+
+        obj.doCollaborate = function () {
+            var sessionKey = fo.utils.generateUUID();
+            if (this.hasUserId) {
+                this.sessionKey = sessionKey;
+            }
+            this.createCollaborationList(function (links) {
+                links.forEach(function (link) {
+                    hub.invoke("authorInvite", sessionKey, ctrl.userNickName, ctrl.userid, link.friendNickName, link.friendUserId);
+                });
+            });
+        }
+
 
 
         shapeHub.client.authorReceiveJoinSessionFromPlayer = function (sessionKey, userId, payload) {
@@ -355,16 +428,17 @@
         }
 
 
-        obj.doReparentModelTo = function (childID, oldParentID, newParentID) {
+        obj.doReparentModelTo = function (childID, oldParentID, newParentID, loc) {
             if (!space.hasSessionKey) return false;
  
             obj.updateSessionTraffic(0, 10);
 
-            shapeHub.server.authorReparentModelTo(space.sessionKey, childID, oldParentID, newParentID);
+            var location = JSON.stringify(loc);
+            shapeHub.server.authorReparentModelTo(space.sessionKey, childID, oldParentID, newParentID, location);
             return true;
         }
 
-        shapeHub.client.parentModelTo = function (sessionKey, uniqueID, oldParentID, newParentID) {
+        shapeHub.client.parentModelTo = function (sessionKey, uniqueID, oldParentID, newParentID, location) {
             //fo.trace && fo.trace.funcTrace(arguments, "parentModelTo");
             try {
                 if (!space.matchesSession(sessionKey)) {
@@ -373,11 +447,14 @@
                 obj.updateSessionTraffic(0, 10);
                 //parent id's can be null so you must assume root model or page
                 var rootModel = space.rootModel;
+                var loc = JSON.parse(location);
 
                 var item = rootModel.getSubcomponent(uniqueID, true);
                 var newParent = newParentID ? rootModel.getSubcomponent(newParentID, true) : rootModel;
                 if (item && newParent) {
-                    var oldParent = newParent.capture(item);
+                    var index = loc.index ? loc.index : newParent.Subcomponents.count - 1;
+
+                    var oldParent = newParent.captureInsertSubcomponent(index, item);
 
                     //now do the page
                     var rootPage = space.rootPage;
@@ -385,7 +462,11 @@
                         var shape = rootPage.getSubcomponent(uniqueID, true);
                         var group = newParentID ? rootPage.getSubcomponent(newParentID, true) : rootPage;
 
-                        group.capture(shape);
+                        group.captureInsertSubcomponent(index, shape);
+                        if (group == rootPage) {
+                            shape.pinX = loc.pinX;
+                            shape.pinY = loc.pinY;
+                        }
                     }
 
                     fo.publish('client', ['parentModelTo', sessionKey, uniqueID, oldParentID, newParentID]);

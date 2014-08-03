@@ -252,12 +252,14 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         fo.subscribe('proxyStarted', function (proxy, hub, sessionKey) {
             space.proxy = proxy;
 
-            //pop some toast to
-            fo.publish('info', ['connected to service', 'ready']);
+            //let others hear about this before we act
+            setTimeout(function () {
+                sessionKey && proxy.doJoinSession(sessionKey);
 
-
-            sessionKey && proxy.doJoinSession(sessionKey);
-            $scope.safeApply();
+                //pop some toast to
+                fo.publish('info', ['connected to service', 'ready']);
+                $scope.safeApply();
+            }, 100);
         });
 
         fo.subscribeComplete('client', function () {
@@ -294,8 +296,9 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
             space.doSessionSave();
             space.isDocumentSaved = false;
             if (space.hasSessionKey) {
-                space.proxy.doReparentModelTo(childID, oldParentID, newParentID);
+                space.proxy.doReparentModelTo(childID, oldParentID, newParentID, loc);
             }
+            rootPage.updatePIP();
             $scope.safeApply();
         });
 
@@ -334,13 +337,21 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         });
 
         fo.subscribeComplete('undoAdded', function (name, note, shape) {
+            rootPage.updatePIP();
             $scope.safeApply();
         });
 
         fo.subscribeComplete('undoRemoved', function (name, note, shape) {
+            rootPage.updatePIP();
             $scope.safeApply();
         });
 
+
+
+        fo.subscribeComplete('client', function (event) {
+            rootPage.updatePIP();
+            $scope.safeApply();
+        });
 
         return space;
     });

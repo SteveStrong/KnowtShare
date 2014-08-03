@@ -301,7 +301,7 @@
                 page.forceLayout();
 
                 //tell other users the note has changed (changed back that is)
-                fo.publish('Reparented', [child.uniqueID, newParent.uniqueID, oldParent.uniqueID]);
+                fo.publish('Reparented', [child.uniqueID, newParent.uniqueID, oldParent.uniqueID, loc]);
 
                 return payload;
             }
@@ -313,7 +313,7 @@
             var payload = { child: child, oldParent: oldParent, newParent: newParent, loc: loc };
             var undo = fo.undo.do('ShapeReparented', payload);  //
 
-            fo.publish('Reparented', [child.uniqueID, oldParent.uniqueID, newParent.uniqueID])
+            fo.publish('Reparented', [child.uniqueID, oldParent.uniqueID, newParent.uniqueID, loc])
         });
 
 

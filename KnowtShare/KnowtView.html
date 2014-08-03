@@ -272,19 +272,19 @@
 
         <div id="menuShare" class="btn-group-vertical dropdown vertical-menu-group" ng-controller="sessionMenu as menu">
 
-            <button class="btn  btn-sm " ng-click="menu.doCreateSession" ng-hide="menu.hasSessionKey">
+            <button class="btn  btn-sm " ng-click="menu.doCreateSession" ng-show="menu.canDoCreateSession">
                 Share
             </button>
-            <button class="btn  btn-sm " ng-click="menu.doJoinSession" ng-hide="menu.hasSessionKey">
+            <button class="btn  btn-sm " ng-click="menu.doJoinSession" ng-show="menu.canDoJoinSession">
                 Join
             </button>
-            <button class="btn btn-sm " ng-click="menu.doStopSharing" ng-show="menu.hasSessionKey">
+            <button class="btn btn-sm " ng-click="menu.doStopSharing" ng-show="menu.canDoStopSharing">
                 Stop Sharing
             </button>
-            <button class="btn  btn-sm " ng-click="menu.doShareSession" ng-show="menu.hasSessionKey">
+            <button class="btn  btn-sm " ng-click="menu.doShareSession" ng-show="menu.canDoShareSession">
                 Share Link
             </button>
-            <button class="btn  btn-sm " ng-click="menu.doResyncSession" ng-show="menu.hasSessionKey">
+            <button class="btn  btn-sm " ng-click="menu.doResyncSession" ng-show="menu.canDoResyncSession">
                 Resync
             </button>
 

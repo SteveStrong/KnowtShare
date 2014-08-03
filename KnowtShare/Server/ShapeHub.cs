@@ -24,20 +24,20 @@ namespace KnowtShare
         public override Task OnConnected()
         {
             _connections.TryAdd(Context.ConnectionId, null);
-            return Clients.All.clientCountChanged(_connections.Count, "connected");
+            return Clients.All.clientCountChanged(_connections.Count, "connected", this.GroupCount.Count);
         }
 
         public override Task OnReconnected()
         {
             _connections.TryAdd(Context.ConnectionId, null);
-            return Clients.All.clientCountChanged(_connections.Count,"reconnected");
+            return Clients.All.clientCountChanged(_connections.Count, "reconnected", this.GroupCount.Count);
         }
 
         public override Task OnDisconnected()
         {
             object value;
             _connections.TryRemove(Context.ConnectionId, out value);
-            return Clients.All.clientCountChanged(_connections.Count,"disconnected");
+            return Clients.All.clientCountChanged(_connections.Count, "disconnected", this.GroupCount.Count);
         }
 
         #endregion
@@ -45,20 +45,34 @@ namespace KnowtShare
 
         //http://www.asp.net/signalr/overview/signalr-20/hubs-api/hubs-api-guide-server#groupsfromhub
 
+        ConcurrentDictionary<string, int> GroupCount = new ConcurrentDictionary<string, int>();
+
         public Task JoinSessionGroup(string sessionKey)
         {
+            var count = GroupCount.GetOrAdd(sessionKey, 0);
+            GroupCount.TryUpdate(sessionKey, count + 1, count);
             return Groups.Add(Context.ConnectionId, sessionKey);
         }
 
-        //public async Task JoinGroup(string groupName)
-        //{
-        //    await Groups.Add(Context.ConnectionId, groupName);
-        //    Clients.Group(groupname).addContosoChatMessageToPage(Context.ConnectionId + " added to group");
-        //}
-
         public Task LeaveSessionGroup(string sessionKey)
         {
+            var count = GroupCount.GetOrAdd(sessionKey, 0);
+            GroupCount.TryUpdate(sessionKey, count - 1, count);
             return Groups.Remove(Context.ConnectionId, sessionKey);
+        }
+
+        public int SessionCount(string sessionKey)
+        {
+            int count = 0;
+            GroupCount.TryGetValue(sessionKey, out count);
+            return count;
+        }
+
+        public void AuthorSessionCount(string sessionKey, string userId)
+        {
+            //should only callback if this session key has other players
+            var total = SessionCount(sessionKey);
+            Clients.Caller.playerSessionCount(sessionKey, userId, total);
         }
 
 
@@ -82,9 +96,9 @@ namespace KnowtShare
             Clients.OthersInGroup(sessionKey).updateModel(sessionKey, userId, payload);
         }
 
-        public void AuthorReparentModelTo(string sessionKey, string uniqueID, string oldParentID, string newParentID)
+        public void AuthorReparentModelTo(string sessionKey, string uniqueID, string oldParentID, string newParentID, string location)
         {
-            Clients.OthersInGroup(sessionKey).parentModelTo(sessionKey, uniqueID, oldParentID, newParentID);
+            Clients.OthersInGroup(sessionKey).parentModelTo(sessionKey, uniqueID, oldParentID, newParentID, location);
         }
 
         public void AuthorMovedShapeTo(string sessionKey, string uniqueID, double pinX, double pinY, double angle)
@@ -96,14 +110,14 @@ namespace KnowtShare
 
         public async Task PlayerCreateSession(string sessionKey, string userId, string payload)
         {
-            await Groups.Add(Context.ConnectionId, sessionKey);
+            await JoinSessionGroup(sessionKey);
             Clients.OthersInGroup(sessionKey).authorReceiveJoinSessionFromPlayer(sessionKey, userId, payload);
             Clients.Caller.confirmCreateSession(sessionKey, userId);
         }
 
         public async Task PlayerJoinSession(string sessionKey, string userId, string payload)
         {
-            await Groups.Add(Context.ConnectionId, sessionKey);
+            await JoinSessionGroup(sessionKey);
             Clients.OthersInGroup(sessionKey).authorReceiveJoinSessionFromPlayer(sessionKey, userId, payload);
             Clients.Caller.confirmJoinSession(sessionKey, userId);
         }
@@ -111,9 +125,16 @@ namespace KnowtShare
 
         public void PlayerExitSession(string sessionKey, string userId, string payload)
         {
-            Clients.OthersInGroup(sessionKey).ReceiveExitSessionFromPlayer(sessionKey, userId, payload);
+            Clients.OthersInGroup(sessionKey).receiveExitSessionFromPlayer(sessionKey, userId, payload);
             LeaveSessionGroup(sessionKey);
             Clients.Caller.confirmExitSession(sessionKey, userId);
+        }
+
+        public void AuthorResyncSession(string sessionKey, string userId)
+        {
+            //should only callback if this session key has other players
+            var total = SessionCount(sessionKey);
+            Clients.Caller.confirmResyncSession(sessionKey, userId, total);
         }
 
         public void AuthorSendJoinSessionModelToPlayers(string sessionKey, string userId, string payload)
