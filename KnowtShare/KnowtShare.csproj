@@ -231,6 +231,7 @@
     <Content Include="images\KnowtShareSplashscreen.png" />
     <Content Include="images\KnowtShareStoreLogo.png" />
     <Content Include="images\KnowtShareWideLogo.png" />
+    <Content Include="start.html" />
     <Content Include="KnowtChirpV2.html" />
     <Content Include="KnowtChirp.html" />
     <Content Include="Knowtify.html" />
@@ -312,6 +313,8 @@
     <Content Include="Foundry\version.min.js.map">
       <DependentUpon>version.min.js</DependentUpon>
     </Content>
+    <None Include="Properties\PublishProfiles\knowtshare - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\knowtshare - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\knowtshareStaging.pubxml" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
