@@ -4,6 +4,8 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 
+//http://www.asp.net/aspnet/overview/owin-and-katana/owin-startup-class-detection
+
 [assembly: OwinStartup(typeof(KnowtShare.Startup))]
 
 namespace KnowtShare

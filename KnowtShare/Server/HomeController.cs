@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 
-namespace ShapeSignal
+namespace KnowtShare
 {
     public class HomeController : Controller
     {

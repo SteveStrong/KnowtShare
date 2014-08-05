@@ -156,7 +156,6 @@
     <Content Include="css\TwoColumnSidebarLayoutDark.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="Foundry.shape.panzoomold.js" />
     <Content Include="Foundry\canvas2Blob.js" />
     <Content Include="Foundry\canvas2Image.js" />
     <Content Include="Foundry\csvToJSON.js" />
