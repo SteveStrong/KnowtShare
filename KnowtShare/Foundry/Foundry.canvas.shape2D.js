@@ -25,7 +25,9 @@ Foundry.canvas = Foundry.canvas || {};
     var tween = create.Tween;
     var utils = fo.utils;
 
-    ns.colorsFill = ['#FFFFFF', '#FFFF99', '#FFFF33', '#FFCC66', '#FFCC00', '#CC9900', '#996600', '#663300'];
+    ns.colorsFill = ['#FFFFFF', '#FFFF99', '#FFFF33', '#FFCC66', '#FFCC00', '#CC9900', '#996600', '#663300', '#000000', '#000000', '#000000', '#000000', '#000000'];
+    ns.colorsText = ['#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF'];
+
     ns.standardNoteOffset = 10;
     ns.standardNoteSize = 150;
     ns.minNoteSize = 50;
@@ -66,9 +68,9 @@ Foundry.canvas = Foundry.canvas || {};
         var depth = shape.groupDepth;
         var colorDepth = depth > count ? count : depth;
 
+        shape.textColor = ns.colorsText[colorDepth || 0];
         shape.fillColor = ns.colorsFill[colorDepth || 0];
         shape.strokeColor = ns.colorsFill[colorDepth + 1];
-        shape.textColor = depth >= 5 ? 'white' : 'black';
 
         //fo.trace.log(shape.gcsIndent(" updateShapeForLayout done " + shape.myName));
 
@@ -118,7 +120,7 @@ Foundry.canvas = Foundry.canvas || {};
             return this.context ? this.context.headerText : this.myName;
         },
         headline: function () {
-            return create.createText('', "bold 12px Arial", "#000000");
+            return create.createText('', "bold 12px Arial", ns.colorsText[0]);
         },
         background: function () { return create.createShape(); },
         selected: function () { return create.createShape(); },
@@ -172,6 +174,7 @@ Foundry.canvas = Foundry.canvas || {};
             headline.y = (shapeHeight - height) / 2;
 
             fo.suspendDependencies(function () {
+                headline.color = self.textColor;
                 container.setTransform(self.pinX, self.pinY);
                 self.selected.alpha = self.isSelected ? .5 : 0;
                 self.dropTarget.alpha = self.isActiveTarget ? .5 : 0;
@@ -311,7 +314,7 @@ Foundry.canvas = Foundry.canvas || {};
             return this.context ? this.context.noteText : this.headerText;
         },
         note: function () {
-            return create.createText('', "10px Arial", "#000000");
+            return create.createText('', "10px Arial", ns.colorsText[0]);
         },
         isTextDifferent: function () {
             if (this.headerText == this.noteText) return false;
@@ -381,10 +384,16 @@ Foundry.canvas = Foundry.canvas || {};
             this.note.lineWidth = shapeWidth - (2 * ns.standardNoteOffset);
             this.headline.lineWidth = shapeWidth - ns.standardNoteOffset;
 
-            var fill = this.fillColor;
-            var stroke = this.strokeColor;
             var g = this.background.graphics.clear();
-            g.beginFill(fill).beginStroke(stroke).setStrokeStyle(1).drawRect(0, 0, shapeWidth, shapeHeight).endStroke().endFill();
+            fo.suspendDependencies(function () {
+                var fill = self.fillColor;
+                var stroke = self.strokeColor;
+                g.beginFill(fill).beginStroke(stroke).setStrokeStyle(1).drawRect(0, 0, self.width, self.height).endStroke().endFill();
+            });
+
+            //var fill = this.fillColor;
+            //var stroke = this.strokeColor;
+            //g.beginFill(fill).beginStroke(stroke).setStrokeStyle(1).drawRect(0, 0, shapeWidth, shapeHeight).endStroke().endFill();
 
             g = this.selected.graphics.clear();
             g.beginStroke("blue").setStrokeStyle(5).drawRect(3, 3, shapeWidth - 6, shapeHeight - 6).endStroke();
@@ -429,16 +438,11 @@ Foundry.canvas = Foundry.canvas || {};
                     if (note.visible) {
                         headline.y = (ns.minNoteSize - headlineHeight) / 2;
                     }
-
-                }
-               
+                }             
             }
 
-
-
-
-
             fo.suspendDependencies(function () {
+                headline.color = self.textColor;
                 container.setTransform(self.pinX, self.pinY);
                 self.selected.alpha = self.isSelected ? .5 : 0;
                 self.dropTarget.alpha = self.isActiveTarget ? .5 : 0;
@@ -528,7 +532,7 @@ Foundry.canvas = Foundry.canvas || {};
             return this.context ? this.context.headerText : this.myName;
         },
         headline: function () {
-            return create.createText('', "bold 12px Arial", "#000000");
+            return create.createText('', "bold 12px Arial", ns.colorsText[0]);
         },
         background: function () { return create.createShape(); },
         selected: function () { return create.createShape(); },
@@ -579,6 +583,7 @@ Foundry.canvas = Foundry.canvas || {};
             headline.y = (shapeHeight - height) / 2;
 
             fo.suspendDependencies(function () {
+                headline.color = self.textColor;
                 container.setTransform(self.pinX, self.pinY);
                 self.selected.alpha = self.isSelected ? .5 : 0;
                 self.dropTarget.alpha = self.isActiveTarget ? .5 : 0;

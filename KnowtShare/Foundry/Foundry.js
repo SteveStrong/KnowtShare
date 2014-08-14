@@ -4452,6 +4452,18 @@ var fo = Foundry;
         return relationship;
     };
 
+    //collections can also have relationships
+    ns.Collection.prototype.establishRelationship = function (name, init, spec) {
+        var relationship = this[name];
+        if (!ns.utils.isaRelationship(relationship)) {
+            relationship = ns.makeRelationship(init, this, spec); //this is observable
+            relationship.withDependencies = this.withDependencies;
+            relationship.myName = name;
+            this[name] = relationship;
+        };
+        return relationship;
+    };
+
     ns.makeRelation = function (source, target, inverse) {
         if (!source || !target) return;
 
@@ -6880,6 +6892,52 @@ var fa = Foundry.factory;
         }
     }
 
+    var _dictionarys = {};
+    function establishDictionary(id) {
+        if (!ns.isValidNamespaceKey(id)) return;
+
+        var found = _dictionarys[id];
+        if (!found) {
+            _dictionarys[id] = {};
+            found = _dictionarys[id];
+        }
+        return found;
+    }
+
+    ns.getDictionary = function (specId) {
+        if (!ns.isValidNamespaceKey(specId)) return;
+        return establishDictionary(specId)
+    }
+
+    function exportEstablishConstructor(specId) {
+        var id = specId;
+
+        return function (mixin, idFunc, dictionary, parent, onComplete) {
+            var definedSpec = _specs[id];
+            var extract = ns.extractSpec(id, mixin);
+
+
+            if (!idFunc) {
+                var result = ns.makeInstance(definedSpec, extract, parent, onComplete);
+                return result;
+            }
+
+            dictionary = dictionary ? dictionary : establishDictionary(id);
+
+            var myKey = fo.utils.isFunction(idFunc) ? idFunc(mixin) : idFunc;
+            var found = dictionary[myKey];
+            if (!found) {
+                dictionary[myKey] = found = ns.makeInstance(definedSpec, extract, parent, onComplete);
+                found.myName = myKey;
+            } else {
+                found.extendWith(extract);
+                onComplete && onComplete(found);
+            }
+            return found;
+        }
+    }
+
+
 
 
     var _namespaces = {};
@@ -6898,6 +6956,7 @@ var fa = Foundry.factory;
         var name = ns.utils.capitaliseFirstLetter(type);
         exported['new' + name] = exportConstructor(specId);
         exported['new' + name + 'Extract'] = exportExtractConstructor(specId);
+        exported['new' + name + 'Establish'] = exportEstablishConstructor(specId);
 
         if (fullSpec) {
             exported.docs = exported.docs || {};
@@ -8138,7 +8197,7 @@ Foundry.ws = Foundry.workspace;
     }
 
 
-    Workspace.prototype.clear = function () {
+    Workspace.prototype.clear = function (includeDocument) {
         var self = this;
         self.rootModel.removeAllSubcomponents();
         if (self.rootPage) {
@@ -8147,6 +8206,9 @@ Foundry.ws = Foundry.workspace;
             self.rootPage.updateStage(true);
         }
         delete self.localData;
+        if (includeDocument) {
+            self.clearDocumentSpec();
+        }
         fo.publish('WorkspaceClear', [self])
         fo.publish('info', ['Workspace Cleared']);
         //fo.digestLock && fo.digestLock(self.rootPage, function () {
@@ -8311,6 +8373,29 @@ Foundry.ws = Foundry.workspace;
         return syncPayload;
     }
 
+    Workspace.prototype.payloadExportSave = function (payload, name, ext) {
+        var self = this;
+        self.isDocumentSaved = true;
+        self.documentName = name;
+        self.documentExt = ext;
+
+        var resut = this.payloadSaveAs(payload, name, ext);
+        fo.publish('WorkspaceExportSave', [self])
+
+        return resut;
+    };
+
+    Workspace.prototype.payloadOpenMerge = function (payload, name, ext) {
+        var self = this;
+        self.isDocumentSaved = true;
+        self.documentName = name;
+        self.documentExt = ext;
+
+        var resut = this.payloadToCurrentModel(payload);
+        fo.publish('WorkspaceOpenMerge', [self])
+
+        return resut;
+    };
 
     Workspace.prototype.payloadToCurrentModel = function (payload) {
         if (!payload) return;
@@ -9269,6 +9354,18 @@ Foundry.filtering = Foundry.filtering || {};
         var map = {};
         for (var key in group) {
             map[key] = group[key][0];
+        }
+        return map;
+    };
+
+    ns.applyCollectionMapping = function (list, groupSpec) {
+        var itemList = fo.utils.isaCollection(list) ? list.elements : list;
+        var group = ns.applyGrouping(itemList, groupSpec);
+        var map = {};
+        for (var key in group) {
+            var collection = fo.makeCollection(group[key]);
+            collection.myName = key;
+            map[key] = collection;
         }
         return map;
     };

@@ -107,8 +107,8 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
                 pipId: 'PIP',
                 title: "Knowt Share",
                 subTitle: "take notes create KnowtFacts",
-                userId: "123456780",
-                userNickName: 'sedona',
+                //userId: "123456780",
+                //userNickName: 'sedona',
             }
 
             space = fo.ws.makeNoteWorkspace("KnowtShare", fo.utils.union(spec, properties), modelTemplate);
@@ -374,7 +374,7 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
                     window.open(context.noteUri, "_blank");
                 }
                 else {
-                    space.contentMenu.openEdit(context);
+                    space.contentMenu.doOpenEdit(context);
                 }
                 shape.doUpdate();
             });

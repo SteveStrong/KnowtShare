@@ -109,6 +109,23 @@
 </script>
 
 
+<!--templates to support clear All dialog-->
+<script id="ClearOrMergeHeader.html" type="text/ng-template">
+    <!--<p>Clear All</p>-->
+</script>
+<script id="ClearOrMergeBody.html" type="text/ng-template">
+    <div>
+        <p>Do you want to...</p>
+        <button ng-click="ClearNotes()" style="margin:10px" class="btn btn-info">clear existing notes</button>
+        <button ng-click="MergeNotes()" style="margin:10px" class="btn btn-info">merge file with existing notes</button>
+        <button ng-click="doCancel()" style="margin:10px" class='btn btn-default '>Cancel</button>
+    </div>
+</script>
+<script id="ClearOrMergeFooter.html" type="text/ng-template">
+    <button class='btn btn-default ' data-dismiss='modal' ng-click="doCancel()">Cancel</button>
+</script>
+
+
 <!--templates to support Clear File Drop dialog-->
 <script id="ClearFileDropHeader.html" type="text/ng-template">
     <p>File Merge</p>

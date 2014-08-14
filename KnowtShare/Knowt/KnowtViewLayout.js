@@ -22,6 +22,8 @@
         $(appContent).css("top", contentTop + 'px');
         $(verticalMenu).css("top", contentTop + 'px');
 
+        $(appContent).css("height", (result.innerHeight - contentTop - 3) + 'px');
+
         var mainContent = window.document.getElementById('mainContent');
         var appFooter = window.document.getElementById('appFooter');
 
@@ -34,16 +36,14 @@
         var diagramCanvas = window.document.getElementById('diagramCanvas');
         var diagramCanvasStyle = window.getComputedStyle(diagramCanvas);
 
+        var top = parseInt(diagramContainerNavigationStyle.getPropertyValue("height"));
+        $(diagramCanvas).css("top", top + 'px');
 
         var width = parseInt(diagramContainerStyle.getPropertyValue("width"));
         diagramCanvas.width = width;
 
-        var top = parseInt(diagramContainerNavigationStyle.getPropertyValue("height"));
-        $(diagramCanvas).css("top", top + 'px');
-
-
         var height = parseInt(diagramContainerStyle.getPropertyValue("height"));
-        diagramCanvas.height = height - top;
+        diagramCanvas.height = height;
 
         fo.publish('canvasResize', [diagramCanvas, diagramCanvas.width, diagramCanvas.height]);
 

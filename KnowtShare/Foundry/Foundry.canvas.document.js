@@ -139,6 +139,19 @@ Foundry.createjs = this.createjs || {};
                 result.setScreenSize(width, height);
             }
         });
+
+        fo.subscribe('WorkspaceClear', function (space) {
+            result.doUpdatePIP;
+        });
+
+        fo.subscribe('WorkspaceOpenMerge', function (space) {
+            result.doUpdatePIP;
+        });
+
+        fo.subscribe('WorkspaceExportSave', function (space) {
+            result.doUpdatePIP;
+        });
+
         return result;
     }
 

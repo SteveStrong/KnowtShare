@@ -28,6 +28,7 @@ Foundry.canvas = Foundry.canvas || {};
 
     var Page2DCanvas = function (properties, subcomponents, parent) {
 
+
         var canvasElement = (properties && properties.canvasElement) || document.getElementById('myCanvas') || document.createElement('canvas');
 
         var page2DSpec = {

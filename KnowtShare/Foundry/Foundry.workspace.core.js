@@ -204,7 +204,7 @@ Foundry.ws = Foundry.workspace;
     }
 
 
-    Workspace.prototype.clear = function () {
+    Workspace.prototype.clear = function (includeDocument) {
         var self = this;
         self.rootModel.removeAllSubcomponents();
         if (self.rootPage) {
@@ -213,6 +213,9 @@ Foundry.ws = Foundry.workspace;
             self.rootPage.updateStage(true);
         }
         delete self.localData;
+        if (includeDocument) {
+            self.clearDocumentSpec();
+        }
         fo.publish('WorkspaceClear', [self])
         fo.publish('info', ['Workspace Cleared']);
         //fo.digestLock && fo.digestLock(self.rootPage, function () {
@@ -377,6 +380,29 @@ Foundry.ws = Foundry.workspace;
         return syncPayload;
     }
 
+    Workspace.prototype.payloadExportSave = function (payload, name, ext) {
+        var self = this;
+        self.isDocumentSaved = true;
+        self.documentName = name;
+        self.documentExt = ext;
+
+        var resut = this.payloadSaveAs(payload, name, ext);
+        fo.publish('WorkspaceExportSave', [self])
+
+        return resut;
+    };
+
+    Workspace.prototype.payloadOpenMerge = function (payload, name, ext) {
+        var self = this;
+        self.isDocumentSaved = true;
+        self.documentName = name;
+        self.documentExt = ext;
+
+        var resut = this.payloadToCurrentModel(payload);
+        fo.publish('WorkspaceOpenMerge', [self])
+
+        return resut;
+    };
 
     Workspace.prototype.payloadToCurrentModel = function (payload) {
         if (!payload) return;

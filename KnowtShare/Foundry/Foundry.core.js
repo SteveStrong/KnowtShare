@@ -4451,6 +4451,18 @@ var fo = Foundry;
         return relationship;
     };
 
+    //collections can also have relationships
+    ns.Collection.prototype.establishRelationship = function (name, init, spec) {
+        var relationship = this[name];
+        if (!ns.utils.isaRelationship(relationship)) {
+            relationship = ns.makeRelationship(init, this, spec); //this is observable
+            relationship.withDependencies = this.withDependencies;
+            relationship.myName = name;
+            this[name] = relationship;
+        };
+        return relationship;
+    };
+
     ns.makeRelation = function (source, target, inverse) {
         if (!source || !target) return;
 

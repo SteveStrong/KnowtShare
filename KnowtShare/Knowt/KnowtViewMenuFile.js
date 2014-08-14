@@ -55,14 +55,39 @@
         }
 
 
+        result.doClearMergeAsync = function (onComplete) {
+            //do not run if page is empty
+            if (space.isDocumentEmpty()) {
+                space.clear(true); //this make sure we are in a known state
+                onComplete && onComplete();
+                return;
+            }
+
+            space.dialogService.doPopupDialog({
+                //headerTemplate: 'ClearOrMergeHeader.html',
+                bodyTemplate: 'ClearOrMergeBody.html',
+                // footerTemplate: 'ClearOrMergeFooter.html',
+            },
+            {
+                onExit: onComplete,
+            },
+            {
+                ClearNotes: function () {
+                    space.clear(true); //this make sure we are in a known state
+                    space.dialogService.doCloseDialog();
+                },
+                MergeNotes: function () {
+                    space.dialogService.doCloseDialog();
+                },
+            });
+        };
+
+
         result.saveFilePicker = function (documentSpec, onComplete) {
             var doc = documentSpec ? documentSpec : space.copyDocumentSpecTo(space.activeDocument);
             space.userSaveFileDialog(function (payload, name, ext) {
                 if (ext && ext.endsWith('.knt')) {
-                    space.isDocumentSaved = true;
-                    space.documentName = name;
-                    space.documentExt = ext;
-                    space.payloadSaveAs(payload, name, ext);
+                    space.payloadExportSave(payload, name, ext);
                     fo.publish('DocumentChanged', [space])
                 }
                 onComplete && onComplete();
@@ -74,16 +99,24 @@
             var doc = documentSpec ? documentSpec : space.copyDocumentSpecTo(space.activeDocument);
             space.userOpenFileDialog(function (payload, name, ext) {
                 if (ext && ext.endsWith('.knt')) {
-                    space.payloadToCurrentModel(payload);
-                    space.isDocumentSaved = true;
-                    space.documentName = name;
-                    space.documentExt = ext;
-                    fo.publish('DocumentChanged', [space]);
+
+                    result.doClearMergeAsync(function (answer, wasNotCancel) {
+                        if (!wasNotCancel) return;
+                        space.payloadOpenMerge(payload, name, ext);
+                        fo.publish('DocumentChanged', [space]);
+                    })
+
                 }
                 onComplete && onComplete();
             }, '.knt', doc.documentName);
         }
 
+        result.doOpenFilePickerAsync = function (documentSpec, onComplete) {
+            //do not run if page is empty
+            if (space.isDocumentEmpty()) {
+                space.clear(true); //this make sure we are in a known state
+            }
+        }
 
         result.saveAsPNGFilePicker = function (documentSpec, onComplete) {
             var doc = documentSpec ? documentSpec : space.copyDocumentSpecTo(space.activeDocument);

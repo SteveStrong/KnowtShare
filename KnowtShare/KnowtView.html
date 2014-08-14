@@ -28,7 +28,7 @@
 </head>
 
 
-<body ng-cloak ng-controller="workSpace as space">
+<body ng-cloak ng-controller="workSpace as space" style="overflow-y:hidden">
 
     <header id="appHeader" class="app-header">
         <div ng-show="space.debug">
@@ -123,7 +123,7 @@
                         page name: {{viewModel.title}} {{viewModel.pageStats}}
                     </div>-->
                 </div>
-                <canvas id="diagramCanvas" class="diagram-canvas" width="550" height="550"></canvas>
+                <canvas id="diagramCanvas" class="diagram-canvas" width="0" height="0"></canvas>
             </div>
 
         </article>
@@ -132,7 +132,7 @@
             <!--<div class="pan-zoom-header">
             {{pip.pageStats()}}  {{pip.status}}
         </div>-->
-            <canvas id="panZoomCanvas" class="pan-zoom-canvas" width="10" height="5"></canvas>
+            <canvas id="panZoomCanvas" class="pan-zoom-canvas" width="0" height="0"></canvas>
         </article>
     </section>
 
@@ -143,9 +143,9 @@
             </button>
             <ul class="dropdown-menu" role="menu" ng-controller="contentMenu as menu">
                 <li ng-click="menu.doAddNote"><a href="#"> Add </a></li>
-                <li ng-click="menu.doOpenSelected" ng-show="menu.hasSelection"><a href="#"> Edit </a></li>
-                <li ng-click="menu.doDuplicateSelected" ng-show="menu.hasSelection"><a href="#"> Duplicate </a></li>
-                <li ng-click="menu.doConfirmDelete" ng-show="menu.hasSelection"><a href="#"> Delete </a></li>
+                <li ng-click="menu.doOpenSelected" ng-show="menu.canOpenSelected"><a href="#"> Edit </a></li>
+                <li ng-click="menu.doDuplicateSelected" ng-show="menu.canDoDuplicate"><a href="#"> Duplicate </a></li>
+                <li ng-click="menu.doConfirmDelete" ng-show="menu.canDoDelete"><a href="#"> Delete </a></li>
                 <li ng-click="menu.doUnDo" ng-show="menu.canDoUnDo"><a href="#"> Undo </a></li>
             </ul>
         </div>
@@ -209,13 +209,13 @@
             <button class="btn btn-sm" ng-click="menu.animals.doAddNote" ng-show="space.debug">
                 Add Animal
             </button>
-            <button class="btn btn-sm" ng-click="menu.doOpenSelected" ng-disabled="!menu.hasSelection">
+            <button class="btn btn-sm" ng-click="menu.doOpenSelected" ng-disabled="!menu.canOpenSelected">
                 Edit Note
             </button>
-            <button class="btn btn-sm" ng-click="menu.doDuplicateSelected" ng-disabled="!menu.hasSelection">
+            <button class="btn btn-sm" ng-click="menu.doDuplicateSelected" ng-disabled="!menu.canDoDuplicate">
                 Duplicate
             </button>
-            <button class="btn btn-sm" ng-click="menu.doConfirmDelete" ng-disabled="!menu.hasSelection">
+            <button class="btn btn-sm" ng-click="menu.doConfirmDelete" ng-disabled="!menu.canDoDelete">
                 Delete
             </button>
             <button class="btn  btn-sm" ng-click="menu.doUnDo" ng-disabled="!menu.canDoUnDo">

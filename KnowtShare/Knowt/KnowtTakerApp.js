@@ -197,7 +197,7 @@ knowtApp.header = { title: 'Knowt Taker', help: 'knowtshareHelp.html' };
                     window.open(context.noteUri, "_blank");
                 }
                 else {
-                    space.contentMenu.openEdit(context);
+                    space.contentMenu.doOpenEdit(context);
                 }
                 shape.doUpdate();
             });

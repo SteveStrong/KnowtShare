@@ -329,6 +329,52 @@ var fa = Foundry.factory;
         }
     }
 
+    var _dictionarys = {};
+    function establishDictionary(id) {
+        if (!ns.isValidNamespaceKey(id)) return;
+
+        var found = _dictionarys[id];
+        if (!found) {
+            _dictionarys[id] = {};
+            found = _dictionarys[id];
+        }
+        return found;
+    }
+
+    ns.getDictionary = function (specId) {
+        if (!ns.isValidNamespaceKey(specId)) return;
+        return establishDictionary(specId)
+    }
+
+    function exportEstablishConstructor(specId) {
+        var id = specId;
+
+        return function (mixin, idFunc, dictionary, parent, onComplete) {
+            var definedSpec = _specs[id];
+            var extract = ns.extractSpec(id, mixin);
+
+
+            if (!idFunc) {
+                var result = ns.makeInstance(definedSpec, extract, parent, onComplete);
+                return result;
+            }
+
+            dictionary = dictionary ? dictionary : establishDictionary(id);
+
+            var myKey = fo.utils.isFunction(idFunc) ? idFunc(mixin) : idFunc;
+            var found = dictionary[myKey];
+            if (!found) {
+                dictionary[myKey] = found = ns.makeInstance(definedSpec, extract, parent, onComplete);
+                found.myName = myKey;
+            } else {
+                found.extendWith(extract);
+                onComplete && onComplete(found);
+            }
+            return found;
+        }
+    }
+
+
 
 
     var _namespaces = {};
@@ -347,6 +393,7 @@ var fa = Foundry.factory;
         var name = ns.utils.capitaliseFirstLetter(type);
         exported['new' + name] = exportConstructor(specId);
         exported['new' + name + 'Extract'] = exportExtractConstructor(specId);
+        exported['new' + name + 'Establish'] = exportEstablishConstructor(specId);
 
         if (fullSpec) {
             exported.docs = exported.docs || {};

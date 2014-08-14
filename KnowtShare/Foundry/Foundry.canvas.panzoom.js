@@ -85,7 +85,8 @@ Foundry.createjs = this.createjs || {};
     ns.PanAndZoomWindow = PanAndZoomWindow;
 
     ns.makePanZoomWindow2D = function (id, spec, parent) {
-        var canvasElement = (spec && spec.canvasElement) || document.getElementById(id) || document.createElement('canvas');
+        var element = fo.utils.isString(id) ? document.getElementById(id) : id;
+        var canvasElement = (spec && spec.canvasElement) || element || document.createElement('canvas');
 
         var properties = spec || {};
         properties.canvasElement = canvasElement;
@@ -96,14 +97,14 @@ Foundry.createjs = this.createjs || {};
             if (self && self != pzSelf) return;
             if (selfParent && selfParent != pzSelfParent) return;
 
-            pzSelf.draw(pzSelfParent, 'green');
+            pzSelf.draw(pzSelfParent, 'black');
             fo.publish('pip', ['update']);
         });
 
 
         fo.subscribe('ShapeReparented', function (child, oldParent, newParent, loc) {
             //fo.publish('info', ['ShapeReparented']);
-            pzSelf.draw(pzSelfParent, 'red');
+            pzSelf.draw(pzSelfParent, 'black');
             fo.publish('pip', ['reparent']);
         });
 
@@ -158,11 +159,11 @@ Foundry.createjs = this.createjs || {};
                 var panX = viewWindowGeom.x * scale;
                 var panY = viewWindowGeom.y * scale;
                 pzSelfParent.setPanTo(-panX, -panY);
-                pzSelf.draw(pzSelfParent, 'yellow');
+                pzSelf.draw(pzSelfParent, 'black');
                 panning = true;
             }
             else if (!panning) {
-                pzSelf.draw(pzSelfParent, 'blue');
+                pzSelf.draw(pzSelfParent, 'black');
             }
             fo.publish('pip', ['moving']);
         });

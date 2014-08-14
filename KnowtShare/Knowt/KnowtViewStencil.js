@@ -166,44 +166,4 @@
     });
 
 
-    fo.subscribe('Duplicate', function (sourceID, model, shape) {
-        var modelSpec = model.getSpec(); //was dehydrate
-        delete modelSpec.uniqueID;
-
-        var newModel = fo.make(modelSpec);
-        var newShape = undefined;
-
-        var uniqueID = newModel.uniqueID;
-        model.myParent.captureSubcomponent(newModel, uniqueID);
-
-        var space = fo.myWorkspace(shape);
-        var page = space.rootPage;
-
-        if (page && shape) {
-            var shapeSpec = shape.getSpec(); //was dehydrate
-            newShape = fo.makeInstance(shapeSpec, {
-                uniqueID: uniqueID,
-                context: newModel,
-            });
-
-            shape.myParent.captureSubcomponent(newShape, uniqueID);
-            if (shape.myParent == page) {
-                page.resetDropDelta();
-                newShape.pinX = shape.pinX + page.defaultPinXDelta();
-                newShape.pinY = shape.pinY + page.defaultPinYDelta();
-            }
-
-            page.selectShape(newShape,true);
-            page.introduceShape(newShape, function () {
-                page.render();
-            });
-            
-        }
-        fo.publish('Added', [uniqueID, newModel, newShape]);
-
-        page.selectShape(newShape)
-
-        //fo.publish('OpenEdit', [newShape, newModel]);
-    });
-
 }(knowtApp, Foundry, Foundry.workspace));

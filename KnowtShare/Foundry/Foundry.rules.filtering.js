@@ -616,6 +616,18 @@ Foundry.filtering = Foundry.filtering || {};
         return map;
     };
 
+    ns.applyCollectionMapping = function (list, groupSpec) {
+        var itemList = fo.utils.isaCollection(list) ? list.elements : list;
+        var group = ns.applyGrouping(itemList, groupSpec);
+        var map = {};
+        for (var key in group) {
+            var collection = fo.makeCollection(group[key]);
+            collection.myName = key;
+            map[key] = collection;
+        }
+        return map;
+    };
+
     ns.identifyUniqueKeyFields = function (list) {
         if (!fo.utils.isArray(list) || !list[0]) return;
         var map = {};

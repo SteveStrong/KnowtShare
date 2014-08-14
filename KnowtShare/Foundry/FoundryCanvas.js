@@ -4453,6 +4453,18 @@ var fo = Foundry;
         return relationship;
     };
 
+    //collections can also have relationships
+    ns.Collection.prototype.establishRelationship = function (name, init, spec) {
+        var relationship = this[name];
+        if (!ns.utils.isaRelationship(relationship)) {
+            relationship = ns.makeRelationship(init, this, spec); //this is observable
+            relationship.withDependencies = this.withDependencies;
+            relationship.myName = name;
+            this[name] = relationship;
+        };
+        return relationship;
+    };
+
     ns.makeRelation = function (source, target, inverse) {
         if (!source || !target) return;
 
@@ -6881,6 +6893,52 @@ var fa = Foundry.factory;
         }
     }
 
+    var _dictionarys = {};
+    function establishDictionary(id) {
+        if (!ns.isValidNamespaceKey(id)) return;
+
+        var found = _dictionarys[id];
+        if (!found) {
+            _dictionarys[id] = {};
+            found = _dictionarys[id];
+        }
+        return found;
+    }
+
+    ns.getDictionary = function (specId) {
+        if (!ns.isValidNamespaceKey(specId)) return;
+        return establishDictionary(specId)
+    }
+
+    function exportEstablishConstructor(specId) {
+        var id = specId;
+
+        return function (mixin, idFunc, dictionary, parent, onComplete) {
+            var definedSpec = _specs[id];
+            var extract = ns.extractSpec(id, mixin);
+
+
+            if (!idFunc) {
+                var result = ns.makeInstance(definedSpec, extract, parent, onComplete);
+                return result;
+            }
+
+            dictionary = dictionary ? dictionary : establishDictionary(id);
+
+            var myKey = fo.utils.isFunction(idFunc) ? idFunc(mixin) : idFunc;
+            var found = dictionary[myKey];
+            if (!found) {
+                dictionary[myKey] = found = ns.makeInstance(definedSpec, extract, parent, onComplete);
+                found.myName = myKey;
+            } else {
+                found.extendWith(extract);
+                onComplete && onComplete(found);
+            }
+            return found;
+        }
+    }
+
+
 
 
     var _namespaces = {};
@@ -6899,6 +6957,7 @@ var fa = Foundry.factory;
         var name = ns.utils.capitaliseFirstLetter(type);
         exported['new' + name] = exportConstructor(specId);
         exported['new' + name + 'Extract'] = exportExtractConstructor(specId);
+        exported['new' + name + 'Establish'] = exportEstablishConstructor(specId);
 
         if (fullSpec) {
             exported.docs = exported.docs || {};
@@ -8139,7 +8198,7 @@ Foundry.ws = Foundry.workspace;
     }
 
 
-    Workspace.prototype.clear = function () {
+    Workspace.prototype.clear = function (includeDocument) {
         var self = this;
         self.rootModel.removeAllSubcomponents();
         if (self.rootPage) {
@@ -8148,6 +8207,9 @@ Foundry.ws = Foundry.workspace;
             self.rootPage.updateStage(true);
         }
         delete self.localData;
+        if (includeDocument) {
+            self.clearDocumentSpec();
+        }
         fo.publish('WorkspaceClear', [self])
         fo.publish('info', ['Workspace Cleared']);
         //fo.digestLock && fo.digestLock(self.rootPage, function () {
@@ -8312,6 +8374,29 @@ Foundry.ws = Foundry.workspace;
         return syncPayload;
     }
 
+    Workspace.prototype.payloadExportSave = function (payload, name, ext) {
+        var self = this;
+        self.isDocumentSaved = true;
+        self.documentName = name;
+        self.documentExt = ext;
+
+        var resut = this.payloadSaveAs(payload, name, ext);
+        fo.publish('WorkspaceExportSave', [self])
+
+        return resut;
+    };
+
+    Workspace.prototype.payloadOpenMerge = function (payload, name, ext) {
+        var self = this;
+        self.isDocumentSaved = true;
+        self.documentName = name;
+        self.documentExt = ext;
+
+        var resut = this.payloadToCurrentModel(payload);
+        fo.publish('WorkspaceOpenMerge', [self])
+
+        return resut;
+    };
 
     Workspace.prototype.payloadToCurrentModel = function (payload) {
         if (!payload) return;
@@ -9270,6 +9355,18 @@ Foundry.filtering = Foundry.filtering || {};
         var map = {};
         for (var key in group) {
             map[key] = group[key][0];
+        }
+        return map;
+    };
+
+    ns.applyCollectionMapping = function (list, groupSpec) {
+        var itemList = fo.utils.isaCollection(list) ? list.elements : list;
+        var group = ns.applyGrouping(itemList, groupSpec);
+        var map = {};
+        for (var key in group) {
+            var collection = fo.makeCollection(group[key]);
+            collection.myName = key;
+            map[key] = collection;
         }
         return map;
     };
@@ -12040,6 +12137,7 @@ Foundry.canvas = Foundry.canvas || {};
 
     var Page2DCanvas = function (properties, subcomponents, parent) {
 
+
         var canvasElement = (properties && properties.canvasElement) || document.getElementById('myCanvas') || document.createElement('canvas');
 
         var page2DSpec = {
@@ -13436,7 +13534,9 @@ Foundry.canvas = Foundry.canvas || {};
     var tween = create.Tween;
     var utils = fo.utils;
 
-    ns.colorsFill = ['#FFFFFF', '#FFFF99', '#FFFF33', '#FFCC66', '#FFCC00', '#CC9900', '#996600', '#663300'];
+    ns.colorsFill = ['#FFFFFF', '#FFFF99', '#FFFF33', '#FFCC66', '#FFCC00', '#CC9900', '#996600', '#663300', '#000000', '#000000', '#000000', '#000000', '#000000'];
+    ns.colorsText = ['#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF'];
+
     ns.standardNoteOffset = 10;
     ns.standardNoteSize = 150;
     ns.minNoteSize = 50;
@@ -13477,9 +13577,9 @@ Foundry.canvas = Foundry.canvas || {};
         var depth = shape.groupDepth;
         var colorDepth = depth > count ? count : depth;
 
+        shape.textColor = ns.colorsText[colorDepth || 0];
         shape.fillColor = ns.colorsFill[colorDepth || 0];
         shape.strokeColor = ns.colorsFill[colorDepth + 1];
-        shape.textColor = depth >= 5 ? 'white' : 'black';
 
         //fo.trace.log(shape.gcsIndent(" updateShapeForLayout done " + shape.myName));
 
@@ -13529,7 +13629,7 @@ Foundry.canvas = Foundry.canvas || {};
             return this.context ? this.context.headerText : this.myName;
         },
         headline: function () {
-            return create.createText('', "bold 12px Arial", "#000000");
+            return create.createText('', "bold 12px Arial", ns.colorsText[0]);
         },
         background: function () { return create.createShape(); },
         selected: function () { return create.createShape(); },
@@ -13583,6 +13683,7 @@ Foundry.canvas = Foundry.canvas || {};
             headline.y = (shapeHeight - height) / 2;
 
             fo.suspendDependencies(function () {
+                headline.color = self.textColor;
                 container.setTransform(self.pinX, self.pinY);
                 self.selected.alpha = self.isSelected ? .5 : 0;
                 self.dropTarget.alpha = self.isActiveTarget ? .5 : 0;
@@ -13722,7 +13823,7 @@ Foundry.canvas = Foundry.canvas || {};
             return this.context ? this.context.noteText : this.headerText;
         },
         note: function () {
-            return create.createText('', "10px Arial", "#000000");
+            return create.createText('', "10px Arial", ns.colorsText[0]);
         },
         isTextDifferent: function () {
             if (this.headerText == this.noteText) return false;
@@ -13792,10 +13893,16 @@ Foundry.canvas = Foundry.canvas || {};
             this.note.lineWidth = shapeWidth - (2 * ns.standardNoteOffset);
             this.headline.lineWidth = shapeWidth - ns.standardNoteOffset;
 
-            var fill = this.fillColor;
-            var stroke = this.strokeColor;
             var g = this.background.graphics.clear();
-            g.beginFill(fill).beginStroke(stroke).setStrokeStyle(1).drawRect(0, 0, shapeWidth, shapeHeight).endStroke().endFill();
+            fo.suspendDependencies(function () {
+                var fill = self.fillColor;
+                var stroke = self.strokeColor;
+                g.beginFill(fill).beginStroke(stroke).setStrokeStyle(1).drawRect(0, 0, self.width, self.height).endStroke().endFill();
+            });
+
+            //var fill = this.fillColor;
+            //var stroke = this.strokeColor;
+            //g.beginFill(fill).beginStroke(stroke).setStrokeStyle(1).drawRect(0, 0, shapeWidth, shapeHeight).endStroke().endFill();
 
             g = this.selected.graphics.clear();
             g.beginStroke("blue").setStrokeStyle(5).drawRect(3, 3, shapeWidth - 6, shapeHeight - 6).endStroke();
@@ -13840,16 +13947,11 @@ Foundry.canvas = Foundry.canvas || {};
                     if (note.visible) {
                         headline.y = (ns.minNoteSize - headlineHeight) / 2;
                     }
-
-                }
-               
+                }             
             }
 
-
-
-
-
             fo.suspendDependencies(function () {
+                headline.color = self.textColor;
                 container.setTransform(self.pinX, self.pinY);
                 self.selected.alpha = self.isSelected ? .5 : 0;
                 self.dropTarget.alpha = self.isActiveTarget ? .5 : 0;
@@ -13939,7 +14041,7 @@ Foundry.canvas = Foundry.canvas || {};
             return this.context ? this.context.headerText : this.myName;
         },
         headline: function () {
-            return create.createText('', "bold 12px Arial", "#000000");
+            return create.createText('', "bold 12px Arial", ns.colorsText[0]);
         },
         background: function () { return create.createShape(); },
         selected: function () { return create.createShape(); },
@@ -13990,6 +14092,7 @@ Foundry.canvas = Foundry.canvas || {};
             headline.y = (shapeHeight - height) / 2;
 
             fo.suspendDependencies(function () {
+                headline.color = self.textColor;
                 container.setTransform(self.pinX, self.pinY);
                 self.selected.alpha = self.isSelected ? .5 : 0;
                 self.dropTarget.alpha = self.isActiveTarget ? .5 : 0;
@@ -14445,7 +14548,8 @@ Foundry.createjs = this.createjs || {};
     ns.PanAndZoomWindow = PanAndZoomWindow;
 
     ns.makePanZoomWindow2D = function (id, spec, parent) {
-        var canvasElement = (spec && spec.canvasElement) || document.getElementById(id) || document.createElement('canvas');
+        var element = fo.utils.isString(id) ? document.getElementById(id) : id;
+        var canvasElement = (spec && spec.canvasElement) || element || document.createElement('canvas');
 
         var properties = spec || {};
         properties.canvasElement = canvasElement;
@@ -14456,14 +14560,14 @@ Foundry.createjs = this.createjs || {};
             if (self && self != pzSelf) return;
             if (selfParent && selfParent != pzSelfParent) return;
 
-            pzSelf.draw(pzSelfParent, 'green');
+            pzSelf.draw(pzSelfParent, 'black');
             fo.publish('pip', ['update']);
         });
 
 
         fo.subscribe('ShapeReparented', function (child, oldParent, newParent, loc) {
             //fo.publish('info', ['ShapeReparented']);
-            pzSelf.draw(pzSelfParent, 'red');
+            pzSelf.draw(pzSelfParent, 'black');
             fo.publish('pip', ['reparent']);
         });
 
@@ -14518,11 +14622,11 @@ Foundry.createjs = this.createjs || {};
                 var panX = viewWindowGeom.x * scale;
                 var panY = viewWindowGeom.y * scale;
                 pzSelfParent.setPanTo(-panX, -panY);
-                pzSelf.draw(pzSelfParent, 'yellow');
+                pzSelf.draw(pzSelfParent, 'black');
                 panning = true;
             }
             else if (!panning) {
-                pzSelf.draw(pzSelfParent, 'blue');
+                pzSelf.draw(pzSelfParent, 'black');
             }
             fo.publish('pip', ['moving']);
         });
@@ -14802,6 +14906,19 @@ Foundry.createjs = this.createjs || {};
                 result.setScreenSize(width, height);
             }
         });
+
+        fo.subscribe('WorkspaceClear', function (space) {
+            result.doUpdatePIP;
+        });
+
+        fo.subscribe('WorkspaceOpenMerge', function (space) {
+            result.doUpdatePIP;
+        });
+
+        fo.subscribe('WorkspaceExportSave', function (space) {
+            result.doUpdatePIP;
+        });
+
         return result;
     }
 

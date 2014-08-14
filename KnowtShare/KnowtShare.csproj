@@ -314,6 +314,7 @@
     </Content>
     <None Include="Properties\PublishProfiles\knowtshare - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\knowtshare - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\knowtshare.pubxml" />
     <None Include="Properties\PublishProfiles\knowtshareStaging.pubxml" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />

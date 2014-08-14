@@ -26,17 +26,23 @@
         doAddNote: function () {
             var self = this;
             this.doCreateNote({}, function (obj) {
-                obj.note && self.openEdit(obj.note);
+                obj.note && self.doOpenEdit(obj.note);
             });
         },
         canOpenSelected: function () {
             return this.hasSelection;
         },
         doOpenSelected: function () {
-            this.openEdit(this.currentNote);
+            this.doOpenEdit(this.currentNote);
+        },
+        canDoDuplicate: function () {
+            return this.hasSelection;
         },
         doDuplicateSelected: function () {
-            fo.publish('info', ['doDuplicateSelected']);
+            var note = this.currentNote;
+            var parent = note.myParent;
+            var parentShape = this.rootPage && this.rootPage.getSubcomponent(parent.myName) || this.rootPage;
+            this.doDuplicate(note, parent, parentShape);
         },
         canDoDelete: function() {
             return this.hasSelection;
@@ -317,6 +323,44 @@
         });
 
 
+        obj.doDuplicate = function (context, target, view) {
+            if (!context || obj.dialogService.isBusy()) return;
+            //mush of this is specific to notes so maybe if belongs 
+            //defined in the stencil??
+
+            var properties = context.getSpec();
+
+            var spec = {
+                author: this.userNickName,
+                userId: this.userId,
+            }
+
+            //this assumes we are duplicating a note
+            var note = this.stencil.newNote(fo.utils.union(spec, properties), target);
+
+            var uniqueID = fo.utils.generateUUID();
+            target.capture(note, uniqueID);
+
+            var shape = undefined;
+            if (view) {
+                shape = this.stencil.newNoteShape({
+                    uniqueID: uniqueID,
+                    context: note,
+                }, view);
+
+
+                var page = space.rootPage;
+                page.introduceShape(shape, function () {
+                    shape.setDefaultXY(page.defaultXY());
+                    view.capture(shape, uniqueID);
+                });
+            }
+            fo.publish('Added', [uniqueID, note, shape]);
+
+            //do this somewhere else if (!dataUri) ctrl.openEdit(obj);
+            return { note: note, shape: shape };
+           
+        }
 
 
         //dataURI is used to store a picture
@@ -453,7 +497,7 @@
 
                     setTimeout(function () {
                         var clear = space.isDocumentEmpty();
-                        if (clear || 'clear'.matches(action)) space.clear();
+                        if (clear || 'clear'.matches(action)) space.clear(true);
 
                         space.payloadToCurrentModel(payload);
                         fo.publish('DocumentChanged', [space])
@@ -467,7 +511,7 @@
         obj.doClearFileDropAsync = function (onComplete) {
             //do not run if page is empty
             if (space.isDocumentEmpty()) {
-                space.clear(); //this make sure we are in a known state
+                space.clear(true); //this make sure we are in a known state
                 onComplete && onComplete();
                 return;
             }
@@ -497,7 +541,7 @@
         obj.doClearAsync = function (onComplete) {
             //do not run if page is empty
             if (space.isDocumentEmpty() ) {
-                space.clear(); //this make sure we are in a known state
+                space.clear(true); //this make sure we are in a known state
                 onComplete && onComplete();
                 return;
             }
@@ -512,7 +556,7 @@
             },
             {
                 ClearNotes: function () {
-                   space.clear(); //this make sure we are in a known state
+                   space.clear(true); //this make sure we are in a known state
                    obj.dialogService.doCloseDialog();
                 },
                 SaveDocumentFirst: function () {
@@ -522,7 +566,7 @@
             });
         };
 
-        obj.openEdit = function (context) {
+        obj.doOpenEdit = function (context) {
             if (!context || obj.dialogService.isBusy()) return;
             //mush of this is specific to notes so maybe if belongs 
             //defined in the stencil??
