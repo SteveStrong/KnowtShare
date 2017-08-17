@@ -1,0 +1,19 @@
+﻿
+
+<section >
+    <article class="cardbody">
+        <h1 class="cardh1">{{item.Town}}</h1>
+        <img class="cardimg" ng-src="images/{{item.Picture}}"  alt="{{item.Town}} {{item.State}} - {{item.Picture}}" />
+        <div class="carddiv">
+            <p>State: {{item.State}}</p>
+            <p>Population: {{item.Population}}</p>
+            <p>Median Household Income: {{item['Median Household Income']}}</p>
+            <p>Median Age:  {{item['Median Age']}}</p>
+            <p>% Below the Poverty Level: {{item['% Below Poverty Level']}}</p>
+            <p>High Flood Risk: {{item['High Flood Risk?']}}</p>
+            <a ng-href="{{item.URL}}">Get More Information</a>
+        </div>
+    </article>
+
+</section>
+

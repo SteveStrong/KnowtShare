@@ -24,6 +24,22 @@
     <link href="content/toastr.min.css" rel="stylesheet" />
     <link href="css/noteDiagram.css" rel="stylesheet" />
 
+    <!--<style>
+        .modal {
+            width: 50%; /* respsonsive width */
+        }
+    </style>-->
+    <!--<style>
+        body .modal {
+            /* new custom width 
+                http://stackoverflow.com/questions/10169432/how-can-i-change-the-default-width-of-a-twitter-bootstrap-modal-box
+            */
+            width: 360px;
+            /* must be half of the width, minus scrollbar on the left (30px) */
+            margin-left: -280px;
+        }
+    </style>-->
+
 
 </head>
 
@@ -66,35 +82,45 @@
                 <span style="margin-right:10px">:{{space.userId}}</span>
                 <span style="margin-right:10px">:{{space.userNickName}}</span>
             </div>
-                <span ng-if="space.isViewOnlySession">
-                    <button class="btn btn-default navbar-btn" ng-click="vm.doAddAnnotation">
-                        Annotate
-                    </button>
-                    <button class="btn btn-default navbar-btn" ng-click="vm.doSaveFilePicker">
-                        Save
-                    </button>
-                    <button class="btn btn-default navbar-btn" ng-click="vm.doResyncSession">
-                        Resync
-                    </button>
-                    <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isDrawingView" ng-click="vm.doZoomToFit">
-                        Fit
-                    </button>
-                    <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isDrawingView" ng-click="vm.doZoom1To1">
-                        1:1
-                    </button>
-                    <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isDrawingView" ng-click="vm.gotoTextView">
-                        Text
-                    </button>
-                    <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isTextView" ng-click="vm.gotoDrawingView">
-                        Note
-                    </button>
 
-                    <button type="button" class="btn navbar-btn" ng-show="ng-click=" vm.dotogglepanzoomwindow">
-                        {{vm.zoomText}}
-                    </button>
-                </span>
+            <!--<div style="display:inline" ng-controller="mobileServices as mobileClient">
+                <button class="btn btn-success" style="margin-right:10px" ng-click="mobileClient.doLoginFacebook">facebook</button>
+                <button class="btn btn-success" style="margin-right:10px" ng-click="mobileClient.doLoginTwitter">twitter</button>
+                <button class="btn btn-success" style="margin-right:10px" ng-click="mobileClient.doLoginMicrosoft">microsoft</button>
+                <button class="btn btn-success" style="margin-right:10px" ng-click="mobileClient.doLoginGoogle">google</button>
+                <button class="btn  btn-sm " ng-click="mobileClient.doLoginDialog" ng-show="mobileClient.canDoLoginDialog">Login</button>
 
-</nav>
+            </div>-->
+
+            <span ng-if="space.isViewOnlySession">
+                <button class="btn btn-default navbar-btn" ng-click="vm.doAddAnnotation">
+                    Annotate
+                </button>
+                <button class="btn btn-default navbar-btn" ng-click="vm.doSaveFilePicker">
+                    Save
+                </button>
+                <button class="btn btn-default navbar-btn" ng-click="vm.doResyncSession">
+                    Resync
+                </button>
+                <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isDrawingView" ng-click="vm.doZoomToFit">
+                    Fit
+                </button>
+                <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isDrawingView" ng-click="vm.doZoom1To1">
+                    1:1
+                </button>
+                <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isDrawingView" ng-click="vm.gotoTextView">
+                    Text
+                </button>
+                <button class="btn btn-default navbar-btn" ng-show="space.viewMenu.isTextView" ng-click="vm.gotoDrawingView">
+                    Note
+                </button>
+
+                <button type="button" class="btn navbar-btn" ng-show="ng-click=" vm.dotogglepanzoomwindow">
+                    {{vm.zoomText}}
+                </button>
+            </span>
+
+        </nav>
     </header>
 
     <section id="appContent" class="app-content">
@@ -290,6 +316,8 @@
 
         </div>
 
+
+
     </aside>
 
     <footer id="appFooter" class="app-footer"></footer>
@@ -307,6 +335,11 @@
 
     <script src="Scripts/toastr.min.js"></script>
 
+    <!--http://azure.microsoft.com/en-us/documentation/articles/mobile-services-html-how-to-use-client-library/#what-is-->
+
+    <script src='http://ajax.aspnetcdn.com/ajax/mobileservices/MobileServices.Web-1.1.2.min.js'></script>
+
+    <!--    <script src="https://shapesignal.azure-mobile.net/client/MobileServices.Web-1.0.0.min.js"></script>-->
 
     <!--Reference the autogenerated SignalR hub script. -->
     <script src="Scripts/jquery.signalR-2.1.0.min.js"></script>
@@ -317,9 +350,9 @@
     <!--<script type="text/javascript" src="http://foundryjs.azurewebsites.net/Foundry/FoundryComplete.js"></script>-->
 
     <script type="text/javascript" src="Foundry/FoundryComplete.js"></script>
-    <script src="Foundry/Foundry.canvas.page2D.js"></script>
+    <!--<script src="Foundry/Foundry.canvas.page2D.js"></script>
     <script src="Foundry/Foundry.canvas.document.js"></script>
-    <script src="Foundry/Foundry.canvas.panzoom.js"></script>
+    <script src="Foundry/Foundry.canvas.panzoom.js"></script>-->
 
     <script type="text/javascript" src="Knowt/KnowtShareApp.js"></script>
     <script type="text/javascript" src="Knowt/KnowtViewShapeHub.js"></script>
@@ -336,6 +369,7 @@
     <script type="text/javascript" src="Knowt/KnowtViewMenuFile.js"></script>
     <script type="text/javascript" src="Knowt/KnowtViewMenuView.js"></script>
     <script type="text/javascript" src="Knowt/KnowtViewMenuSession.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewMobileServices.js"></script>
 
     <script type="text/javascript" src="Knowt/KnowtViewNoteCanvasView.js"></script>
     <script type="text/javascript" src="Knowt/KnowtViewNoteTreeView.js"></script>

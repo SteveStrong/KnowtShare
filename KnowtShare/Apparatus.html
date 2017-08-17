@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<!--http://www.html5rocks.com/en/mobile/touch/-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+
+<html ng-app="apparatusApp" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+    <title>Apparatus</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <meta name="description" content="knowtshare: collaborative modeling " />
+    <meta name="author" content="Apprentice Systems" />
+
+    <meta name="application-name" content="knowtshare" />
+    <meta name="msapplication-TileColor" content="#a63fa6" />
+    <meta name="msapplication-square70x70logo" content="images/KnowtShareBadge.png" />
+    <meta name="msapplication-square150x150logo" content="images/KnowtShareLogo.png" />
+    <meta name="msapplication-wide310x150logo" content="images/KnowtShareWideLogo.png" />
+    <meta name="msapplication-square310x310logo" content="images/KnowtShareWideLogo.png" />
+
+
+    <link href="content/bootstrap.min.css" rel="stylesheet" />
+    <link href="content/toastr.min.css" rel="stylesheet" />
+
+    <link href="css/noteDiagram.css" rel="stylesheet" />
+</head>
+
+
+<body ng-cloak ng-controller="workSpace as space" style="overflow-y:hidden">
+
+    <header id="appHeader" class="appHeader">
+        <div>
+            <span class="label label-info " style="margin-left:10px">doc: {{space.documentName}}</span>
+            <span class="label label-info " style="margin-left:1px">ext: {{space.documentExt}}</span>
+            <span class="label label-info " style="margin-left:1px">doc title: {{space.documentTitle}}</span>
+
+            <span class="label label-success " style="margin-left:10px">ses title: {{space.sessionTitle}}</span>
+            <span class="label label-success " style="margin-left:1px">mode: {{space.clientMode}}</span>
+
+            <span class="label label-warning " style="margin-left:10px">key: {{space.sessionKey}}</span>
+            <span class="label label-warning " style="margin-left:1px">id: {{space.userId}}</span>
+            <span class="label label-warning " style="margin-left:1px">name: {{space.userNickName}}</span>
+
+            <span class="label label-success " style="margin-left:10px">saved: {{space.isDocumentSaved}}</span>
+            <span class="label label-success " style="margin-left:1px">empty: {{space.isDocumentEmpty()}}</span>
+
+            <span class="label label-danger " style="margin-left:10px">doc: {{space.activeDocument.documentName}}</span>
+            <span class="label label-danger " style="margin-left:1px">ext: {{space.activeDocument.documentExt}}</span>
+        </div>
+
+        <nav>
+            <h1 class="label label-info " style="margin-left:10px">{{space.clientCount}}</h1>
+            <span class="label label-success " ng-show="space.hasSessionKey">{{space.traffic}}</span>
+
+            <img ng-click="space.updateAllViews()" id="knowtshareLogo" src="images\KnowtShareWideLogo.png" width="100" />
+            <span style="margin-left:10px">:{{space.title}}</span>
+            <span style="margin-left:1px"><em>:{{space.subTitle}}</em></span>
+        </nav>
+
+    </header>
+
+    <div style="display:inline" ng-controller="mobileServices as mobileClient">
+        <button class="btn btn-success" style="margin-right:10px" ng-click="mobileClient.doLoginFacebook">facebook</button>
+        <button class="btn btn-success" style="margin-right:10px" ng-click="mobileClient.doLoginTwitter">twitter</button>
+        <button class="btn btn-success" style="margin-right:10px" ng-click="mobileClient.doLoginMicrosoft">microsoft</button>
+        <button class="btn btn-success" style="margin-right:10px" ng-click="mobileClient.doLoginGoogle">google</button>
+        <button class="btn  btn-sm " ng-click="mobileClient.doLoginDialog" ng-show="mobileClient.canDoLoginDialog">Login</button>
+
+    </div>
+
+    <section id="appContent" class="appContent">
+        <article id="mainContent" class="mainContent" ng-controller="createMenu as menu">
+            <span>|</span>
+            <button class="btn btn-info" ng-click="menu.doOpenDecisionTree">Import decision tree</button>
+            <span>|</span>
+            <button class="btn btn-info" ng-click="menu.doOpenDataTable">Import solution database</button>
+            <span>|</span>
+            <!--<button class="btn btn-info" ng-click="menu.doOpenFilePicker">Import picture assets</button>
+            <span>|</span>-->
+            <button class="btn btn-info" ng-disabled="true" ng-click="menu.doConfirmDelete">Test</button>
+            <span>|</span>
+            <button class="btn btn-info" ng-disabled="true" ng-click="menu.doOpenSelected">Publish</button>
+            <span>|</span>
+            <button class="btn btn-info" ng-disabled="true" ng-click="menu.doOpenSelected">Share</button>
+            <span>|</span>
+        </article>
+
+
+
+        <article>
+
+
+            <section class="left-side" ng-controller="cloudStorage as storage">
+            </section>
+
+            <section class="right-side" ng-controller="noteCanvasView as viewModel">
+
+        </article>
+
+
+
+
+    </section>
+
+
+    <footer id="appFooter" class="appFooter">
+        <a href='http://www.windowsazure.com/en-us/develop/mobile/'>
+            Learn more about Microsoft Azure Mobile Services
+        </a><br/>
+
+        <a target="_blank" href="http://azure.microsoft.com/en-us/documentation/articles/mobile-services-html-how-to-use-client-library/">azure docs</a><br />
+        <a target="_blank" href="https://manage.windowsazure.com/@sstrongapprenticesystems.onmicrosoft.com">azure login</a><br />
+
+    </footer>
+
+
+
+    <script src="Scripts/jquery-2.1.1.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/mobileservices/MobileServices.Web-1.1.3.js"></script>
+    <script src="Scripts/angular.js"></script>
+    <script src="Scripts/angular-route.js"></script>
+    <script src="Scripts/angular-animate.js"></script>
+    <script src="Scripts/angular-touch.js"></script>
+
+    <script src="Scripts/angular-ui/ui-bootstrap.min.js"></script>
+    <script src="Scripts/angular-ui/ui-bootstrap-tpls.min.js"></script>
+
+    <script src="Scripts/toastr.min.js"></script>
+
+
+    <!--<script type="text/javascript" src="http://foundryjs.azurewebsites.net/Foundry/FoundryComplete.js"></script>-->
+    <script type="text/javascript" src="Foundry/Foundry.js"></script>
+
+
+    <script type="text/javascript" src="Knowt/Apparatus.js"></script>
+
+
+    <script type="text/javascript" src="Knowt/KnowtViewNgDialog.js"></script>
+    <script ype="text/javascript" src="Knowt/KnowtViewKeyEvents.js"></script>
+    <script type="text/javascript" src="Knowt/ApparatusMenuCreate.js"></script>
+    <script type="text/javascript" src="Knowt/ApparatusCloudStorage.js"></script>
+    <script type="text/javascript" src="Knowt/KnowtViewMobileServices.js"></script>
+</body>
+</html>

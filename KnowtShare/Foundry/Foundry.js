@@ -3516,20 +3516,17 @@ var fo = Foundry;
             });
 
 
-            if (deep && this.Members) {
-                this.Members.forEach(function (coll) {
-                    if (coll.count == 0) return;
-
-                    spec = spec || {};
-                    var value = coll;
+            if (deep && this.Subcomponents.count > 0) {
+                var results = this.Subcomponents.map(function (item) {
+                    var value = item;
                     if (ns.utils.isaComponent(value) || ns.utils.isaCollection(value)) {
                         value = value.getSpec(deep);
                     }
-                    if (value) {
-                        spec[coll.myName] = value;
-                    }
+                    return value;
                 });
+                spec["SubSpec"] = JSON.stringify(results);
             }
+
             return spec;
         },
 

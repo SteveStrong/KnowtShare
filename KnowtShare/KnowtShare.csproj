@@ -38,39 +38,42 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.AspNet.SignalR.Core">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.1.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.1.1\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.Owin">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.Owin.1.2.1\lib\net45\Microsoft.AspNet.SignalR.Owin.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.SignalR.Owin, Version=1.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Owin.1.2.2\lib\net45\Microsoft.AspNet.SignalR.Owin.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb">
-      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.1.0\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.1.1\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Owin.3.0.0\lib\net45\Microsoft.Owin.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Diagnostics, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin.Diagnostics, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Owin.Diagnostics.2.1.0\lib\net40\Microsoft.Owin.Diagnostics.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Owin.Diagnostics.3.0.0\lib\net45\Microsoft.Owin.Diagnostics.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Host.HttpListener, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin.Host.HttpListener, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Owin.Host.HttpListener.2.1.0\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Owin.Host.HttpListener.3.0.0\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.0.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Hosting, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin.Hosting, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Owin.Hosting.2.1.0\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Owin.Hosting.3.0.0\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin.Security, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Owin.Security.3.0.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -78,15 +81,15 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Owin">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Formatting, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.0\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -99,35 +102,35 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.Helpers.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Http, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Http, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.0\lib\net45\System.Web.Http.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Http.WebHost, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.0\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.2\lib\net45\System.Web.Http.WebHost.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Mvc, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Mvc, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.0\lib\net45\System.Web.Mvc.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.2\lib\net45\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.0\lib\net45\System.Web.Razor.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.2\lib\net45\System.Web.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.WebPages.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
@@ -230,92 +233,58 @@
     <Content Include="images\KnowtShareSplashscreen.png" />
     <Content Include="images\KnowtShareStoreLogo.png" />
     <Content Include="images\KnowtShareWideLogo.png" />
-    <Content Include="start.html" />
-    <Content Include="KnowtChirpV2.html" />
-    <Content Include="KnowtChirp.html" />
-    <Content Include="Knowtify.html" />
-    <Content Include="KnowtPad.html" />
-    <Content Include="KnowtTaker.html" />
-    <Content Include="KnowtViewLayout.html" />
-    <Content Include="KnowtView.Dialogs.html" />
-    <Content Include="KnowtView.html" />
-    <Content Include="Knowt\KnowtChirpAppV2.js" />
-    <Content Include="Knowt\KnowtChirpApp.js" />
-    <Content Include="Knowt\KnowtDialogTest.js" />
-    <Content Include="Knowt\KnowtPadApp.js" />
-    <Content Include="Knowt\KnowtShareApp.js" />
-    <Content Include="Knowt\KnowtTakerApp.js" />
-    <Content Include="Knowt\older\KnowtViewLayout - Copy.js" />
-    <Content Include="Knowt\older\KnowtViewController.js" />
-    <Content Include="Knowt\KnowtViewErrorReport.js" />
-    <Content Include="Knowt\KnowtViewKeyEvents.js" />
-    <Content Include="Knowt\KnowtViewLayout.js" />
-    <Content Include="Knowt\KnowtViewMenuContent.js" />
-    <Content Include="Knowt\KnowtViewMenuFile.js" />
-    <Content Include="Knowt\KnowtViewMenuPanZoom.js" />
-    <Content Include="Knowt\KnowtViewMenuSession.js" />
-    <Content Include="Knowt\KnowtViewMenuShare.js" />
-    <Content Include="Knowt\KnowtViewMenuView.js" />
-    <Content Include="Knowt\KnowtViewNgDialog.js" />
-    <Content Include="Knowt\KnowtViewNoteCanvasView.js" />
-    <Content Include="Knowt\KnowtViewNoteTreeView.js" />
-    <Content Include="Knowt\older\KnowtViewShapeHub - Copy.js" />
-    <Content Include="Knowt\KnowtViewShapeHub.js" />
-    <Content Include="Knowt\KnowtViewStencil.js" />
-    <Content Include="Knowt\KnowtViewTraffic.js" />
-    <Content Include="Knowt\older\KnowtShareApp.html" />
-    <Content Include="Knowt\KnowtViewStencilAnimals.js" />
-    <Content Include="Knowt\older\oldKnowtViewApp.js" />
-    <Content Include="Knowt\older\oldKnowtViewViewModel.js" />
-    <Content Include="packages.config" />
-    <Content Include="content\toastr.scss" />
-    <Content Include="content\toastr.less" />
-    <Content Include="content\fonts\fontawesome-webfont.woff" />
-    <Content Include="content\fonts\fontawesome-webfont.ttf" />
-    <Content Include="content\fonts\fontawesome-webfont.eot" />
-    <Content Include="content\fonts\FontAwesome.otf" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="content\bootstrap-theme.css.map" />
-    <Content Include="content\bootstrap.css.map" />
-    <Content Include="images\Thumbs.db" />
-    <Content Include="KnowtView.NoteTemplate.html" />
-    <Content Include="Foundry\Foundry.core.js.bundle">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Foundry\Foundry.core.min.js.map">
-      <DependentUpon>Foundry.core.min.js</DependentUpon>
-    </Content>
-    <Content Include="Foundry\Foundry.js.bundle">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Foundry\Foundry.min.js.map">
-      <DependentUpon>Foundry.min.js</DependentUpon>
-    </Content>
-    <Content Include="Foundry\FoundryCanvas.js.bundle">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Foundry\FoundryCanvas.min.js.map">
-      <DependentUpon>FoundryCanvas.min.js</DependentUpon>
-    </Content>
-    <Content Include="Foundry\FoundryComplete.js.bundle">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Foundry\FoundryComplete.min.js.map">
-      <DependentUpon>FoundryComplete.min.js</DependentUpon>
-    </Content>
-    <Content Include="Foundry\FoundryUI.js.bundle" />
-    <Content Include="Foundry\FoundryUI.min.js.map">
-      <DependentUpon>FoundryUI.min.js</DependentUpon>
-    </Content>
-    <Content Include="Foundry\version.min.js.map">
-      <DependentUpon>version.min.js</DependentUpon>
-    </Content>
-    <None Include="Properties\PublishProfiles\knowtshare - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\knowtshare - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\knowtshare.pubxml" />
-    <None Include="Properties\PublishProfiles\knowtshareStaging.pubxml" />
+    <Content Include="Apparatus.html" />
+    <Content Include="Knowt\Apparatus.js" />
+    <Content Include="Knowt\ApparatusMenuCreate.js" />
+    <Content Include="Knowt\ApparatusCloudStorage.js" />
+    <Content Include="Knowt\app\index.html" />
+    <Content Include="Knowt\app\page.js" />
+    <Content Include="Knowt\app\styles.css" />
+    <Content Include="Knowt\KnowtViewMobileServices.js" />
+    <Content Include="Knowt\older\ShapeShareViewModel.js" />
+    <Content Include="recommenderBeach\beachKnowt.js" />
+    <Content Include="recommenderBeach\cardDirective.js" />
+    <Content Include="recommenderBeach\Images\baseball card.jpg" />
+    <Content Include="recommenderBeach\Images\beachApp.png" />
+    <Content Include="recommenderBeach\Images\beachClassification.jpg" />
+    <Content Include="recommenderBeach\Images\beachDecisionContext.jpg" />
+    <Content Include="recommenderBeach\Images\beachTable.jpg" />
+    <Content Include="recommenderBeach\Images\Cannon Beach.jpg" />
+    <Content Include="recommenderBeach\Images\Cape May.JPG" />
+    <Content Include="recommenderBeach\Images\Carmel by the Sea.jpg" />
+    <Content Include="recommenderBeach\Images\Charleston.jpg" />
+    <Content Include="recommenderBeach\Images\Corpus Christi.jpg" />
+    <Content Include="recommenderBeach\Images\Fort Lauderdale.jpg" />
+    <Content Include="recommenderBeach\Images\Galveston.jpg" />
+    <Content Include="recommenderBeach\Images\Grand Haven.jpg" />
+    <Content Include="recommenderBeach\Images\Gulfport.jpg" />
+    <Content Include="recommenderBeach\Images\Huntington Beach.jpg" />
+    <Content Include="recommenderBeach\Images\Long Beach.jpg" />
+    <Content Include="recommenderBeach\Images\Malibu.JPG" />
+    <Content Include="recommenderBeach\Images\Miami Beach.jpg" />
+    <Content Include="recommenderBeach\Images\Mobile.jpg" />
+    <Content Include="recommenderBeach\Images\Myrtle Beach.jpg" />
+    <Content Include="recommenderBeach\Images\Newport.jpg" />
+    <Content Include="recommenderBeach\Images\Ogunquit.JPG" />
+    <Content Include="recommenderBeach\Images\Pensacola.JPG" />
+    <Content Include="recommenderBeach\Images\Pompano Beach.jpg" />
+    <Content Include="recommenderBeach\Images\Port St Lucie.jpg" />
+    <Content Include="recommenderBeach\Images\Rehoboth Beach.jpg" />
+    <Content Include="recommenderBeach\Images\San Diego.jpg" />
+    <Content Include="recommenderBeach\Images\Santa Barbara.jpg" />
+    <Content Include="recommenderBeach\Images\Santa Cruz.jpg" />
+    <Content Include="recommenderBeach\Images\Savannah.jpg" />
+    <Content Include="recommenderBeach\Images\Southampton.jpg" />
+    <Content Include="recommenderBeach\Images\St Petersburg.jpg" />
+    <Content Include="recommenderBeach\Images\Tampa.jpg" />
+    <Content Include="recommenderBeach\Images\Traverse City.jpg" />
+    <Content Include="recommenderBeach\Images\Virginia Beach.jpg" />
+    <Content Include="recommenderBeach\Images\West Palm Beach.jpg" />
+    <Content Include="recommenderBeach\recommender.css" />
+    <Content Include="recommenderBeach\recommender.html" />
+    <Content Include="recommenderBeach\recommender.js" />
+    <Content Include="recommenderBeach\recommenderTemplate.css" />
+    <Content Include="recommenderBeach\recommenderTemplate.html" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
     <Content Include="Scripts\angular-cookies.js" />
@@ -333,14 +302,8 @@
     <Content Include="Scripts\angular-scenario.js" />
     <Content Include="Scripts\angular-touch.js" />
     <Content Include="Scripts\angular-touch.min.js" />
-    <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.js" />
-    <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.min.js" />
-    <Content Include="Scripts\angular-ui\ui-bootstrap.js" />
-    <Content Include="Scripts\angular-ui\ui-bootstrap.min.js" />
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\i18n\angular-locale_af-na.js" />
     <Content Include="Scripts\i18n\angular-locale_af-za.js" />
     <Content Include="Scripts\i18n\angular-locale_af.js" />
@@ -620,15 +583,107 @@
     <Content Include="Scripts\i18n\angular-locale_zh.js" />
     <Content Include="Scripts\i18n\angular-locale_zu-za.js" />
     <Content Include="Scripts\i18n\angular-locale_zu.js" />
+    <Content Include="Scripts\jquery.signalR-2.1.1.js" />
+    <Content Include="Scripts\jquery.signalR-2.1.1.min.js" />
+    <Content Include="start.html" />
+    <Content Include="KnowtChirpV2.html" />
+    <Content Include="KnowtChirp.html" />
+    <Content Include="Knowtify.html" />
+    <Content Include="KnowtPad.html" />
+    <Content Include="KnowtTaker.html" />
+    <Content Include="KnowtViewLayout.html" />
+    <Content Include="KnowtView.Dialogs.html" />
+    <Content Include="KnowtView.html" />
+    <Content Include="Knowt\KnowtChirpAppV2.js" />
+    <Content Include="Knowt\KnowtChirpApp.js" />
+    <Content Include="Knowt\KnowtDialogTest.js" />
+    <Content Include="Knowt\KnowtPadApp.js" />
+    <Content Include="Knowt\KnowtShareApp.js" />
+    <Content Include="Knowt\KnowtTakerApp.js" />
+    <Content Include="Knowt\older\KnowtViewLayout - Copy.js" />
+    <Content Include="Knowt\older\KnowtViewController.js" />
+    <Content Include="Knowt\KnowtViewErrorReport.js" />
+    <Content Include="Knowt\KnowtViewKeyEvents.js" />
+    <Content Include="Knowt\KnowtViewLayout.js" />
+    <Content Include="Knowt\KnowtViewMenuContent.js" />
+    <Content Include="Knowt\KnowtViewMenuFile.js" />
+    <Content Include="Knowt\KnowtViewMenuPanZoom.js" />
+    <Content Include="Knowt\KnowtViewMenuSession.js" />
+    <Content Include="Knowt\KnowtViewMenuShare.js" />
+    <Content Include="Knowt\KnowtViewMenuView.js" />
+    <Content Include="Knowt\KnowtViewNgDialog.js" />
+    <Content Include="Knowt\KnowtViewNoteCanvasView.js" />
+    <Content Include="Knowt\KnowtViewNoteTreeView.js" />
+    <Content Include="Knowt\older\KnowtViewShapeHub - Copy.js" />
+    <Content Include="Knowt\KnowtViewShapeHub.js" />
+    <Content Include="Knowt\KnowtViewStencil.js" />
+    <Content Include="Knowt\KnowtViewTraffic.js" />
+    <Content Include="Knowt\older\KnowtShareApp.html" />
+    <Content Include="Knowt\KnowtViewStencilAnimals.js" />
+    <Content Include="Knowt\older\oldKnowtViewApp.js" />
+    <Content Include="Knowt\older\oldKnowtViewViewModel.js" />
+    <Content Include="packages.config" />
+    <Content Include="content\toastr.scss" />
+    <Content Include="content\toastr.less" />
+    <Content Include="content\fonts\fontawesome-webfont.woff" />
+    <Content Include="content\fonts\fontawesome-webfont.ttf" />
+    <Content Include="content\fonts\fontawesome-webfont.eot" />
+    <Content Include="content\fonts\FontAwesome.otf" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="content\bootstrap-theme.css.map" />
+    <Content Include="content\bootstrap.css.map" />
+    <Content Include="images\Thumbs.db" />
+    <Content Include="KnowtView.NoteTemplate.html" />
+    <Content Include="Foundry\Foundry.core.js.bundle">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Foundry\Foundry.core.min.js.map">
+      <DependentUpon>Foundry.core.min.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\Foundry.js.bundle">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Foundry\Foundry.min.js.map">
+      <DependentUpon>Foundry.min.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\FoundryCanvas.js.bundle">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Foundry\FoundryCanvas.min.js.map">
+      <DependentUpon>FoundryCanvas.min.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\FoundryComplete.js.bundle">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Foundry\FoundryComplete.min.js.map">
+      <DependentUpon>FoundryComplete.min.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\FoundryUI.js.bundle" />
+    <Content Include="Foundry\FoundryUI.min.js.map">
+      <DependentUpon>FoundryUI.min.js</DependentUpon>
+    </Content>
+    <Content Include="Foundry\version.min.js.map">
+      <DependentUpon>version.min.js</DependentUpon>
+    </Content>
+    <Content Include="Knowt\app\Mobile Services - Windows Azure.website" />
+    <Content Include="Knowt\app\server\launch-linux.sh" />
+    <Content Include="Knowt\app\server\launch-mac.command" />
+    <Content Include="Knowt\app\server\launch-windows.lnk" />
+    <Content Include="Knowt\app\server\start-iisexpress.ps1" />
+    <None Include="Properties\PublishProfiles\knowtshare - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\knowtshare - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\knowtshare.pubxml" />
+    <None Include="Properties\PublishProfiles\knowtshareStaging.pubxml" />
+    <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.js" />
+    <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.min.js" />
+    <Content Include="Scripts\angular-ui\ui-bootstrap.js" />
+    <Content Include="Scripts\angular-ui\ui-bootstrap.min.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jasmine-html.js" />
     <Content Include="Scripts\jasmine.js" />
-    <None Include="Scripts\jquery-2.1.1.intellisense.js" />
-    <Content Include="Scripts\jquery-2.1.1.js" />
-    <Content Include="Scripts\jquery-2.1.1.min.js" />
-    <Content Include="Scripts\toastr.js" />
-    <Content Include="Scripts\toastr.min.js" />
-    <Content Include="Scripts\toastr.min.js.map" />
-    <Content Include="Scripts\version.json" />
     <Content Include="Scripts\errors.json" />
     <Content Include="Scripts\angular-touch.min.js.map" />
     <Content Include="Scripts\angular-sanitize.min.js.map" />
@@ -638,7 +693,14 @@
     <Content Include="Scripts\angular-cookies.min.js.map" />
     <Content Include="Scripts\angular-animate.min.js.map" />
     <Content Include="Scripts\angular.min.js.map" />
+    <None Include="Scripts\jquery-2.1.1.intellisense.js" />
+    <Content Include="Scripts\jquery-2.1.1.js" />
+    <Content Include="Scripts\jquery-2.1.1.min.js" />
+    <Content Include="Scripts\toastr.js" />
+    <Content Include="Scripts\toastr.min.js" />
+    <Content Include="Scripts\toastr.min.js.map" />
     <Content Include="Scripts\jquery-2.1.1.min.map" />
+    <Content Include="Scripts\version.json" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -648,8 +710,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="angularSignalR.html" />
-    <Content Include="Scripts\jquery.signalR-2.1.0.js" />
-    <Content Include="Scripts\jquery.signalR-2.1.0.min.js" />
     <Content Include="SpecRunner.html" />
     <Content Include="index.html" />
     <Content Include="Spec\BlockTest.js" />

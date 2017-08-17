@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html ng-app="chatApp" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Angular SignalR Test</title>
+
+    <style type="text/css">
+        .container {
+            background-color: #99CCFF;
+            border: thick solid #808080;
+            padding: 20px;
+            margin: 20px;
+        }
+
+        .pannel {
+            background-color: #c5dff8;
+            border:  solid #808080;
+            padding: 10px;
+            margin: 10px;
+        }
+        
+        .selected {
+             border: thick solid #ff0000;
+            /*border: 2px solid #999;*/
+        }
+    </style>
+    <link href="content/toastr.min.css" rel="stylesheet" />
+
+</head>
+<body ng-cloak ng-controller="chatController">
+
+    <div class="container">
+        <input type="text" ng-model="author" placeholder="your name here" /><br/>
+
+        <input type="text" ng-model="message" placeholder="enter your message" />
+        <input type="button" ng-click="doSendMessage()" value="Send" />
+        <ul ng-repeat="item in messageList">
+            <li>
+                <strong>{{ item.encodedName}}</strong>:&nbsp;&nbsp;{{ item.encodedMessage}}
+            </li>
+        </ul>
+    </div>
+
+    <button ng-click="doNewPage()">new page</button>
+
+    <div class="container">
+        <input type="text" ng-model="session" placeholder="enter your session key" />
+        <input type="button" ng-click="doJoinSession()" value="Join" />
+        <input type="button" ng-click="doExitSession()" value="Quit" />
+    </div>
+
+    <div>
+        <button ng-click="doAddNote()">Add</button>
+        <button ng-click="doEditNote()">Edit</button>
+        <button ng-click="doDeleteNote()">Delete</button>
+        <button ng-click="doClearNotes()">Clear</button>
+        <button ng-click="doMoveLeft()">Move Left</button>
+        <button ng-click="doMoveRight()">Move Right</button>
+    </div>
+
+    <div class="container">
+        <p>All Notes</p>
+
+        <script type="text/ng-template" id="noteTreeBody.html">
+            <strong>{{ note.myName}}</strong>:&nbsp;&nbsp;{{ note.headerText}}
+            <button ng-click="doSendNoteChanges(note)">Send Changes</button>
+            <input type="text" ng-model="note.noteText" placeholder="enter your note text" style="width:100%" />
+        </script>
+
+            <script type="text/ng-template" id="noteTreeItem.html">
+                <article  data-type="{{note.myType}}">
+                    <div ng-click="toggleSelect(note)" class="pannel" ng-class="{'selected': note.isSelected}">
+                        <div ng-include=" 'noteTreeBody.html' "></div>
+                    </div>
+
+                    <ul>
+                        <li ng-repeat="note in note.Subcomponents.elements" ng-include=" 'noteTreeItem.html' "></li>
+                    </ul>
+                </article>
+            </script>
+
+            <ul>
+                <li ng-repeat="note in rootModel.Subcomponents.elements" ng-include=" 'noteTreeItem.html' "></li>
+            </ul>
+    </div>
+
+    <script src="Scripts/jquery-2.1.1.min.js"></script>
+    <script src="Scripts/toastr.min.js"></script>
+    <script src="Scripts/angular.js"></script>
+    <script src="http://foundryjs.azurewebsites.net/foundry/foundry.js"></script>
+
+    <script src="Scripts/jquery.signalR-2.1.0.min.js"></script>
+    <script src="signalr/hubs"></script>
+    <script src="angularSignalR.js"></script>
+    <!--<script src="noteStencil.js"></script>-->
+    <script src="Knowt/KnowtViewStencil.js"></script>
+</body>
+</html>

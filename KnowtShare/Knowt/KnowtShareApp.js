@@ -13,6 +13,25 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
         return id;
     }
 
+
+    app.getNamespace = function (obj) {
+        return fo.utils.getNamespace(obj);
+    }
+
+    app.getType = function (obj) {
+        return fo.utils.getType(obj);
+    }
+
+    app.factory = function () {
+        if (!fo[app.name]) {
+            fo.exportTypes();
+        }
+        return fo[app.name];
+    }
+
+
+
+
     //app.provider({
     //    $exceptionHandler: function () {
 
@@ -455,6 +474,23 @@ knowtApp.header = { title: 'Knowt Share', help: 'knowtshareHelp.html' };
          }
 
         return space.sessionMenu;
+    })
+}(knowtApp, Foundry));
+
+//now create the mobileServiceMenu controller
+(function (app, fo, undefined) {
+
+    app.controller('mobileServices', function ($log, workspaceService, dialogService) {
+        var space = workspaceService.activeWorkSpace();
+
+        if (!space.mobileServices) {
+            space.mobileServices = space.factory.newMobileServices({
+                space: space,
+                dialogService: dialogService,
+            }, space);
+        }
+
+        return space.mobileServices;
     })
 }(knowtApp, Foundry));
 

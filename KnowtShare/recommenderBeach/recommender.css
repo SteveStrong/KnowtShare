@@ -1,0 +1,122 @@
+﻿
+
+
+body, div {
+    margin-left: 10px;
+}
+
+ul {
+    list-style: circle;
+}
+
+li {
+    margin-left: 20px;
+}
+
+.page {
+    margin-top: 30px;
+}
+
+.check-box-button {
+    cursor: pointer;
+    height: 32px;
+    width: 32px;
+    border: 1px solid #333;
+    color: darkgreen;
+    text-align: center;
+    font-family: Dingbats;
+    opacity: 0.25;
+}
+
+    .check-box-button:hover {
+        opacity: 1.0;
+        background-color: white;
+        -moz-transform: scale(1.1);
+        -ms-transform: scale(1.1);
+        -o-transform: scale(1.1);
+        -webkit-transform: scale(1.1);
+        transform: scale(1.1);
+    }
+
+    .check-box-button:active {
+        -moz-transform: scale(0.9);
+        -ms-transform: scale(0.9);
+        -o-transform: scale(0.9);
+        -webkit-transform: scale(0.9);
+        transform: scale(0.9);
+    }
+
+    .check-box-button[data-check-box-button-selected=true] {
+        opacity: 1.0;
+        background-color: darkgreen;
+        color: white;
+    }
+
+.main-text, .main-description {
+    width: 150px;
+    text-align: center;
+    vertical-align: top;
+    cursor:pointer;
+}
+
+
+.custom-enter,
+.custom-leave,
+.custom-move {
+    -webkit-transition: 1s linear all;
+    -moz-transition: 1s linear all;
+    -o-transition: 1s linear all;
+    transition: 1s linear all;
+    position: relative;
+}
+
+.custom-enter {
+    left: -10px;
+    opacity: 0;
+}
+
+    .custom-enter.custom-enter-active {
+        left: 0;
+        opacity: 1;
+    }
+
+.custom-leave {
+    left: 0;
+    opacity: 1;
+}
+
+    .custom-leave.custom-leave-active {
+        left: -10px;
+        opacity: 0;
+    }
+
+.custom-move {
+    opacity: 0.5;
+}
+
+    .custom-move.custom-move-active {
+        opacity: 1;
+    }
+
+.fade-hide, .fade-show {
+    -webkit-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+    -moz-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+    -o-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+    transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+}
+
+.fade-hide {
+    opacity: 1;
+}
+
+    .fade-hide.fade-hide-active {
+        opacity: 0;
+    }
+
+.fade-show {
+    opacity: 0;
+}
+
+    .fade-show.fade-show-active {
+        opacity: 1;
+    }

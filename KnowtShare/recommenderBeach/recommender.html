@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html data-ng-app="recommenderApp" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>Apprentice Systems</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <meta name="description" content="knowtshare: collaborative modeling " />
+    <meta name="author" content="Apprentice Systems" />
+
+    <link href="recommender.css" rel="stylesheet" />
+    <link href="recommenderTemplate.css" rel="stylesheet" />
+    <link href="../content/bootstrap.css" rel="stylesheet" />
+
+</head>
+
+<body class="page" data-ng-controller="recommendationController as vm">
+
+    <ul class="breadcrumb">
+        <li ng-repeat="crumb in vm.selectionPath">
+            <a class="main-description" ng-click="vm.goto(crumb)">{{crumb.text}}</a>
+        </li>
+    </ul>
+
+    <div class="container well" ng-show="!vm.rootNode.isLeafParent">
+        <div class="row" ng-repeat="item in vm.choices" ng-animate="{enter: 'animate-enter', leave: 'animate-leave'}">
+            <div style="height:50px" data-ng-show="item.isBranch" ng-click="vm.toggleDone(item);$event.stopPropagation();">
+                <button class="check-box-button" data-check-box-button-selected="{{item.done}}">
+                    <span data-ng-show="item.done">&#10004;</span>  <!--&#10038;-->
+                </button>
+                <span class="main-text">{{item.headerText}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div data-ng-if="vm.rootNode.isLeafParent" class="row" style="margin-left:20px">
+        <card ng-repeat="item in vm.choices" item='item.details' class="col-lg-4">
+        </card>
+    </div>
+
+    <!--<div class="row">
+        <div class="row" ng-hide="vm.noMoreChoice">
+            <button class="btn btn-info col-lg-1 col-lg-offset-1" ng-disabled="!vm.canDoBack" data-ng-click="vm.doBack">back  </button>
+            <button class="btn btn-info col-lg-1 col-lg-offset-1" ng-disabled="!vm.canDoNext" data-ng-click="vm.doNext">next</button>
+        </div>
+    </div>-->
+    <!--<button class="btn btn-default col-lg-1" data-ng-click="vm.doShowAll">show all</button><br />
+    <div class="row well" ng-if="vm.showAll">
+        <div ng-repeat="data in list" class="col-lg-3">
+            <card item='data'></card>
+        </div>
+    </div>-->
+
+    <script src="../Scripts/angular.js"></script>
+    <script src="../Scripts/angular.js"></script>
+    <script src="../Scripts/angular-route.js"></script>
+    <script src="../Scripts/angular-animate.js"></script>
+    <script src="../Scripts/angular-touch.js"></script>
+
+    <script src="../Scripts/angular-ui/ui-bootstrap.min.js"></script>
+    <script src="../Scripts/angular-ui/ui-bootstrap-tpls.min.js"></script>
+
+
+    <script src='http://ajax.aspnetcdn.com/ajax/mobileservices/MobileServices.Web-1.2.2.min.js'></script>
+    <script type="text/javascript" src="http://foundryjs.azurewebsites.net/Foundry/Foundry.js"></script>
+
+    <script src="beachKnowt.js"></script>
+    <script src="cardDirective.js"></script>
+    <script src="recommender.js"></script>
+</body>
+
+
+</html>

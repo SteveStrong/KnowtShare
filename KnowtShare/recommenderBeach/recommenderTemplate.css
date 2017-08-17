@@ -1,0 +1,45 @@
+﻿        .cardh1 {
+            color: #331A86;
+            font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;
+            font-weight: 600;
+            text-align: center;
+            padding-top: 6px;
+            padding-right: 6px;
+            padding-bottom: 6px;
+            padding-left: 6px;
+        }
+
+        .cardbody {
+	        border: thin solid #555454;
+	        border-radius: 46px;
+	        max-width: 450px;
+	        -webkit-box-shadow: 7px 7px #BFBEBE;
+	        box-shadow: 7px 7px #BFBEBE;
+        }
+
+        .cardimg {
+            width: 80%;
+            margin-left: 10%;
+            margin-right: 10%;
+            border: thick outset #9C9A96;
+        }
+
+        .carddiv {
+            margin-left: 10%;
+            padding-top: 20px;
+            padding-bottom: 52px;
+        }
+
+            .carddiv p {
+                color: #2D2C2C;
+                font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;
+                font-weight: bold;
+                font-size: medium;
+            }
+
+            .carddiv a {
+                color: #3919A8;
+                font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;
+                font-variant: normal;
+                font-weight: bold;
+            }
